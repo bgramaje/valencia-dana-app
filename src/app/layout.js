@@ -16,10 +16,8 @@ export default function RootLayout({ children }) {
       <Head>
         <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
       </Head>
-      <html lang="en">
-        <body
-          className={`${inter.className} antialiased`}
-        >
+      <html lang="es">
+        <body className={`${inter.className} antialiased`}>
           {children}
         </body>
       </html>

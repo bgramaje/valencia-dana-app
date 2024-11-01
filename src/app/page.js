@@ -159,6 +159,7 @@ export default function Home() {
     return (
         <div className="relative w-full h-dvh">
             <DeckGL
+                height="100dvh"
                 initialViewState={viewState}
                 controller={true}
                 layers={layers}
@@ -166,6 +167,8 @@ export default function Home() {
                 getCursor={() => (isSelectingLocation ? 'crosshair' : 'grab')}
             >
                 <ReactMap
+                    attributionControl={false}
+                    reuseMaps
                     mapStyle="https://api.maptiler.com/maps/streets-v2/style.json?key=3l2Dsb6tXQ0t2OzWLivd"
                     onClick={handleMapClick}
                 />
@@ -294,6 +297,7 @@ export default function Home() {
                     />
                 </Link>
             </div>
+
 
         </div>
     )

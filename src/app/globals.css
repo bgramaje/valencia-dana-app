@@ -81,7 +81,7 @@ body {
 }
 
 body {
-  overflow-y: hidden;
+  overflow-y: auto;
   min-height: -webkit-fill-available;
 }
 
@@ -91,4 +91,8 @@ input:focus {
 
 input {
   font-size: 16px !important;
+}
+
+.maplibregl-map > div:last-child {
+ display: none !important;
 }
