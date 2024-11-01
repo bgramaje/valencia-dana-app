@@ -1,39 +1,51 @@
-import fs from 'fs';
-import path from 'path';
+import { createClient } from '@supabase/supabase-js';
 
-const markersFilePath = path.join(process.cwd(), 'data', 'markers.json');
+const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL;
+const supabaseKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
+const supabase = createClient(supabaseUrl, supabaseKey);
 
-// Leer los marcadores del archivo JSON
-const readMarkers = () => {
-    if (fs.existsSync(markersFilePath)) {
-        const jsonData = fs.readFileSync(markersFilePath);
-        return JSON.parse(jsonData);
-    }
-    return [];
-};
-
-// Guardar los marcadores en el archivo JSON
-const saveMarkers = (markers) => {
-    fs.writeFileSync(markersFilePath, JSON.stringify(markers, null, 2));
-};
-
+// Get markers from Supabase
 export async function GET(request) {
-    const markers = readMarkers();
+    const { data: markers, error } = await supabase
+        .from('markers')
+        .select('*');
+
+    if (error) {
+        return new Response(JSON.stringify({ error: error.message }), { status: 500 });
+    }
+
     return new Response(JSON.stringify(markers), { status: 200 });
 }
 
+// Add a new marker to Supabase
 export async function POST(request) {
     const newMarker = await request.json();
-    const markers = readMarkers();
-    markers.push(newMarker);
-    saveMarkers(markers);
-    return new Response(JSON.stringify(newMarker), { status: 201 });
+    
+    const { data, error } = await supabase
+        .from('markers')
+        .insert([newMarker])
+        .select()
+
+    if (error) {
+        return new Response(JSON.stringify({ error: error.message }), { status: 500 });
+    }
+    console.log(data);
+    
+    return new Response(JSON.stringify(data[0]), { status: 201 });
 }
 
+// Delete a marker from Supabase
 export async function DELETE(request) {
-    const { id } = await request.json(); // Asumiendo que envías un ID para eliminar el marcador
-    const markers = readMarkers();
-    const updatedMarkers = markers.filter((marker, index) => index !== id);
-    saveMarkers(updatedMarkers);
+    const { id } = await request.json();
+    
+    const { error } = await supabase
+        .from('markers')
+        .delete()
+        .eq('id', id);
+
+    if (error) {
+        return new Response(JSON.stringify({ error: error.message }), { status: 500 });
+    }
+
     return new Response(JSON.stringify({ message: 'Marker deleted' }), { status: 200 });
 }

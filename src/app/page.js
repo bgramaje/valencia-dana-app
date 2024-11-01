@@ -107,6 +107,8 @@ export default function Home() {
     }
 
     const handleAddMarker = () => {
+        setNewMarker({ id: Date.now(), ...newMarker })
+
         fetch('/api/markers', {
             method: 'POST',
             headers: {
@@ -129,7 +131,7 @@ export default function Home() {
             headers: {
                 'Content-Type': 'application/json',
             },
-            body: JSON.stringify({ id: markers.indexOf(selectedMarker) }), // Envía el índice o ID
+            body: JSON.stringify({ id: selectedMarker.id }), // Envía el índice o ID
         })
             .then(response => response.json())
             .then(data => {
