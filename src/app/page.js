@@ -146,7 +146,7 @@ export default function Home() {
     };
 
     return (
-        <div className="relative w-full h-screen">
+        <div className="relative w-full h-dvh">
             <DeckGL
                 initialViewState={viewState}
                 controller={true}
@@ -157,6 +157,7 @@ export default function Home() {
                 <ReactMap
                     mapStyle="https://api.maptiler.com/maps/streets-v2/style.json?key=3l2Dsb6tXQ0t2OzWLivd"
                     onClick={handleMapClick}
+                    
                 />
             </DeckGL>
 

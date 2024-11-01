@@ -82,4 +82,5 @@ body {
 
 body {
   overflow-y: hidden;
+  min-height: -webkit-fill-available;
 }
