@@ -84,3 +84,11 @@ body {
   overflow-y: hidden;
   min-height: -webkit-fill-available;
 }
+
+input:focus {
+  font-size: 16px !important;  
+}
+
+input {
+  font-size: 16px !important;
+}
