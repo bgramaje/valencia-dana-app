@@ -146,7 +146,7 @@ export default function Home() {
     };
 
     return (
-        <div className="relative w-full h-dvh">
+        <div className="relative w-full h-dvh overflow-hidden">
             <DeckGL
                 initialViewState={viewState}
                 controller={true}
