@@ -40,6 +40,17 @@ export default function Home() {
 
     const getGoogleMapsUrl = () => `https://www.google.com/maps?q=${selectedMarker.latitude},${selectedMarker.longitude}`;
 
+    // Initialize warning modal state from local storage
+    useEffect(() => {
+        const warningModalState = localStorage.getItem('warningModalClosed');
+        setWarningModalOpen(warningModalState !== 'true'); // Show modal if not previously closed
+    }, []);
+
+    const closeWarningModal = () => {
+        setWarningModalOpen(false);
+        localStorage.setItem('warningModalClosed', 'true');
+    };
+
     useEffect(() => {
         // Cargar marcadores al montar el componente
         fetch('/api/markers')
@@ -168,14 +179,14 @@ export default function Home() {
                 </div>
             )}
 
-              {/* Modal de advertencia que aparece por defecto */}
-              <Dialog open={isWarningModalOpen} onOpenChange={setWarningModalOpen}>
+            {/* Modal de advertencia que aparece por defecto */}
+            <Dialog open={isWarningModalOpen} onOpenChange={closeWarningModal}>
                 <DialogContent>
                     <DialogHeader className="flex-row gap-1 items-center m-0">
-                    <Icon
-                        icon="ph:seal-warning-duotone"
-                        style={{ color: 'red', width: 24, height: 24 , marginTop: 4}} // Color blanco para los iconos
-                    />
+                        <Icon
+                            icon="ph:seal-warning-duotone"
+                            style={{ color: 'red', width: 24, height: 24, marginTop: 4 }} // Color blanco para los iconos
+                        />
                         <DialogTitle className="text-red-600 m-0 pt-0 mb-1">Advertencia Importante</DialogTitle>
                     </DialogHeader>
                     <p className="font-semibold">
