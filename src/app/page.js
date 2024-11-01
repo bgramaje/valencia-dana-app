@@ -36,6 +36,7 @@ export default function Home() {
     const [selectedMarker, setSelectedMarker] = useState(null)
     const [isModalOpen, setModalOpen] = useState(false)
     const [isSelectingLocation, setIsSelectingLocation] = useState(false)
+    const [isWarningModalOpen, setWarningModalOpen] = useState(true) // Estado para el modal de advertencia
 
     const getGoogleMapsUrl = () => `https://www.google.com/maps?q=${selectedMarker.latitude},${selectedMarker.longitude}`;
 
@@ -166,6 +167,25 @@ export default function Home() {
                     </div>
                 </div>
             )}
+
+              {/* Modal de advertencia que aparece por defecto */}
+              <Dialog open={isWarningModalOpen} onOpenChange={setWarningModalOpen}>
+                <DialogContent>
+                    <DialogHeader className="flex-row gap-1 items-center m-0">
+                    <Icon
+                        icon="ph:seal-warning-duotone"
+                        style={{ color: 'red', width: 24, height: 24 , marginTop: 4}} // Color blanco para los iconos
+                    />
+                        <DialogTitle className="text-red-600 m-0 pt-0 mb-1">Advertencia Importante</DialogTitle>
+                    </DialogHeader>
+                    <p className="font-semibold">
+                        Los voluntarios que se dirijan a las zonas afectadas deben llevar mascarillas y guantes, ya que el agua ha estado en contacto con cuerpos sin vida y posiblemente químicos. ¡Por favor, tomen precauciones!
+                    </p>
+                    <DialogFooter>
+                        <Button onClick={() => setWarningModalOpen(false)} className="w-full mt-2" variant="destructive">Entendido</Button>
+                    </DialogFooter>
+                </DialogContent>
+            </Dialog>
 
             <Dialog open={isModalOpen} onOpenChange={setModalOpen}>
                 <DialogContent className="max-w-[90%] w-fit min-w-[350px]">
