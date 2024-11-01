@@ -167,8 +167,8 @@ export default function Home() {
                     Seleccionar ubicación y añadir marcador
                 </Button>
 
-                <Dialog open={isModalOpen} onOpenChange={setModalOpen}>
-                    <DialogContent>
+                <Dialog open={isModalOpen} onOpenChange={setModalOpen} className="max-w-[90%]">
+                    <DialogContent className="max-w-[90%]">
                         <DialogHeader>
                             <DialogTitle>{selectedMarker ? 'Información del Marcador' : 'Añadir nuevo marcador'}</DialogTitle>
                         </DialogHeader>
