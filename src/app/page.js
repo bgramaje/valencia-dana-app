@@ -52,6 +52,10 @@ export default function Home() {
     };
 
     useEffect(() => {
+        if(!isModalOpen)setSelectedMarker(null)
+    }, [isModalOpen])
+
+    useEffect(() => {
         // Cargar marcadores al montar el componente
         fetch('/api/markers')
             .then(response => response.json())
@@ -106,7 +110,8 @@ export default function Home() {
     ]
 
     const handleMapClick = (event) => {
-        if (selectedMarker) setSelectedMarker(null)
+        console.log(isSelectingLocation);
+        
         if (isSelectingLocation && event.coordinate) {
             setNewMarker({
                 ...newMarker,
