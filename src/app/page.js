@@ -9,6 +9,8 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Input } from "@/components/ui/input"
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from "@/components/ui/dialog"
 import { Icon } from '@iconify/react'
+import Image from 'next/image'
+import Link from 'next/link'
 
 // Coordenadas iniciales para Valencia
 const INITIAL_VIEW_STATE = {
@@ -250,9 +252,18 @@ export default function Home() {
                         width="40"
                         height="40"
                         className='text-red-300'
-                        style={{ color: isSelectingLocation ? 'white': 'black', width: 40, height: 40 }} // Color blanco para los iconos
+                        style={{ color: isSelectingLocation ? 'white' : 'black', width: 40, height: 40 }} // Color blanco para los iconos
                     />
                 </Button>
+                <Link href="https://github.com/bgramaje" passHref>
+                    <Image
+                        alt="github"
+                        src="https://avatars.githubusercontent.com/u/56760866?s=400&u=85f1f7114a7c9f4afc1c63e3d06d35a7e204ce1a&v=4"
+                        width={50}
+                        height={50}
+                        className="rounded-xl p-1 bg-white"
+                    />
+                </Link>
             </div>
 
         </div>
