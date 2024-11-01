@@ -27,6 +27,7 @@ const ASSISTANCE_TYPES = {
 
 }
 
+
 export default function Home() {
     const [viewState, setViewState] = useState(INITIAL_VIEW_STATE)
     const [markers, setMarkers] = useState([])
@@ -34,6 +35,10 @@ export default function Home() {
     const [selectedMarker, setSelectedMarker] = useState(null)
     const [isModalOpen, setModalOpen] = useState(false)
     const [isSelectingLocation, setIsSelectingLocation] = useState(false)
+
+    const getGoogleMapsUrl = () => {
+      return `https://www.google.com/maps?q=${selectedMarker.latitude},${selectedMarker.longitude}`;
+  }
 
     useEffect(() => {
         // Cargar marcadores al montar el componente
@@ -178,7 +183,8 @@ export default function Home() {
                                     <p><strong>Longitud:</strong> {selectedMarker.longitude.toFixed(4)}</p>
                                     <p><strong>Latitud:</strong> {selectedMarker.latitude.toFixed(4)}</p>
                                 </div>
-                                <Button onClick={handleDeleteMarker} variant="destructive" className="w-full">Eliminar Marcador</Button> {/* Botón para eliminar el marcador */}
+                                <Button onClick={handleDeleteMarker} variant="destructive" className="w-full mt-2">Eliminar Marcador</Button> {/* Botón para eliminar el marcador */}
+                                <Button onClick={() => window.open(getGoogleMapsUrl(), '_blank')} className="w-full mt-2">Abrir en Google Maps</Button> {/* Botón para abrir en Google Maps */}
                             </div>
                         ) : (
                             <>
