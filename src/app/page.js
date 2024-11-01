@@ -24,7 +24,6 @@ const ASSISTANCE_TYPES = {
     FOOD: { color: [0, 255, 0], label: 'Comida', iconMap: 'https://api.iconify.design/mdi/food.svg', icon: 'mdi:food' },
     MEDICAL: { color: [255, 0, 0], label: 'Asistencia Médica', iconMap: 'https://api.iconify.design/mdi/medical-bag.svg', icon: 'mdi:medical-bag' },
     OTHER: { color: [165, 3, 252], label: 'Otros', iconMap: 'https://api.iconify.design/bxs/shopping-bags.svg', icon: 'bxs:shopping-bags' }
-
 }
 
 
@@ -146,7 +145,7 @@ export default function Home() {
     };
 
     return (
-        <div className="relative w-full h-dvh overflow-hidden">
+        <div className="relative w-full h-dvh">
             <DeckGL
                 initialViewState={viewState}
                 controller={true}
@@ -157,93 +156,105 @@ export default function Home() {
                 <ReactMap
                     mapStyle="https://api.maptiler.com/maps/streets-v2/style.json?key=3l2Dsb6tXQ0t2OzWLivd"
                     onClick={handleMapClick}
-
                 />
             </DeckGL>
 
-            <div className="absolute top-0 left-0 bg-white p-4 m-4 rounded shadow">
-                <h2 className="text-lg font-bold mb-2">Añadir punto de asistencia</h2>
-                <Button className="mt-2 w-full" {...isSelectingLocation && { variant: 'destructive', className: 'animate-pulse' }} onClick={() => setIsSelectingLocation(true)}>
-                    Seleccionar ubicación y añadir marcador
-                </Button>
-
-                <Dialog open={isModalOpen} onOpenChange={setModalOpen} className="max-w-[90%]">
-                    <DialogContent className="max-w-[90%]">
-                        <DialogHeader>
-                            <DialogTitle>{selectedMarker ? 'Información del Marcador' : 'Añadir nuevo marcador'}</DialogTitle>
-                        </DialogHeader>
-                        {selectedMarker ? (
-                            <div>
-                                <p className="flex"><strong>Tipo:</strong>
-                                    <Icon
-                                        icon={ASSISTANCE_TYPES[selectedMarker.type].icon}
-                                        width="20"
-                                        height="20"
-                                    />
-                                </p>
-                                <p className="text-xl"><strong>Descripción:</strong> {selectedMarker.description}</p>
-                                <div className="flex gap-2">
-                                    <p><strong>Longitud:</strong> {selectedMarker.longitude.toFixed(4)}</p>
-                                    <p><strong>Latitud:</strong> {selectedMarker.latitude.toFixed(4)}</p>
-                                </div>
-                                <Button onClick={handleDeleteMarker} variant="destructive" className="w-full mt-2">Eliminar Marcador</Button> {/* Botón para eliminar el marcador */}
-                                <Button onClick={() => window.open(getGoogleMapsUrl(), '_blank')} className="w-full mt-2">Abrir en Google Maps</Button> {/* Botón para abrir en Google Maps */}
-                            </div>
-                        ) : (
-                            <>
-                                <Select
-                                    value={newMarker.type}
-                                    onValueChange={(value) => setNewMarker({ ...newMarker, type: value })}
-                                >
-                                    <SelectTrigger className="w-full">
-                                        <SelectValue placeholder="Tipo de asistencia" />
-                                    </SelectTrigger>
-                                    <SelectContent>
-                                        {Object.entries(ASSISTANCE_TYPES).map(([key, value]) => (
-                                            <SelectItem key={key} value={key}>
-                                                <span className="flex items-center">
-                                                    <Icon icon={value.icon} width="20" height="20" className="mr-2" />
-                                                    {value.label}
-                                                </span>
-                                            </SelectItem>
-                                        ))}
-                                    </SelectContent>
-                                </Select>
-                                <Input
-                                    className="mt-2"
-                                    placeholder="Descripción"
-                                    value={newMarker.description}
-                                    onChange={(e) => setNewMarker({ ...newMarker, description: e.target.value })}
-                                />
-                                <DialogFooter>
-                                    <Button className="w-full mt-2" onClick={handleAddMarker}>
-                                        Confirmar y añadir marcador
-                                    </Button>
-                                </DialogFooter>
-                            </>
-                        )}
-                    </DialogContent>
-                </Dialog>
-            </div>
-            <div className="absolute bottom-0 right-0 bg-white p-4 m-4 rounded shadow">
-                <h3 className="font-bold mb-2">Leyenda</h3>
-                {Object.entries(ASSISTANCE_TYPES).map(([key, value]) => (
-                    <div key={key} className="flex items-center mb-1">
-                        <div
-                            className="w-8 h-8 mr-2 rounded-full flex items-center justify-center"
-                            style={{ backgroundColor: `rgb(${value.color.join(',')})` }}
-                        >
-                            <Icon
-                                icon={value.icon}
-                                width="20"
-                                height="20"
-                                style={{ color: 'white' }} // Color blanco para los iconos
-                            />
-                        </div>
-                        <span className="font-bold">{value.label}</span>
+            {isSelectingLocation && (
+                <div className="flex absolute top-10 left-1/2 transform -translate-x-1/2 -translate-y-1/2 items-center gap-4">
+                    <div className="bg-white p-2 py-2 m-0 rounded-xl shadow flex gap-1 flex-wrap justify-between">
+                        <span className="font-semibold text-[13px] uppercase leading-tight text-red-500 animate-pulse">Añadiendo marcador: Seleccione coordenada</span>
                     </div>
-                ))}
+                </div>
+            )}
+
+            <Dialog open={isModalOpen} onOpenChange={setModalOpen}>
+                <DialogContent className="max-w-[90%] w-fit min-w-[350px]">
+                    <DialogHeader>
+                        <DialogTitle>{selectedMarker ? 'Información del Marcador' : 'Añadir nuevo marcador'}</DialogTitle>
+                    </DialogHeader>
+                    {selectedMarker ? (
+                        <div>
+                            <p className="flex"><strong>Tipo:</strong>
+                                <Icon
+                                    icon={ASSISTANCE_TYPES[selectedMarker.type].icon}
+                                    width="20"
+                                    height="20"
+                                />
+                            </p>
+                            <p className="text-xl"><strong>Descripción:</strong> {selectedMarker.description}</p>
+                            <div className="flex gap-2">
+                                <p><strong>Longitud:</strong> {selectedMarker.longitude.toFixed(4)}</p>
+                                <p><strong>Latitud:</strong> {selectedMarker.latitude.toFixed(4)}</p>
+                            </div>
+                            <Button onClick={handleDeleteMarker} variant="destructive" className="w-full mt-2">Eliminar Marcador</Button> {/* Botón para eliminar el marcador */}
+                            <Button onClick={() => window.open(getGoogleMapsUrl(), '_blank')} className="w-full mt-2">Abrir en Google Maps</Button> {/* Botón para abrir en Google Maps */}
+                        </div>
+                    ) : (
+                        <>
+                            <Select
+                                value={newMarker.type}
+                                onValueChange={(value) => setNewMarker({ ...newMarker, type: value })}
+                            >
+                                <SelectTrigger className="w-full">
+                                    <SelectValue placeholder="Tipo de asistencia" />
+                                </SelectTrigger>
+                                <SelectContent>
+                                    {Object.entries(ASSISTANCE_TYPES).map(([key, value]) => (
+                                        <SelectItem key={key} value={key}>
+                                            <span className="flex items-center">
+                                                <Icon icon={value.icon} width="20" height="20" className="mr-2" />
+                                                {value.label}
+                                            </span>
+                                        </SelectItem>
+                                    ))}
+                                </SelectContent>
+                            </Select>
+                            <Input
+                                className="mt-0"
+                                placeholder="Descripción"
+                                value={newMarker.description}
+                                onChange={(e) => setNewMarker({ ...newMarker, description: e.target.value })}
+                            />
+                            <DialogFooter>
+                                <Button className="w-full mt-0" onClick={handleAddMarker}>
+                                    Confirmar y añadir marcador
+                                </Button>
+                            </DialogFooter>
+                        </>
+                    )}
+                </DialogContent>
+            </Dialog>
+            <div className="flex absolute bottom-0 left-1/2 transform -translate-x-1/2 -translate-y-1/2 items-center gap-4">
+                <div className="bg-white p-2 py-2 m-0 rounded-xl shadow flex gap-1 flex-wrap justify-between">
+                    {Object.entries(ASSISTANCE_TYPES).map(([key, value]) => (
+                        <div key={key} className="flex items-center mb-0">
+                            <div
+                                className="w-8 h-8 mr-2 rounded-full flex items-center justify-center"
+                                style={{ backgroundColor: `rgb(${value.color.join(',')})` }}
+                            >
+                                <Icon
+                                    icon={value.icon}
+                                    width="20"
+                                    height="20"
+                                    style={{ color: 'white' }} // Color blanco para los iconos
+                                />
+                            </div>
+                            <span className="font-semibold w-[100px] text-[13px] uppercase leading-tight">{value.label}</span>
+                        </div>
+                    ))}
+                </div>
+
+                <Button variant="outline" size="icon" className={`w-[60px] h-[60px] rounded-xl ${isSelectingLocation && 'animate-pulse bg-red-400'}`} onClick={() => setIsSelectingLocation(true)}>
+                    <Icon
+                        icon="lets-icons:add-ring"
+                        width="40"
+                        height="40"
+                        className='text-red-300'
+                        style={{ color: isSelectingLocation ? 'white': 'black', width: 40, height: 40 }} // Color blanco para los iconos
+                    />
+                </Button>
             </div>
+
         </div>
     )
 }
