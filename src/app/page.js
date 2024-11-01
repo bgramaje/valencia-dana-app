@@ -37,8 +37,8 @@ export default function Home() {
     const [isSelectingLocation, setIsSelectingLocation] = useState(false)
 
     const getGoogleMapsUrl = () => {
-      return `https://www.google.com/maps?q=${selectedMarker.latitude},${selectedMarker.longitude}`;
-  }
+        return `https://www.google.com/maps?q=${selectedMarker.latitude},${selectedMarker.longitude}`;
+    }
 
     useEffect(() => {
         // Cargar marcadores al montar el componente
@@ -157,13 +157,13 @@ export default function Home() {
                 <ReactMap
                     mapStyle="https://api.maptiler.com/maps/streets-v2/style.json?key=3l2Dsb6tXQ0t2OzWLivd"
                     onClick={handleMapClick}
-                    
+
                 />
             </DeckGL>
 
             <div className="absolute top-0 left-0 bg-white p-4 m-4 rounded shadow">
                 <h2 className="text-lg font-bold mb-2">Añadir punto de asistencia</h2>
-                <Button className="mt-2 w-full" onClick={() => setIsSelectingLocation(true)}>
+                <Button className="mt-2 w-full" {...isSelectingLocation && { variant: 'destructive', className: 'animate-pulse' }} onClick={() => setIsSelectingLocation(true)}>
                     Seleccionar ubicación y añadir marcador
                 </Button>
 
