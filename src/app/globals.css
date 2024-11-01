@@ -70,3 +70,16 @@ body {
     @apply bg-background text-foreground;
   }
 }
+
+
+.maplibregl-ctrl-attrib-inner {
+  display: none;
+}
+
+.maplibregl-ctrl-attrib-button {
+  display: none;
+}
+
+body {
+  overflow-y: hidden;
+}
