@@ -106,6 +106,7 @@ export default function Home() {
     ]
 
     const handleMapClick = (event) => {
+        if (selectedMarker) setSelectedMarker(null)
         if (isSelectingLocation && event.coordinate) {
             setNewMarker({
                 ...newMarker,
