@@ -37,9 +37,7 @@ export default function Home() {
     const [isModalOpen, setModalOpen] = useState(false)
     const [isSelectingLocation, setIsSelectingLocation] = useState(false)
 
-    const getGoogleMapsUrl = () => {
-        return `https://www.google.com/maps?q=${selectedMarker.latitude},${selectedMarker.longitude}`;
-    }
+    const getGoogleMapsUrl = () => `https://www.google.com/maps?q=${selectedMarker.latitude},${selectedMarker.longitude}`;
 
     useEffect(() => {
         // Cargar marcadores al montar el componente
@@ -164,7 +162,7 @@ export default function Home() {
             {isSelectingLocation && (
                 <div className="flex absolute top-10 left-1/2 transform -translate-x-1/2 -translate-y-1/2 items-center gap-4">
                     <div className="bg-white p-2 py-2 m-0 rounded-xl shadow flex gap-1 flex-wrap justify-between">
-                        <span className="font-semibold text-[13px] uppercase leading-tight text-red-500 animate-pulse">Añadiendo marcador: Seleccione coordenada</span>
+                        <span className="font-semibold text-[13px] uppercase leading-tight text-red-500 animate-pulse text-center">Añadiendo marcador: Seleccione coordenada</span>
                     </div>
                 </div>
             )}
@@ -226,7 +224,7 @@ export default function Home() {
                     )}
                 </DialogContent>
             </Dialog>
-            <div className="flex absolute bottom-0 left-1/2 transform -translate-x-1/2 -translate-y-1/2 items-center gap-4">
+            <div className="flex absolute bottom-0 left-1/2 transform -translate-x-1/2 items-center gap-4 flex-col-reverse md:flex-row -translate-y-4 md:-translate-y-1/2 ">
                 <div className="bg-white p-2 py-2 m-0 rounded-xl shadow flex gap-1 flex-wrap justify-between">
                     {Object.entries(ASSISTANCE_TYPES).map(([key, value]) => (
                         <div key={key} className="flex items-center mb-0">
@@ -255,13 +253,13 @@ export default function Home() {
                         style={{ color: isSelectingLocation ? 'white' : 'black', width: 40, height: 40 }} // Color blanco para los iconos
                     />
                 </Button>
-                <Link href="https://github.com/bgramaje" passHref>
+                <Link href="https://github.com/bgramaje" passHref className="hidden md:block">
                     <Image
                         alt="github"
                         src="https://avatars.githubusercontent.com/u/56760866?s=400&u=85f1f7114a7c9f4afc1c63e3d06d35a7e204ce1a&v=4"
                         width={50}
                         height={50}
-                        className="rounded-xl p-1 bg-white"
+                        className="rounded-xl p-1 bg-white hidden md:block"
                     />
                 </Link>
             </div>
