@@ -172,7 +172,7 @@ export default function Home() {
             </div>
 
             {isSelectingLocation && (
-                <div className="flex absolute top-20 left-1/2 transform -translate-x-1/2 -translate-y-1/2 items-center gap-4">
+                <div className="flex absolute top-[90px] left-1/2 transform -translate-x-1/2 -translate-y-1/2 items-center gap-4">
                     <div className="bg-white p-2 py-2 m-0 rounded-xl shadow flex gap-1 flex-wrap justify-between">
                         <span className="font-semibold text-[13px] uppercase leading-tight text-red-500 animate-pulse text-center">Añadiendo marcador: Seleccione coordenada</span>
                     </div>
