@@ -11,22 +11,12 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from "
 import { Icon } from '@iconify/react'
 import Image from 'next/image'
 import Link from 'next/link'
-
-// Coordenadas iniciales para Valencia
-const INITIAL_VIEW_STATE = {
-    longitude: -0.3763,
-    latitude: 39.4699,
-    zoom: 12,
-    pitch: 0,
-    bearing: 0
-}
-
-const ASSISTANCE_TYPES = {
-    WATER: { color: [0, 0, 255], label: 'Agua', iconMap: 'https://api.iconify.design/mdi/water.svg', icon: 'mdi:water' },
-    FOOD: { color: [0, 255, 0], label: 'Comida', iconMap: 'https://api.iconify.design/mdi/food.svg', icon: 'mdi:food' },
-    MEDICAL: { color: [255, 0, 0], label: 'Asistencia Médica', iconMap: 'https://api.iconify.design/mdi/medical-bag.svg', icon: 'mdi:medical-bag' },
-    OTHER: { color: [165, 3, 252], label: 'Otros', iconMap: 'https://api.iconify.design/bxs/shopping-bags.svg', icon: 'bxs:shopping-bags' }
-}
+import { WarningDialog } from '@/components/dialogs/WarningDialog'
+import { InfoDialog } from '@/components/dialogs/InfoDialog'
+import { ASSISTANCE_TYPES, INITIAL_VIEW_STATE } from '@/lib/enums'
+import { getGoogleMapsUrl } from '@/lib/getAdress'
+import { CreateDialog } from '@/components/dialogs/CreateDialog'
+import { InfoMarkerDialog } from '@/components/dialogs/InfoMarkerDialog'
 
 
 export default function Home() {
@@ -37,10 +27,8 @@ export default function Home() {
     const [isModalOpen, setModalOpen] = useState(false)
     const [isSelectingLocation, setIsSelectingLocation] = useState(false)
     const [isWarningModalOpen, setWarningModalOpen] = useState(true) // Estado para el modal de advertencia
+    const [isInfoOpen, setIsInfoOpen] = useState(false) // Estado para el modal de advertencia
 
-    const getGoogleMapsUrl = () => `https://www.google.com/maps?q=${selectedMarker.latitude},${selectedMarker.longitude}`;
-
-    // Initialize warning modal state from local storage
     useEffect(() => {
         const warningModalState = localStorage.getItem('warningModalClosed');
         setWarningModalOpen(warningModalState !== 'true'); // Show modal if not previously closed
@@ -52,11 +40,10 @@ export default function Home() {
     };
 
     useEffect(() => {
-        if(!isModalOpen)setSelectedMarker(null)
+        if (!isModalOpen) setSelectedMarker(null)
     }, [isModalOpen])
 
     useEffect(() => {
-        // Cargar marcadores al montar el componente
         fetch('/api/markers')
             .then(response => response.json())
             .then(data => {
@@ -110,8 +97,6 @@ export default function Home() {
     ]
 
     const handleMapClick = (event) => {
-        console.log(isSelectingLocation);
-        
         if (isSelectingLocation && event.coordinate) {
             setNewMarker({
                 ...newMarker,
@@ -180,8 +165,14 @@ export default function Home() {
                 />
             </DeckGL>
 
+            <div className="flex absolute top-10 left-1/2 transform -translate-x-1/2 -translate-y-1/2 items-center gap-4">
+                <div className="bg-white p-2 py-2 m-0 rounded-xl shadow flex gap-1 flex-wrap justify-between">
+                    <span className="font-semibold text-[13px] uppercase leading-tight text-blue-500 text-center font-bold">Total Marcadores: {markers.length}</span>
+                </div>
+            </div>
+
             {isSelectingLocation && (
-                <div className="flex absolute top-10 left-1/2 transform -translate-x-1/2 -translate-y-1/2 items-center gap-4">
+                <div className="flex absolute top-20 left-1/2 transform -translate-x-1/2 -translate-y-1/2 items-center gap-4">
                     <div className="bg-white p-2 py-2 m-0 rounded-xl shadow flex gap-1 flex-wrap justify-between">
                         <span className="font-semibold text-[13px] uppercase leading-tight text-red-500 animate-pulse text-center">Añadiendo marcador: Seleccione coordenada</span>
                     </div>
@@ -189,82 +180,27 @@ export default function Home() {
             )}
 
             {/* Modal de advertencia que aparece por defecto */}
-            <Dialog open={isWarningModalOpen} onOpenChange={closeWarningModal}>
-                <DialogContent>
-                    <DialogHeader className="flex-row gap-1 items-center m-0">
-                        <Icon
-                            icon="ph:seal-warning-duotone"
-                            style={{ color: 'red', width: 24, height: 24, marginTop: 4 }} // Color blanco para los iconos
-                        />
-                        <DialogTitle className="text-red-600 m-0 pt-0 mb-1">Advertencia Importante</DialogTitle>
-                    </DialogHeader>
-                    <p className="font-semibold">
-                        Los voluntarios que se dirijan a las zonas afectadas deben llevar mascarillas y guantes, ya que el agua ha estado en contacto con cuerpos sin vida y posiblemente químicos. ¡Por favor, tomen precauciones!
-                    </p>
-                    <DialogFooter>
-                        <Button onClick={() => setWarningModalOpen(false)} className="w-full mt-2" variant="destructive">Entendido</Button>
-                    </DialogFooter>
-                </DialogContent>
-            </Dialog>
+            <WarningDialog
+                isWarningModalOpen={isWarningModalOpen}
+                closeWarningModal={closeWarningModal}
+            />
 
-            <Dialog open={isModalOpen} onOpenChange={setModalOpen}>
-                <DialogContent className="max-w-[90%] w-fit min-w-[350px]">
-                    <DialogHeader>
-                        <DialogTitle>{selectedMarker ? 'Información del Marcador' : 'Añadir nuevo marcador'}</DialogTitle>
-                    </DialogHeader>
-                    {selectedMarker ? (
-                        <div>
-                            <p className="flex"><strong>Tipo:</strong>
-                                <Icon
-                                    icon={ASSISTANCE_TYPES[selectedMarker.type].icon}
-                                    width="20"
-                                    height="20"
-                                />
-                            </p>
-                            <p className="text-xl"><strong>Descripción:</strong> {selectedMarker.description}</p>
-                            <div className="flex gap-2">
-                                <p><strong>Longitud:</strong> {selectedMarker.longitude.toFixed(4)}</p>
-                                <p><strong>Latitud:</strong> {selectedMarker.latitude.toFixed(4)}</p>
-                            </div>
-                            <Button onClick={handleDeleteMarker} variant="destructive" className="w-full mt-2">Eliminar Marcador</Button> {/* Botón para eliminar el marcador */}
-                            <Button onClick={() => window.open(getGoogleMapsUrl(), '_blank')} className="w-full mt-2">Abrir en Google Maps</Button> {/* Botón para abrir en Google Maps */}
-                        </div>
-                    ) : (
-                        <>
-                            <Select
-                                value={newMarker.type}
-                                onValueChange={(value) => setNewMarker({ ...newMarker, type: value })}
-                            >
-                                <SelectTrigger className="w-full">
-                                    <SelectValue placeholder="Tipo de asistencia" />
-                                </SelectTrigger>
-                                <SelectContent>
-                                    {Object.entries(ASSISTANCE_TYPES).map(([key, value]) => (
-                                        <SelectItem key={key} value={key}>
-                                            <span className="flex items-center">
-                                                <Icon icon={value.icon} width="20" height="20" className="mr-2" />
-                                                {value.label}
-                                            </span>
-                                        </SelectItem>
-                                    ))}
-                                </SelectContent>
-                            </Select>
-                            <Input
-                                className="mt-0"
-                                placeholder="Descripción"
-                                value={newMarker.description}
-                                onChange={(e) => setNewMarker({ ...newMarker, description: e.target.value })}
-                            />
-                            <DialogFooter>
-                                <Button className="w-full mt-0" onClick={handleAddMarker}>
-                                    Confirmar y añadir marcador
-                                </Button>
-                            </DialogFooter>
-                        </>
-                    )}
-                </DialogContent>
-            </Dialog>
-            <div className="flex absolute bottom-0 left-1/2 transform -translate-x-1/2 items-center gap-4 flex-col-reverse md:flex-row -translate-y-4 md:-translate-y-1/2 ">
+            {selectedMarker
+                ? <InfoMarkerDialog
+                    open={isModalOpen}
+                    close={setModalOpen}
+                    selectedMarker={selectedMarker}
+                    handleDeleteMarker={handleDeleteMarker}
+                />
+                : <CreateDialog
+                    open={isModalOpen}
+                    close={setModalOpen}
+                    newMarker={newMarker}
+                    handleAddMarker={handleAddMarker}
+                />
+            }
+
+            <div className="flex absolute bottom-0 left-1/2 transform -translate-x-1/2 items-center gap-1 flex-col-reverse md:flex-row -translate-y-4 md:-translate-y-1/2 ">
                 <div className="bg-white p-2 py-2 m-0 rounded-xl shadow flex gap-1 flex-wrap justify-between">
                     {Object.entries(ASSISTANCE_TYPES).map(([key, value]) => (
                         <div key={key} className="flex items-center mb-0">
@@ -283,17 +219,27 @@ export default function Home() {
                         </div>
                     ))}
                 </div>
-
-                <Button variant="outline" size="icon" className={`w-[60px] h-[60px] rounded-xl ${isSelectingLocation && 'animate-pulse bg-red-400'}`} onClick={() => setIsSelectingLocation(true)}>
-                    <Icon
-                        icon="lets-icons:add-ring"
-                        width="40"
-                        height="40"
-                        className='text-red-300'
-                        style={{ color: isSelectingLocation ? 'white' : 'black', width: 40, height: 40 }} // Color blanco para los iconos
-                    />
-                </Button>
-                <Link href="https://github.com/bgramaje" passHref className="hidden md:block">
+                <div className="flex gap-2">
+                    <Button variant="outline" size="icon" className={`min-w-[60px] h-[60px] rounded-xl ${isSelectingLocation && 'animate-pulse bg-red-400'}`} onClick={() => setIsSelectingLocation(true)}>
+                        <Icon
+                            icon="lets-icons:add-ring"
+                            width="40"
+                            height="40"
+                            className='text-red-300'
+                            style={{ color: isSelectingLocation ? 'white' : 'black', width: 40, height: 40 }} // Color blanco para los iconos
+                        />
+                    </Button>
+                    <Button onClick={() => setIsInfoOpen(true)} variant="outline" size="icon" className={`min-w-[60px] h-[60px] rounded-xl`}>
+                        <Icon
+                            icon="ph:info-bold"
+                            width="40"
+                            height="40"
+                            className='text-red-300'
+                            style={{ color: 'black', width: 40, height: 40 }} // Color blanco para los iconos
+                        />
+                    </Button>
+                </div>
+                <Link href="https://github.com/bgramaje" passHref className="ml-1 hidden lg:block">
                     <Image
                         alt="github"
                         src="https://avatars.githubusercontent.com/u/56760866?s=400&u=85f1f7114a7c9f4afc1c63e3d06d35a7e204ce1a&v=4"
@@ -304,6 +250,11 @@ export default function Home() {
                 </Link>
             </div>
 
+            {/* Modal de advertencia que aparece por defecto */}
+            <InfoDialog
+                open={isInfoOpen}
+                close={() => setIsInfoOpen(false)}
+            />
 
         </div>
     )
