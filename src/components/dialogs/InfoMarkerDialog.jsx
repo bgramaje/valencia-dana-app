@@ -5,7 +5,91 @@ import { Button } from "@/components/ui/button"
 import { ASSISTANCE_TYPES } from '@/lib/enums'
 import { getAddress, getGoogleMapsUrl } from '@/lib/getAdress'
 
+import {
+    InputOTP,
+    InputOTPGroup,
+    InputOTPSlot,
+} from "@/components/ui/input-otp"
+
+import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert"
+import { toast } from "sonner"
+
+const opciones = {
+    weekday: 'long',    // Día de la semana completo (ej. "domingo")
+    day: '2-digit',     // Día en formato de dos dígitos
+    month: 'long',      // Mes en texto completo (ej. "diciembre")
+    year: 'numeric',    // Año con cuatro dígitos
+    hour: 'numeric',    // Hora en formato de 12 o 24 horas según configuración
+    minute: '2-digit',  // Minutos en formato de dos dígitos
+    hour12: true        // Formato de 12 horas con "AM" y "PM"
+  };
+
+const CodeDialog = ({ open, close, handleDeleteMarker, selectedMarker }) => {
+    const [value, setValue] = React.useState("")
+
+    const handleClose = () => {
+        if(value !== selectedMarker.password) {
+            toast.error("Error borrando marcador", {
+                description: "El código de borrado no es correcto.",
+                duration: 2000,
+            })
+            return;
+        }
+
+        handleDeleteMarker()
+        close(false)
+        toast.success("Marcador borrado correctamente", {
+            description: new Intl.DateTimeFormat('es-ES', opciones).format(new Date()),
+            duration: 2000,
+        })
+    }
+
+    return (
+        <Dialog open={open} onOpenChange={close}>
+            <DialogContent className="max-w-[90%] w-fit min-w-[350px] rounded-xl">
+                <DialogHeader>
+                    <DialogTitle>{'Código de borrado'}</DialogTitle>
+                </DialogHeader>
+                <div className="flex flex-col gap-0 justify-center items-center">
+                    <Alert>
+                        <AlertTitle></AlertTitle>
+                        <AlertDescription>
+                            <p className="text-[13px] max-w-[260px] text-left mb-2">
+                                Escriba el código facilitado durante la creación para borrar el marcador.
+                            </p>
+                            <div className="w-full flex items-center justify-center">
+                                <InputOTP
+                                    variant="destructive"
+                                    maxLength={6}
+                                    value={value}
+                                    onChange={(value) => setValue(value)}
+                                    required
+                                >
+                                    <InputOTPGroup>
+                                        <InputOTPSlot index={0} />
+                                        <InputOTPSlot index={1} />
+                                        <InputOTPSlot index={2} />
+                                        <InputOTPSlot index={3} />
+                                        <InputOTPSlot index={4} />
+                                        <InputOTPSlot index={5} />
+                                    </InputOTPGroup>
+                                </InputOTP>
+                            </div>
+                        </AlertDescription>
+                    </Alert>
+                </div>
+                <DialogFooter>
+                    <Button className="w-full mt-0" variant="destructive" onClick={handleClose}>
+                        Borrar
+                    </Button>
+                </DialogFooter>
+            </DialogContent>
+        </Dialog>
+    )
+}
+
 export const InfoMarkerDialog = ({ open, close, selectedMarker, handleDeleteMarker }) => {
+    const [showCodeDialog, setShowCodeDialog] = useState(false);
     const [direccion, setDireccion] = useState({
         calle: null,
         poblacion: null,
@@ -21,34 +105,44 @@ export const InfoMarkerDialog = ({ open, close, selectedMarker, handleDeleteMark
         fetchAddress();
     }, [selectedMarker]);
 
+    const handleDelete = () => setShowCodeDialog(true)
+
     return (
-        <Dialog open={open} onOpenChange={close}>
-            <DialogContent className="max-w-[90%] w-fit min-w-[350px]">
-                <DialogHeader>
-                    <DialogTitle>{'Información del Marcador'}</DialogTitle>
-                </DialogHeader>
-                <div>
-                    <div className="flex gap-1 items-center text-md font-medium">Tipo:
-                        <Icon
-                            icon={ASSISTANCE_TYPES[selectedMarker.type].icon}
-                            width="20"
-                            height="20"
-                        />
-                        <p className="font-bold">{ASSISTANCE_TYPES[selectedMarker.type].label}</p>
-                    </div>
-                    <p className="text-md font-bold">Ayuda: {selectedMarker.description === '' ? '-' : selectedMarker.description}</p>
-                    {direccion.calle ? (
-                        <div>
-                            <p className="font-bold"><span className="text-md font-medium">Calle:</span> {direccion.calle}</p>
-                            <p className="font-bold"><span className="text-md font-medium">Población:</span> {direccion.poblacion}</p>
+        <>
+            <Dialog open={open} onOpenChange={close}>
+                <DialogContent className="max-w-[90%] w-fit min-w-[350px] rounded-xl">
+                    <DialogHeader>
+                        <DialogTitle>{'Información del Marcador'}</DialogTitle>
+                    </DialogHeader>
+                    <div>
+                        <div className="flex gap-1 items-center text-md font-medium">Tipo:
+                            <Icon
+                                icon={ASSISTANCE_TYPES[selectedMarker.type].icon}
+                                width="20"
+                                height="20"
+                            />
+                            <p className="font-bold">{ASSISTANCE_TYPES[selectedMarker.type].label}</p>
                         </div>
-                    ) : (
-                        <p>Cargando dirección...</p>
-                    )}
-                    <Button onClick={handleDeleteMarker} variant="destructive" className="w-full mt-2">Eliminar Marcador</Button> {/* Botón para eliminar el marcador */}
-                    <Button onClick={() => window.open(getGoogleMapsUrl(selectedMarker), '_blank')} className="w-full mt-2">Abrir en Google Maps</Button> {/* Botón para abrir en Google Maps */}
-                </div>
-            </DialogContent>
-        </Dialog>
+                        <p className="text-md font-bold">Ayuda: {selectedMarker.description === '' ? '-' : selectedMarker.description}</p>
+                        {direccion.calle ? (
+                            <div>
+                                <p className="font-bold"><span className="text-md font-medium">Calle:</span> {direccion.calle}</p>
+                                <p className="font-bold"><span className="text-md font-medium">Población:</span> {direccion.poblacion}</p>
+                            </div>
+                        ) : (
+                            <p>Cargando dirección...</p>
+                        )}
+                        <Button onClick={handleDelete} variant="destructive" className="w-full mt-2">Eliminar Marcador</Button> {/* Botón para eliminar el marcador */}
+                        <Button onClick={() => window.open(getGoogleMapsUrl(selectedMarker), '_blank')} className="w-full mt-2">Abrir en Google Maps</Button> {/* Botón para abrir en Google Maps */}
+                    </div>
+                </DialogContent>
+            </Dialog>
+            <CodeDialog
+                open={showCodeDialog}
+                close={setShowCodeDialog}
+                handleDeleteMarker={handleDeleteMarker}
+                selectedMarker={selectedMarker}
+            />
+        </>
     )
 }

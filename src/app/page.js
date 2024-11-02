@@ -5,16 +5,13 @@ import { Map as ReactMap } from 'react-map-gl/maplibre'
 import { DeckGL } from '@deck.gl/react'
 import { IconLayer, ScatterplotLayer } from '@deck.gl/layers'
 import { Button } from "@/components/ui/button"
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
-import { Input } from "@/components/ui/input"
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from "@/components/ui/dialog"
 import { Icon } from '@iconify/react'
 import Image from 'next/image'
 import Link from 'next/link'
+
 import { WarningDialog } from '@/components/dialogs/WarningDialog'
 import { InfoDialog } from '@/components/dialogs/InfoDialog'
 import { ASSISTANCE_TYPES, INITIAL_VIEW_STATE } from '@/lib/enums'
-import { getGoogleMapsUrl } from '@/lib/getAdress'
 import { CreateDialog } from '@/components/dialogs/CreateDialog'
 import { InfoMarkerDialog } from '@/components/dialogs/InfoMarkerDialog'
 
@@ -71,6 +68,25 @@ export default function Home() {
     }, []);
 
     const layers = [
+        new ScatterplotLayer({
+            id: 'scatter-plot',
+            data: markers,
+            pickable: true,
+            opacity: 0.5,
+            filled: true,
+            radiusScale: 4,
+            radiusMinPixels: 20,
+            radiusMaxPixels: 20,
+            getPosition: d => [d.longitude, d.latitude],
+            getRadius: d => 5,
+            getFillColor: d => ASSISTANCE_TYPES[d.type].color,
+            onClick: ({ object }) => {
+                if (object) {
+                    setSelectedMarker(object);
+                    setModalOpen(true);
+                }
+            }
+        }),
         new IconLayer({
             id: 'icon-layer',
             data: markers,
@@ -86,25 +102,6 @@ export default function Home() {
             parameters: { depthTest: false },
             getAngle: 0,
             getSize: 20,
-            onClick: ({ object }) => {
-                if (object) {
-                    setSelectedMarker(object);
-                    setModalOpen(true);
-                }
-            }
-        }),
-        new ScatterplotLayer({
-            id: 'scatter-plot',
-            data: markers,
-            pickable: true,
-            opacity: 0.2,
-            filled: true,
-            radiusScale: 4,
-            radiusMinPixels: 20,
-            radiusMaxPixels: 20,
-            getPosition: d => [d.longitude, d.latitude],
-            getRadius: d => 5,
-            getFillColor: d => ASSISTANCE_TYPES[d.type].color,
             onClick: ({ object }) => {
                 if (object) {
                     setSelectedMarker(object);
@@ -134,15 +131,15 @@ export default function Home() {
         }
     }
 
-    const handleAddMarker = () => {
-        setNewMarker({ id: Date.now(), ...newMarker })
-
+    const handleAddMarker = (code) => {
+        console.log(code);
+        
         fetch('/api/markers', {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
             },
-            body: JSON.stringify(newMarker),
+            body: JSON.stringify({...newMarker, password: code}),
         })
             .then(response => response.json())
             .then(data => {
@@ -228,7 +225,7 @@ export default function Home() {
             }
 
             <div className="flex absolute bottom-0 left-1/2 transform -translate-x-1/2 items-center gap-1 flex-col-reverse md:flex-row -translate-y-4 md:-translate-y-1/2 ">
-                <div className="bg-white p-2 py-2 m-0 rounded-xl shadow flex gap-1 flex-wrap justify-between">
+                <div className="bg-white p-2 m-0 rounded-xl shadow flex gap-1 flex-wrap justify-between">
                     {Object.entries(ASSISTANCE_TYPES).map(([key, value]) => (
                         <div key={key} className="flex items-center mb-0">
                             <div
