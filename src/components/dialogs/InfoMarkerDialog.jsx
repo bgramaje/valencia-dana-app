@@ -133,7 +133,7 @@ export const InfoMarkerDialog = ({ open, close, selectedMarker, handleDeleteMark
                             <p className="font-bold">{ASSISTANCE_TYPES[selectedMarker.type].label}</p>
                         </div>
                         <p className=":text-md font-bold">Ayuda: {selectedMarker.description === '' ? '-' : selectedMarker.description}</p>
-                        <a href={`telf:+34${selectedMarker.telf}`}>
+                        <a href={`tel:+34${selectedMarker.telf}`}>
                             <p className="text-md font-bold">Teléfono: {selectedMarker.telf === '' ? '-' : selectedMarker.telf}</p>
                         </a>
                         {direccion.calle ? (
