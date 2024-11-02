@@ -28,14 +28,14 @@ export const InfoMarkerDialog = ({ open, close, selectedMarker, handleDeleteMark
                     <DialogTitle>{'Información del Marcador'}</DialogTitle>
                 </DialogHeader>
                 <div>
-                    <p className="flex gap-1 items-center text-md font-medium">Tipo:
+                    <div className="flex gap-1 items-center text-md font-medium">Tipo:
                         <Icon
                             icon={ASSISTANCE_TYPES[selectedMarker.type].icon}
                             width="20"
                             height="20"
                         />
                         <p className="font-bold">{ASSISTANCE_TYPES[selectedMarker.type].label}</p>
-                    </p>
+                    </div>
                     <p className="text-md font-bold">Ayuda: {selectedMarker.description === '' ? '-' : selectedMarker.description}</p>
                     {direccion.calle ? (
                         <div>
