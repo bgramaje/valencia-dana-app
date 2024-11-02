@@ -114,7 +114,7 @@ export const InfoMarkerDialog = ({ open, close, selectedMarker, handleDeleteMark
                                     </p>
                                 </Badge>
                             )}
-                             {selectedMarker.status === "asignado" && (
+                            {selectedMarker.status === "asignado" && (
                                 <Badge variant={"outline"} className="animate-pulse bg-orange-500 text-orange-900">
                                     <p className="uppercase text-[11px]">
                                         {selectedMarker.status}
@@ -132,8 +132,10 @@ export const InfoMarkerDialog = ({ open, close, selectedMarker, handleDeleteMark
                             />
                             <p className="font-bold">{ASSISTANCE_TYPES[selectedMarker.type].label}</p>
                         </div>
-                        <p className="text-md font-bold">Ayuda: {selectedMarker.description === '' ? '-' : selectedMarker.description}</p>
-                        <p className="text-md font-bold">Teléfono: {selectedMarker.telf === '' ? '-' : selectedMarker.telf}</p>
+                        <p className=":text-md font-bold">Ayuda: {selectedMarker.description === '' ? '-' : selectedMarker.description}</p>
+                        <a href={`telf:${selectedMarker.telf}`}>
+                            <p className="text-md font-bold">Teléfono: {selectedMarker.telf === '' ? '-' : selectedMarker.telf}</p>
+                        </a>
                         {direccion.calle ? (
                             <div>
                                 <p className="font-bold"><span className="text-md font-medium">Calle:</span> {direccion.calle}</p>
