@@ -2,8 +2,9 @@ import React, { useState, useEffect } from 'react'
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from "@/components/ui/dialog"
 import { Icon } from '@iconify/react'
 import { Button } from "@/components/ui/button"
-import { ASSISTANCE_TYPES } from '@/lib/enums'
+import { ASSISTANCE_TYPES, DATE_OPTIONS } from '@/lib/enums'
 import { getAddress, getGoogleMapsUrl } from '@/lib/getAdress'
+import { Badge } from "@/components/ui/badge"
 
 import {
     InputOTP,
@@ -14,21 +15,11 @@ import {
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert"
 import { toast } from "sonner"
 
-const opciones = {
-    weekday: 'long',    // Día de la semana completo (ej. "domingo")
-    day: '2-digit',     // Día en formato de dos dígitos
-    month: 'long',      // Mes en texto completo (ej. "diciembre")
-    year: 'numeric',    // Año con cuatro dígitos
-    hour: 'numeric',    // Hora en formato de 12 o 24 horas según configuración
-    minute: '2-digit',  // Minutos en formato de dos dígitos
-    hour12: true        // Formato de 12 horas con "AM" y "PM"
-  };
-
 const CodeDialog = ({ open, close, handleDeleteMarker, selectedMarker }) => {
     const [value, setValue] = React.useState("")
 
     const handleClose = () => {
-        if(value !== selectedMarker.password) {
+        if (value !== selectedMarker.password) {
             toast.error("Error borrando marcador", {
                 description: "El código de borrado no es correcto.",
                 duration: 2000,
@@ -39,7 +30,7 @@ const CodeDialog = ({ open, close, handleDeleteMarker, selectedMarker }) => {
         handleDeleteMarker()
         close(false)
         toast.success("Marcador borrado correctamente", {
-            description: new Intl.DateTimeFormat('es-ES', opciones).format(new Date()),
+            description: new Intl.DateTimeFormat('es-ES', DATE_OPTIONS).format(new Date()),
             duration: 2000,
         })
     }
@@ -112,7 +103,14 @@ export const InfoMarkerDialog = ({ open, close, selectedMarker, handleDeleteMark
             <Dialog open={open} onOpenChange={close}>
                 <DialogContent className="max-w-[90%] w-fit min-w-[350px] rounded-xl">
                     <DialogHeader>
-                        <DialogTitle>{'Información del Marcador'}</DialogTitle>
+                        <DialogTitle className="text-left flex flex-col items-center gap-1">
+                            {'Información'}
+                            <Badge variant={"outline"}>
+                                <p className="uppercase text-[11px]">
+                                    {selectedMarker.status}
+                                </p>
+                            </Badge>
+                        </DialogTitle>
                     </DialogHeader>
                     <div>
                         <div className="flex gap-1 items-center text-md font-medium">Tipo:
@@ -124,6 +122,7 @@ export const InfoMarkerDialog = ({ open, close, selectedMarker, handleDeleteMark
                             <p className="font-bold">{ASSISTANCE_TYPES[selectedMarker.type].label}</p>
                         </div>
                         <p className="text-md font-bold">Ayuda: {selectedMarker.description === '' ? '-' : selectedMarker.description}</p>
+                        <p className="text-md font-bold">Teléfono: {selectedMarker.telf === '' ? '-' : selectedMarker.telf}</p>
                         {direccion.calle ? (
                             <div>
                                 <p className="font-bold"><span className="text-md font-medium">Calle:</span> {direccion.calle}</p>

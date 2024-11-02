@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react'
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from "@/components/ui/dialog"
 import { Icon } from '@iconify/react'
 import { Button } from "@/components/ui/button"
-import { ASSISTANCE_TYPES } from '@/lib/enums'
+import { ASSISTANCE_TYPES, DATE_OPTIONS } from '@/lib/enums'
 import { getAddress } from '@/lib/getAdress'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { Input } from "@/components/ui/input"
@@ -12,19 +12,10 @@ import {
     InputOTPGroup,
     InputOTPSlot,
 } from "@/components/ui/input-otp"
+
 import { toast } from "sonner"
 
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert"
-
-const opciones = {
-    weekday: 'long',    // Día de la semana completo (ej. "domingo")
-    day: '2-digit',     // Día en formato de dos dígitos
-    month: 'long',      // Mes en texto completo (ej. "diciembre")
-    year: 'numeric',    // Año con cuatro dígitos
-    hour: 'numeric',    // Hora en formato de 12 o 24 horas según configuración
-    minute: '2-digit',  // Minutos en formato de dos dígitos
-    hour12: true        // Formato de 12 horas con "AM" y "PM"
-  };
 
 const CodeDialog = ({ open, close, code }) => {
     const [copied, setCopied] = useState(false)
@@ -81,8 +72,8 @@ const CodeDialog = ({ open, close, code }) => {
                 <DialogFooter>
                     <Button className="w-full mt-0" onClick={() => {
                         close(false)
-                        toast.success("Alerta creada correctamente", {
-                            description: new Intl.DateTimeFormat('es-ES', opciones).format(new Date()),
+                        toast.success("Marcador creado correctamente", {
+                            description: new Intl.DateTimeFormat('es-ES', DATE_OPTIONS).format(new Date()),
                             duration: 2000,
                         })
                     }}>
@@ -126,32 +117,44 @@ export const CreateDialog = ({ open, close, newMarker, handleAddMarker, setNewMa
             <Dialog open={open} onOpenChange={close}>
                 <DialogContent className="max-w-[90%] w-fit min-w-[350px] rounded-xl">
                     <DialogHeader>
-                        <DialogTitle>{'Añadir nuevo marcador'}</DialogTitle>
+                        <DialogTitle className="text-left">{'Añadir nuevo marcador'}</DialogTitle>
                     </DialogHeader>
-                    <Select
-                        value={newMarker.type}
-                        onValueChange={(value) => setNewMarker({ ...newMarker, type: value })}
-                    >
-                        <SelectTrigger className="w-full">
-                            <SelectValue placeholder="Tipo de asistencia" />
-                        </SelectTrigger>
-                        <SelectContent>
-                            {Object.entries(ASSISTANCE_TYPES).map(([key, value]) => (
-                                <SelectItem key={key} value={key}>
-                                    <span className="flex items-center">
-                                        <Icon icon={value.icon} width="20" height="20" className="mr-2" />
-                                        {value.label}
-                                    </span>
-                                </SelectItem>
-                            ))}
-                        </SelectContent>
-                    </Select>
-                    <Input
-                        className="mt-0"
-                        placeholder="Qué necesitas? Telf?"
-                        value={newMarker.description}
-                        onChange={(e) => setNewMarker({ ...newMarker, description: e.target.value })}
-                    />
+                    <div className="flex flex-col gap-2">
+                        <Select
+                            value={newMarker.type}
+                            onValueChange={(value) => setNewMarker({ ...newMarker, type: value })}
+                        >
+                            <SelectTrigger className="w-full">
+                                <SelectValue placeholder="Tipo de asistencia" />
+                            </SelectTrigger>
+                            <SelectContent>
+                                {Object.entries(ASSISTANCE_TYPES).map(([key, value]) => (
+                                    <SelectItem key={key} value={key}>
+                                        <span className="flex items-center">
+                                            <Icon icon={value.icon} width="20" height="20" className="mr-2" />
+                                            {value.label}
+                                        </span>
+                                    </SelectItem>
+                                ))}
+                            </SelectContent>
+                        </Select>
+                        <Input
+                            placeholder="612 345 678"
+                            required
+                            type="tel"
+                            pattern="[6|7|8|9]{1}[0-9]{2} [0-9]{3} [0-9]{3}"
+                            className="mt-0"
+                            value={newMarker.telf}
+                            onChange={(e) => setNewMarker({ ...newMarker, telf: e.target.value })}
+                        />
+                        <Input
+                            className="mt-0"
+                            placeholder="Qué necesitas?"
+                            value={newMarker.description}
+                            onChange={(e) => setNewMarker({ ...newMarker, description: e.target.value })}
+                        />
+                    </div>
+
                     {direccion.calle ? (
                         <div>
                             <p><strong>Calle:</strong> {direccion.calle}</p>
