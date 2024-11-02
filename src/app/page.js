@@ -18,7 +18,6 @@ import { getGoogleMapsUrl } from '@/lib/getAdress'
 import { CreateDialog } from '@/components/dialogs/CreateDialog'
 import { InfoMarkerDialog } from '@/components/dialogs/InfoMarkerDialog'
 
-
 export default function Home() {
     const [viewState, setViewState] = useState(INITIAL_VIEW_STATE)
     const [markers, setMarkers] = useState([])
@@ -26,12 +25,31 @@ export default function Home() {
     const [selectedMarker, setSelectedMarker] = useState(null)
     const [isModalOpen, setModalOpen] = useState(false)
     const [isSelectingLocation, setIsSelectingLocation] = useState(false)
-    const [isWarningModalOpen, setWarningModalOpen] = useState(true) // Estado para el modal de advertencia
-    const [isInfoOpen, setIsInfoOpen] = useState(false) // Estado para el modal de advertencia
+    const [isWarningModalOpen, setWarningModalOpen] = useState(true)
+    const [isInfoOpen, setIsInfoOpen] = useState(false)
+    const [userLocation, setUserLocation] = useState(null)
+
+    useEffect(() => {
+        // Obtiene la ubicación actual
+        navigator.geolocation.getCurrentPosition(
+            position => {
+                const { latitude, longitude } = position.coords;
+                setViewState({
+                    ...viewState,
+                    latitude,
+                    longitude,
+                    zoom: 13, // Ajusta el nivel de zoom inicial
+                });
+                setUserLocation({ latitude, longitude });
+            },
+            error => console.error('Error getting location:', error),
+            { enableHighAccuracy: true }
+        );
+    }, []);
 
     useEffect(() => {
         const warningModalState = localStorage.getItem('warningModalClosed');
-        setWarningModalOpen(warningModalState !== 'true'); // Show modal if not previously closed
+        setWarningModalOpen(warningModalState !== 'true');
     }, []);
 
     const closeWarningModal = () => {
@@ -40,8 +58,8 @@ export default function Home() {
     };
 
     useEffect(() => {
-        if (!isModalOpen) setSelectedMarker(null)
-    }, [isModalOpen])
+        if (!isModalOpen) setSelectedMarker(null);
+    }, [isModalOpen]);
 
     useEffect(() => {
         fetch('/api/markers')
@@ -71,7 +89,7 @@ export default function Home() {
             onClick: ({ object }) => {
                 if (object) {
                     setSelectedMarker(object);
-                    setModalOpen(true); // Abre el modal con la información del marcador
+                    setModalOpen(true);
                 }
             }
         }),
@@ -90,11 +108,19 @@ export default function Home() {
             onClick: ({ object }) => {
                 if (object) {
                     setSelectedMarker(object);
-                    setModalOpen(true); // Abre el modal con la información del marcador
+                    setModalOpen(true);
                 }
             }
+        }),
+        userLocation && new ScatterplotLayer({
+            id: 'user-location-layer',
+            data: [userLocation],
+            getPosition: d => [d.longitude, d.latitude],
+            getFillColor: [0, 0, 255],
+            getRadius: 100,
+            pickable: false
         })
-    ]
+    ].filter(Boolean);
 
     const handleMapClick = (event) => {
         if (isSelectingLocation && event.coordinate) {
