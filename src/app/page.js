@@ -54,17 +54,21 @@ export default function Home() {
         localStorage.setItem('warningModalClosed', 'true');
     };
 
+    const fetchMarkers = () => {
+        fetch('/api/markers')
+        .then(response => response.json())
+        .then(data => {
+            setMarkers(data);
+        })
+        .catch(error => console.error('Error loading markers:', error));
+    }
+
     useEffect(() => {
         if (!isModalOpen) setSelectedMarker(null);
     }, [isModalOpen]);
 
     useEffect(() => {
-        fetch('/api/markers')
-            .then(response => response.json())
-            .then(data => {
-                setMarkers(data);
-            })
-            .catch(error => console.error('Error loading markers:', error));
+        fetchMarkers()
     }, []);
 
     const layers = [
@@ -150,6 +154,25 @@ export default function Home() {
             .catch(error => console.error('Error adding marker:', error));
     }
 
+    const handleCompleteMarker = () => {
+        fetch(`/api/markers/${selectedMarker.id}`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({ id: selectedMarker.id, status: 'completado' }), // Envía el índice o ID
+        })
+            .then(response => response.json())
+            .then(data => {
+                console.log('Marker updated:', data);
+                setModalOpen(false);
+                setSelectedMarker(null);
+                fetchMarkers()
+            })
+            .catch(error => console.error('Error deleting marker:', error));
+    };
+
+
     const handleDeleteMarker = () => {
         fetch('/api/markers', {
             method: 'DELETE',
@@ -214,6 +237,7 @@ export default function Home() {
                     close={setModalOpen}
                     selectedMarker={selectedMarker}
                     handleDeleteMarker={handleDeleteMarker}
+                    handleCompleteMarker={handleCompleteMarker}
                 />
                 : <CreateDialog
                     open={isModalOpen}

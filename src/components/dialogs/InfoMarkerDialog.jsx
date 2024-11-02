@@ -15,7 +15,7 @@ import {
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert"
 import { toast } from "sonner"
 
-const CodeDialog = ({ open, close, handleDeleteMarker, selectedMarker }) => {
+const CodeDialog = ({ open, close, selectedMarker, callback, children }) => {
     const [value, setValue] = React.useState("")
 
     const handleClose = () => {
@@ -26,27 +26,21 @@ const CodeDialog = ({ open, close, handleDeleteMarker, selectedMarker }) => {
             })
             return;
         }
-
-        handleDeleteMarker()
-        close(false)
-        toast.success("Marcador borrado correctamente", {
-            description: new Intl.DateTimeFormat('es-ES', DATE_OPTIONS).format(new Date()),
-            duration: 2000,
-        })
+        callback()
     }
 
     return (
         <Dialog open={open} onOpenChange={close}>
             <DialogContent className="max-w-[90%] w-fit min-w-[350px] rounded-xl">
                 <DialogHeader>
-                    <DialogTitle>{'Código de borrado'}</DialogTitle>
+                    <DialogTitle>{'Código'}</DialogTitle>
                 </DialogHeader>
                 <div className="flex flex-col gap-0 justify-center items-center">
                     <Alert>
                         <AlertTitle></AlertTitle>
                         <AlertDescription>
                             <p className="text-[13px] max-w-[260px] text-left mb-2">
-                                Escriba el código facilitado durante la creación para borrar el marcador.
+                                Escriba el código facilitado durante la creación para aplicar la operación.
                             </p>
                             <div className="w-full flex items-center justify-center">
                                 <InputOTP
@@ -70,17 +64,17 @@ const CodeDialog = ({ open, close, handleDeleteMarker, selectedMarker }) => {
                     </Alert>
                 </div>
                 <DialogFooter>
-                    <Button className="w-full mt-0" variant="destructive" onClick={handleClose}>
-                        Borrar
-                    </Button>
+                    {React.cloneElement(children, { onClick: handleClose })}
                 </DialogFooter>
             </DialogContent>
         </Dialog>
     )
 }
 
-export const InfoMarkerDialog = ({ open, close, selectedMarker, handleDeleteMarker }) => {
+export const InfoMarkerDialog = ({ open, close, selectedMarker, handleDeleteMarker, handleCompleteMarker }) => {
     const [showCodeDialog, setShowCodeDialog] = useState(false);
+    const [showCompleteDialog, setShowCompleteDialog] = useState(false);
+
     const [direccion, setDireccion] = useState({
         calle: null,
         poblacion: null,
@@ -97,6 +91,7 @@ export const InfoMarkerDialog = ({ open, close, selectedMarker, handleDeleteMark
     }, [selectedMarker]);
 
     const handleDelete = () => setShowCodeDialog(true)
+    const handleComplete = () => setShowCompleteDialog(true)
 
     return (
         <>
@@ -105,11 +100,27 @@ export const InfoMarkerDialog = ({ open, close, selectedMarker, handleDeleteMark
                     <DialogHeader>
                         <DialogTitle className="text-left flex flex-col items-center gap-1">
                             {'Información'}
-                            <Badge variant={"outline"}>
-                                <p className="uppercase text-[11px]">
-                                    {selectedMarker.status}
-                                </p>
-                            </Badge>
+                            {selectedMarker.status === "completado" && (
+                                <Badge className="bg-green-500 text-green-900 animate-pulse hover:bg-green-500 hover:cursor-pointer">
+                                    <p className="uppercase text-[11px]">
+                                        {selectedMarker.status}
+                                    </p>
+                                </Badge>
+                            )}
+                            {selectedMarker.status === "pendiente" && (
+                                <Badge variant={"outline"} className="animate-pulse bg-red-500 text-red-900">
+                                    <p className="uppercase text-[11px]">
+                                        {selectedMarker.status}
+                                    </p>
+                                </Badge>
+                            )}
+                             {selectedMarker.status === "asignado" && (
+                                <Badge variant={"outline"} className="animate-pulse bg-orange-500 text-orange-900">
+                                    <p className="uppercase text-[11px]">
+                                        {selectedMarker.status}
+                                    </p>
+                                </Badge>
+                            )}
                         </DialogTitle>
                     </DialogHeader>
                     <div>
@@ -131,7 +142,10 @@ export const InfoMarkerDialog = ({ open, close, selectedMarker, handleDeleteMark
                         ) : (
                             <p>Cargando dirección...</p>
                         )}
-                        <Button onClick={handleDelete} variant="destructive" className="w-full mt-2">Eliminar Marcador</Button> {/* Botón para eliminar el marcador */}
+                        <div className="flex gap-2">
+                            {selectedMarker.status !== "completado" && <Button onClick={handleComplete} className="w-full mt-2 bg-green-500">Completar</Button>}
+                            <Button onClick={handleDelete} variant="destructive" className="w-full mt-2">Eliminar</Button>
+                        </div>
                         <Button onClick={() => window.open(getGoogleMapsUrl(selectedMarker), '_blank')} className="w-full mt-2">Abrir en Google Maps</Button> {/* Botón para abrir en Google Maps */}
                     </div>
                 </DialogContent>
@@ -139,9 +153,39 @@ export const InfoMarkerDialog = ({ open, close, selectedMarker, handleDeleteMark
             <CodeDialog
                 open={showCodeDialog}
                 close={setShowCodeDialog}
+                selectedMarker={selectedMarker}
+                callback={() => {
+                    handleDeleteMarker()
+                    close(false)
+                    toast.success("Marcador borrado correctamente", {
+                        description: new Intl.DateTimeFormat('es-ES', DATE_OPTIONS).format(new Date()),
+                        duration: 2000,
+                    })
+                }}
+            >
+                <Button className="w-full mt-0" variant="destructive" >
+                    Borrar
+                </Button>
+            </CodeDialog>
+
+            <CodeDialog
+                open={showCompleteDialog}
+                close={setShowCompleteDialog}
                 handleDeleteMarker={handleDeleteMarker}
                 selectedMarker={selectedMarker}
-            />
+                callback={() => {
+                    handleCompleteMarker()
+                    close(false)
+                    toast.success("Marcador marcado como completado correctamente", {
+                        description: new Intl.DateTimeFormat('es-ES', DATE_OPTIONS).format(new Date()),
+                        duration: 2000,
+                    })
+                }}
+            >
+                <Button className="w-full mt-0 bg-green-500">
+                    Completar
+                </Button>
+            </CodeDialog>
         </>
     )
 }
