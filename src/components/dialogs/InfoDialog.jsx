@@ -6,7 +6,7 @@ import { Button } from "@/components/ui/button"
 export const InfoDialog = ({ open, close }) => {
     return (
         <Dialog open={open} onOpenChange={close}>
-            <DialogContent>
+            <DialogContent className="rounded-xl">
                 <DialogHeader className="flex-row gap-1 items-center m-0">
                     <Icon
                         icon="ph:info-bold"
@@ -15,7 +15,7 @@ export const InfoDialog = ({ open, close }) => {
                     <DialogTitle className="text-blue-600 m-0 pt-0 mb-1">Instrucciones para un buen uso</DialogTitle>
                 </DialogHeader>
                 <div className="flex-col gap-0">
-                    <p>1. Para añadir un marcador, pulsa en el botón <strong>"+"</strong>.</p>
+                    <p>1. Para añadir un marcador, pulsa en el botón <strong>&quot;+&quot;</strong>.</p>
                     <p>2. Se habilitará el mapa en modo marcador; es decir, donde pulses, se establecerá la coordenada del marcador.</p>
                     <p>3. Indica el tipo de ayuda que necesitas y añade una descripción.</p>
                     <strong>4. Cuando hayas recibido ayuda, ELIMINA el marcador, porfavor.</strong>
