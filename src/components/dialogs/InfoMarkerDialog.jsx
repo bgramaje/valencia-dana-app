@@ -3,7 +3,7 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from "
 import { Icon } from '@iconify/react'
 import { Button } from "@/components/ui/button"
 import { ASSISTANCE_TYPES } from '@/lib/enums'
-import { getAddress } from '@/lib/getAdress'
+import { getAddress, getGoogleMapsUrl } from '@/lib/getAdress'
 
 export const InfoMarkerDialog = ({ open, close, selectedMarker, handleDeleteMarker }) => {
     const [direccion, setDireccion] = useState({

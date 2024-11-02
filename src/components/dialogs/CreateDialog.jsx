@@ -7,7 +7,7 @@ import { getAddress } from '@/lib/getAdress'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { Input } from "@/components/ui/input"
 
-export const CreateDialog = ({ open, close, newMarker, handleAddMarker }) => {
+export const CreateDialog = ({ open, close, newMarker, handleAddMarker, setNewMarker }) => {
     const [direccion, setDireccion] = useState({
         calle: null,
         poblacion: null,

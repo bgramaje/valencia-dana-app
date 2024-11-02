@@ -18,7 +18,7 @@ export const InfoDialog = ({ open, close }) => {
                     <p>1. Para añadir un marcador, pulsa en el botón <strong>&quot;+&quot;</strong>.</p>
                     <p>2. Se habilitará el mapa en modo marcador; es decir, donde pulses, se establecerá la coordenada del marcador.</p>
                     <p>3. Indica el tipo de ayuda que necesitas y añade una descripción.</p>
-                    <strong>4. Cuando hayas recibido ayuda, ELIMINA el marcador, porfavor.</strong>
+                    <p><strong>4. Cuando hayas recibido ayuda, ELIMINA el marcador, porfavor.</strong></p>
                     <p>Para cualquier cosa, dejo mi email: boraal.dev@gmail.com</p>
                 </div>
                 <DialogFooter>
