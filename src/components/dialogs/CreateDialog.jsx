@@ -38,9 +38,9 @@ const VoiceInput = (props) => {
 
     if (recognition) {
         // Configuración del reconocimiento de voz
-        recognition.continuous = false;
+        recognition.continuous = true;
+        recognition.interimResults = true;
         recognition.lang = 'es-ES'; // Configura el idioma, por ejemplo, español
-        recognition.interimResults = false;
         recognition.maxAlternatives = 1;
 
         // Evento que se activa cuando el reconocimiento detecta resultados
@@ -57,20 +57,21 @@ const VoiceInput = (props) => {
         recognition.onspeechstart = () => console.log('Speech detected');
         recognition.onspeechend = () => console.log('Speech ended');
         recognition.onsoundend = () => console.log('Sound ended');
-        recognition.onend = () => console.log('Recognition ended');
+        recognition.onend = () => {
+            console.log('Recognition ended');
+            setListening(false)
+        }
         recognition.onnomatch = () => console.log('No match found');
 
         recognition.onerror = (event) => {
-            recognition.onerror = (event) => {
-                if (event.error === 'network') {
-                    toast('Error de red: verifica tu conexión a Internet.');
-                } else if (event.error === 'not-allowed') {
-                    toast('Permiso denegado: permite el acceso al micrófono.');
-                } else {
-                    toast(`Error en el reconocimiento de voz: ${event.error}`);
-                }
-                setListening(false);
-            };
+            if (event.error === 'network') {
+                toast('Error de red: verifica tu conexión a Internet.');
+            } else if (event.error === 'not-allowed') {
+                toast('Permiso denegado: permite el acceso al micrófono.');
+            } else {
+                toast(`Error en el reconocimiento de voz: ${event.error}`);
+            }
+            setListening(false);
         };
     }
 
