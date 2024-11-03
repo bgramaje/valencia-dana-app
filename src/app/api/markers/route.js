@@ -29,7 +29,6 @@ export async function POST(request) {
     if (error) {
         return new Response(JSON.stringify({ error: error.message }), { status: 500 });
     }
-    console.log(data);
     
     return new Response(JSON.stringify(data[0]), { status: 201 });
 }

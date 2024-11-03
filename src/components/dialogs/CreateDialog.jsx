@@ -129,8 +129,6 @@ export const CreateDialog = ({ open, close, newMarker, handleAddMarker, setNewMa
         let base64Image = null;
         if (image) {
             base64Image = await convertToBase64(image);
-            console.log(base64Image);
-
         }
 
         handleAddMarker(code.toString(), base64Image)

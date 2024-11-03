@@ -135,9 +135,7 @@ export default function Home() {
         }
     }
 
-    const handleAddMarker = (code, base64img) => {
-        console.log(code);
-        
+    const handleAddMarker = (code, base64img) => {        
         fetch('/api/markers', {
             method: 'POST',
             headers: {
@@ -164,7 +162,6 @@ export default function Home() {
         })
             .then(response => response.json())
             .then(data => {
-                console.log('Marker updated:', data);
                 setModalOpen(false);
                 setSelectedMarker(null);
                 fetchMarkers()
@@ -183,7 +180,6 @@ export default function Home() {
         })
             .then(response => response.json())
             .then(data => {
-                console.log('Marker deleted:', data);
                 // Actualiza la lista de marcadores
                 const updatedMarkers = markers.filter(marker => marker !== selectedMarker);
                 setMarkers(updatedMarkers);

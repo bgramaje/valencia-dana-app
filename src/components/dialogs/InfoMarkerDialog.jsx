@@ -213,7 +213,8 @@ export const InfoMarkerDialog = ({ open, close, selectedMarker, handleDeleteMark
                                         height="20"
                                     />
                                     Completar
-                                </Button>}
+                                </Button>
+                            }
                             <Button onClick={handleDelete} variant="destructive" className="w-full mt-2 uppercase text-[12px] font-semibold">
                                 <Icon
                                     icon="ic:twotone-delete"
