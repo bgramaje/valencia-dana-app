@@ -5,46 +5,47 @@ const supabaseKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
 export const supabase = createClient(supabaseUrl, supabaseKey);
 
 // Get markers from Supabase
+// eslint-disable-next-line no-unused-vars
 export async function GET(request) {
-    const { data: markers, error } = await supabase
-        .from('markers')
-        .select('id, type, longitude, latitude, status');
+  const { data: markers, error } = await supabase
+    .from('markers')
+    .select('id, type, longitude, latitude, status');
 
-    if (error) {
-        return new Response(JSON.stringify({ error: error.message }), { status: 500 });
-    }
+  if (error) {
+    return new Response(JSON.stringify({ error: error.message }), { status: 500 });
+  }
 
-    return new Response(JSON.stringify(markers), { status: 200 });
+  return new Response(JSON.stringify(markers), { status: 200 });
 }
 
 // Add a new marker to Supabase
 export async function POST(request) {
-    const newMarker = await request.json();
-    
-    const { data, error } = await supabase
-        .from('markers')
-        .insert([newMarker])
-        .select()
+  const newMarker = await request.json();
 
-    if (error) {
-        return new Response(JSON.stringify({ error: error.message }), { status: 500 });
-    }
-    
-    return new Response(JSON.stringify(data[0]), { status: 201 });
+  const { data, error } = await supabase
+    .from('markers')
+    .insert([newMarker])
+    .select();
+
+  if (error) {
+    return new Response(JSON.stringify({ error: error.message }), { status: 500 });
+  }
+
+  return new Response(JSON.stringify(data[0]), { status: 201 });
 }
 
 // Delete a marker from Supabase
 export async function DELETE(request) {
-    const { id } = await request.json();
-    
-    const { error } = await supabase
-        .from('markers')
-        .delete()
-        .eq('id', id);
+  const { id } = await request.json();
 
-    if (error) {
-        return new Response(JSON.stringify({ error: error.message }), { status: 500 });
-    }
+  const { error } = await supabase
+    .from('markers')
+    .delete()
+    .eq('id', id);
 
-    return new Response(JSON.stringify({ message: 'Marker deleted' }), { status: 200 });
+  if (error) {
+    return new Response(JSON.stringify({ error: error.message }), { status: 500 });
+  }
+
+  return new Response(JSON.stringify({ message: 'Marker deleted' }), { status: 200 });
 }

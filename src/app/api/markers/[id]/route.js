@@ -1,6 +1,6 @@
 // Add a new marker to Supabase
 
-import { supabase } from "../route";
+import { supabase } from '../route';
 
 export async function GET(request, { params }) {
   const { id } = await params; // Get the `id` from the URL params
