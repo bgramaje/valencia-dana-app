@@ -1,4 +1,5 @@
 {
+  "ignorePatterns": ["src/components/ui"],
   "extends": [
     "next/core-web-vitals",
     "airbnb"
