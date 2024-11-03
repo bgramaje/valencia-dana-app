@@ -130,7 +130,7 @@ export const CreateDialog = ({ open, close, newMarker, handleAddMarker, setNewMa
         if (image) {
             base64Image = await convertToBase64(image);
             console.log(base64Image);
-            
+
         }
 
         handleAddMarker(code.toString(), base64Image)
@@ -295,8 +295,13 @@ export const CreateDialog = ({ open, close, newMarker, handleAddMarker, setNewMa
                         <p>Cargando dirección...</p>
                     )}
                     <DialogFooter>
-                        <Button className="w-full mt-0" onClick={handleClose}>
-                            Confirmar y añadir marcador
+                        <Button className="w-full mt-0 uppercase text-[12px] font-semibold" onClick={handleClose}>
+                            <Icon
+                                icon="line-md:circle-twotone-to-confirm-circle-twotone-transition"
+                                width="20"
+                                height="20"
+                            />
+                            Añadir Marcador
                         </Button>
                     </DialogFooter>
                 </DialogContent>
