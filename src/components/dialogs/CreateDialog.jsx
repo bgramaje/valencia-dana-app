@@ -17,7 +17,7 @@ import {
 import { toast } from "sonner"
 
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert"
-import { VoiceInput } from '../input/voice-input'
+import { VoiceInput } from '../custom/voice-input'
 
 const convertToBase64 = (file) => {
     return new Promise((resolve, reject) => {
@@ -105,11 +105,9 @@ export const CreateDialog = ({ open, close, newMarker, handleAddMarker, setNewMa
         poblacion: null,
         direccionCompleta: null,
     });
+
     const [image, setImage] = useState(null)
-    const [isMobile, setIsMobile] = useState(false)
     const fileInputRef = useRef(null)
-    const videoRef = useRef(null)
-    const canvasRef = useRef(null)
 
     useEffect(() => {
         const fetchAddress = async () => {
@@ -118,7 +116,6 @@ export const CreateDialog = ({ open, close, newMarker, handleAddMarker, setNewMa
         };
 
         fetchAddress();
-        setIsMobile(/iPhone|iPad|iPod|Android/i.test(navigator.userAgent))
     }, [newMarker]);
 
     const handleClose = async () => {
@@ -163,35 +160,6 @@ export const CreateDialog = ({ open, close, newMarker, handleAddMarker, setNewMa
             alert('Por favor, arrastra solo archivos de imagen.');
         }
     }, [])
-
-    const activateCamera = async () => {
-        try {
-            const stream = await navigator.mediaDevices.getUserMedia({ video: true });
-            videoRef.current.srcObject = stream;
-            videoRef.current.play();
-        } catch (err) {
-            console.error("Error accessing the camera: ", err);
-        }
-    }
-
-    const capturePhoto = () => {
-        const context = canvasRef.current.getContext('2d');
-        context.drawImage(videoRef.current, 0, 0, 300, 150);
-        const imageDataUrl = canvasRef.current.toDataURL('image/jpeg');
-
-        // Convert data URL to File object
-        fetch(imageDataUrl)
-            .then(res => res.blob())
-            .then(blob => {
-                const file = new File([blob], "camera_photo.jpg", { type: "image/jpeg" });
-                setImage(file);
-            });
-
-        // Stop the video stream
-        const stream = videoRef.current.srcObject;
-        const tracks = stream.getTracks();
-        tracks.forEach(track => track.stop());
-    }
 
     return (
         <>
@@ -270,20 +238,6 @@ export const CreateDialog = ({ open, close, newMarker, handleAddMarker, setNewMa
                                 className="hidden"
                             />
                         </div>
-                        {isMobile && (
-                            <div className="mt-2">
-                                <Button onClick={activateCamera} className="w-full">
-                                    <Camera className="mr-2 h-4 w-4" /> Usar cámara
-                                </Button>
-                                <video ref={videoRef} className="mt-2 w-full hidden" />
-                                <canvas ref={canvasRef} className="hidden" width="300" height="150" />
-                                {videoRef.current && videoRef.current.srcObject && (
-                                    <Button onClick={capturePhoto} className="w-full mt-2">
-                                        Capturar foto
-                                    </Button>
-                                )}
-                            </div>
-                        )}
                     </div>
 
                     {direccion.calle ? (
