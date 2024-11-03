@@ -247,7 +247,7 @@ export function CreateDialog({
       </Dialog>
       <CodeCopyDialog
         open={showCodeDialog}
-        onOpenChange={setShowCodeDialog}
+        close={handleClose}
         code={code}
       />
     </>
