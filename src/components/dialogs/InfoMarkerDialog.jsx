@@ -195,9 +195,7 @@ export const InfoMarkerDialog = ({ open, close, selectedMarker, handleDeleteMark
                             <p className="font-bold">{ASSISTANCE_TYPES[marker?.type].label}</p>
                         </div>
                         <p className=":text-md font-bold">Ayuda: {marker?.description === '' ? '-' : marker.description}</p>
-                        <a href={`tel:+34${marker?.telf}`}>
-                            <p className="text-md font-bold">Teléfono: {marker?.telf === '' ? '-' : marker?.telf}</p>
-                        </a>
+                        <p className="text-md font-bold">Teléfono: {marker?.telf === '' ? '-' : marker?.telf}</p>
                         {direccion.calle ? (
                             <div>
                                 <p className="font-bold"><span className="text-md font-medium">Calle:</span> {direccion.calle}</p>
@@ -207,10 +205,45 @@ export const InfoMarkerDialog = ({ open, close, selectedMarker, handleDeleteMark
                             <p>Cargando dirección...</p>
                         )}
                         <div className="flex gap-2">
-                            {marker?.status !== "completado" && <Button onClick={handleComplete} className="w-full mt-2 bg-green-500 uppercase text-[12px] font-semibold">Completar</Button>}
-                            <Button onClick={handleDelete} variant="destructive" className="w-full mt-2 uppercase text-[12px] font-semibold">Eliminar</Button>
+                            {marker?.status !== "completado" &&
+                                <Button onClick={handleComplete} className="w-full mt-2 bg-green-500 uppercase text-[12px] font-semibold">
+                                    <Icon
+                                        icon="line-md:circle-twotone-to-confirm-circle-twotone-transition"
+                                        width="20"
+                                        height="20"
+                                    />
+                                    Completar
+                                </Button>}
+                            <Button onClick={handleDelete} variant="destructive" className="w-full mt-2 uppercase text-[12px] font-semibold">
+                                <Icon
+                                    icon="ic:twotone-delete"
+                                    width="20"
+                                    height="20"
+                                />
+                                Eliminar
+                            </Button>
                         </div>
-                        <Button onClick={() => window.open(getGoogleMapsUrl(marker), '_blank')} className="w-full mt-2">Abrir en Google Maps</Button> {/* Botón para abrir en Google Maps */}
+                        {marker?.telf && (
+                            <a href={`tel:+34${marker?.telf}`}>
+                                <Button className="w-full mt-2 bg-blue-500 uppercase text-[12px] font-semibold">
+                                    <Icon
+                                        icon="solar:phone-calling-bold"
+                                        width="20"
+                                        height="20"
+                                    />
+                                    Llamar
+                                </Button> {/* Botón para abrir en Google Maps */}
+                            </a>
+                        )}
+
+                        <Button onClick={() => window.open(getGoogleMapsUrl(marker), '_blank')} className="w-full mt-2">
+                            <Icon
+                                icon="mingcute:location-fill"
+                                width="20"
+                                height="20"
+                            />
+                            Abrir en Google Maps
+                        </Button>
                     </div>
                 </DialogContent>
             </Dialog>
@@ -227,7 +260,12 @@ export const InfoMarkerDialog = ({ open, close, selectedMarker, handleDeleteMark
                     })
                 }}
             >
-                <Button className="w-full mt-0 uppercase text-[12px] font-semibold" variant="destructive" >
+                <Button variant="destructive" className="w-full mt-2 uppercase text-[12px] font-semibold">
+                    <Icon
+                        icon="ic:twotone-delete"
+                        width="20"
+                        height="20"
+                    />
                     Eliminar
                 </Button>
             </CodeDialog>
@@ -246,7 +284,12 @@ export const InfoMarkerDialog = ({ open, close, selectedMarker, handleDeleteMark
                     })
                 }}
             >
-                <Button className="w-full mt-0 bg-green-500 uppercase text-[12px] font-semibold">
+                <Button className="w-full mt-2 bg-green-500 uppercase text-[12px] font-semibold">
+                    <Icon
+                        icon="line-md:circle-twotone-to-confirm-circle-twotone-transition"
+                        width="20"
+                        height="20"
+                    />
                     Completar
                 </Button>
             </CodeDialog>
