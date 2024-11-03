@@ -1,7 +1,7 @@
+/* eslint-disable consistent-return */
 import React, {
   useCallback, useEffect, useRef, useState,
 } from 'react';
-
 import { toast } from 'sonner';
 import { isEmpty } from 'lodash';
 import { Upload, X } from 'lucide-react';
@@ -43,6 +43,7 @@ export function CreateDialog({
   });
 
   const [image, setImage] = useState(null);
+  const [imagePreview, setImagePreview] = useState(null); // Estado para la URL de la imagen
   const fileInputRef = useRef(null);
 
   useEffect(() => {
@@ -53,6 +54,17 @@ export function CreateDialog({
 
     fetchAddress();
   }, [newMarker.latitude, newMarker.longitude]);
+
+  useEffect(() => {
+    if (image) {
+      const imageURL = URL.createObjectURL(image);
+      setImagePreview(imageURL);
+
+      return () => {
+        URL.revokeObjectURL(imageURL); // Limpia la URL cuando cambie o se elimine la imagen
+      };
+    }
+  }, [image]);
 
   const handleClose = async () => {
     if (isEmpty(newMarker?.description) || isEmpty(newMarker?.telf)) {
@@ -174,14 +186,14 @@ export function CreateDialog({
               onDrop={handleDrop}
               onClick={() => fileInputRef.current?.click()}
             >
-              {image ? (
+              {imagePreview ? (
                 <div className="relative max-h-52 overflow-auto">
                   <Image
-                    src={URL.createObjectURL(image)}
+                    src={imagePreview}
                     alt="Preview"
                     className="max-h-33 mx-auto rounded-xl"
                     width={100}
-                    height={50} // Ajusta el aspect ratio
+                    height={50}
                     style={{ width: 'auto', height: 'auto' }}
                     priority
                   />
@@ -212,7 +224,6 @@ export function CreateDialog({
               />
             </div>
           </div>
-
           {direccion.calle ? (
             <div className="flex flex-col gap-1">
               <p className="text-[14px] font-semibold flex gap-2 items-center">
@@ -225,30 +236,18 @@ export function CreateDialog({
               </p>
             </div>
           ) : (
-            <div className="flex flex-col gap-1">
-              <Icon
-                icon="line-md:loading-loop"
-                width="30"
-                height="30"
-              />
-            </div>
+            <p>Cargando dirección...</p>
           )}
           <DialogFooter>
-            <Button className="w-full mt-0 uppercase text-[12px] font-semibold" onClick={handleClose}>
-              <Icon
-                icon="line-md:circle-twotone-to-confirm-circle-twotone-transition"
-                width="20"
-                height="20"
-              />
-              Añadir Marcador
+            <Button type="button" variant="outline" onClick={handleClose} className="w-full">
+              Pedir ayuda
             </Button>
           </DialogFooter>
         </DialogContent>
       </Dialog>
-
       <CodeCopyDialog
         open={showCodeDialog}
-        close={setShowCodeDialog}
+        onOpenChange={setShowCodeDialog}
         code={code}
       />
     </>
