@@ -96,3 +96,11 @@ input {
 .maplibregl-map > div:last-child {
  display: none !important;
 }
+
+textarea:focus {
+  font-size: 16px !important;  
+}
+
+textarea {
+  font-size: 16px !important;
+}

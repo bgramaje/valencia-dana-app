@@ -69,7 +69,7 @@ export function VoiceInput(props) {
           size="icon"
         >
           <Icon
-            icon="ic:baseline-mic"
+            icon={listening ? 'svg-spinners:3-dots-bounce' : 'ic:baseline-mic'}
             style={{
               color: 'white', width: 20, height: 20, margin: 0,
             }}
