@@ -239,15 +239,23 @@ export function CreateDialog({
             <p>Cargando dirección...</p>
           )}
           <DialogFooter>
-            <Button type="button" variant="outline" onClick={handleClose} className="w-full">
-              Pedir ayuda
+            <Button
+              className="w-full mt-0 uppercase text-[12px] font-semibold"
+              onClick={handleClose}
+            >
+              <Icon
+                icon="line-md:circle-twotone-to-confirm-circle-twotone-transition"
+                width="20"
+                height="20"
+              />
+              Añadir Marcador
             </Button>
           </DialogFooter>
         </DialogContent>
       </Dialog>
       <CodeCopyDialog
         open={showCodeDialog}
-        close={handleClose}
+        close={setShowCodeDialog}
         code={code}
       />
     </>
