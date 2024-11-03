@@ -4,6 +4,7 @@ import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 
 import { toast } from "sonner"
+import { Textarea } from '../ui/textarea'
 
 export const VoiceInput = (props) => {
     const { setter, ...rest } = props;
@@ -64,8 +65,7 @@ export const VoiceInput = (props) => {
 
     return (
         <div className="relative flex items-center gap-2">
-            <Input
-                type="text"
+            <Textarea
                 {...rest}
             />
             {recognition && (
