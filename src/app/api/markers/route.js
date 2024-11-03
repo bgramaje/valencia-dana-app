@@ -8,7 +8,7 @@ export const supabase = createClient(supabaseUrl, supabaseKey);
 export async function GET(request) {
     const { data: markers, error } = await supabase
         .from('markers')
-        .select('*');
+        .select('id, type, longitude, latitude, status');
 
     if (error) {
         return new Response(JSON.stringify({ error: error.message }), { status: 500 });

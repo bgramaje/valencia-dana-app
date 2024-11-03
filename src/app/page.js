@@ -135,7 +135,7 @@ export default function Home() {
         }
     }
 
-    const handleAddMarker = (code) => {
+    const handleAddMarker = (code, base64img) => {
         console.log(code);
         
         fetch('/api/markers', {
@@ -143,7 +143,7 @@ export default function Home() {
             headers: {
                 'Content-Type': 'application/json',
             },
-            body: JSON.stringify({...newMarker, password: code}),
+            body: JSON.stringify({...newMarker, password: code, img: base64img}),
         })
             .then(response => response.json())
             .then(data => {
