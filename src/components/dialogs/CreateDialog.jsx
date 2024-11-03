@@ -7,6 +7,7 @@ import { getAddress } from '@/lib/getAdress'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { Input } from "@/components/ui/input"
 import { X, Upload, Camera } from "lucide-react"
+import parsePhoneNumber from 'libphonenumber-js'
 
 import {
     InputOTP,
@@ -18,6 +19,7 @@ import { toast } from "sonner"
 
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert"
 import { VoiceInput } from '../custom/voice-input'
+import { isEmpty } from 'lodash'
 
 const convertToBase64 = (file) => {
     return new Promise((resolve, reject) => {
@@ -119,6 +121,39 @@ export const CreateDialog = ({ open, close, newMarker, handleAddMarker, setNewMa
     }, [newMarker]);
 
     const handleClose = async () => {
+        console.log(newMarker);
+        
+        if (isEmpty(newMarker?.description) || isEmpty(newMarker?.telf)) {
+            toast.error('Añade que necesitas en la ayuda y tu número de telefono', {
+                duration: 2000,
+                classNames: {
+                    toast: 'bg-red-800',
+                    title: 'text-red-400 text-md',
+                    description: 'text-red-400',
+                    icon: 'text-red-400',
+                    closeButton: 'bg-lime-400',
+                }
+            })
+            return;
+        }
+
+        const phoneNumber = parsePhoneNumber(newMarker?.telf, 'ES')
+        if (!phoneNumber || !phoneNumber?.isValid()) {
+            toast.error('El teléfono no es válido. Compruébalo', {
+                duration: 2000,
+                classNames: {
+                    toast: 'bg-red-800',
+                    title: 'text-red-400 text-md',
+                    description: 'text-red-400',
+                    icon: 'text-red-400',
+                    closeButton: 'bg-lime-400',
+                }
+            })
+            return;
+        }
+
+        newMarker.telf = phoneNumber.number;
+
         const code = Math.floor(Math.random() * (999999 - 100000 + 1)) + 100000
         setCode(code.toString())
         setShowCodeDialog(true)
@@ -143,9 +178,7 @@ export const CreateDialog = ({ open, close, newMarker, handleAddMarker, setNewMa
         }
     }
 
-    const removeImage = () => {
-        setImage(null);
-    }
+    const removeImage = () => setImage(null);
 
     const handleDragOver = useCallback((event) => {
         event.preventDefault()

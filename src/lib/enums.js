@@ -17,9 +17,9 @@ export const ASSISTANCE_TYPES = {
 export const DATE_OPTIONS = {
     weekday: 'long',    // Día de la semana completo (ej. "domingo")
     day: '2-digit',     // Día en formato de dos dígitos
-    month: 'long',      // Mes en texto completo (ej. "diciembre")
+    month: 'short',      // Mes en texto completo (ej. "diciembre")
     year: 'numeric',    // Año con cuatro dígitos
     hour: 'numeric',    // Hora en formato de 12 o 24 horas según configuración
     minute: '2-digit',  // Minutos en formato de dos dígitos
-    hour12: true        // Formato de 12 horas con "AM" y "PM"
+    hour12: false        // Formato de 12 horas con "AM" y "PM"
   };

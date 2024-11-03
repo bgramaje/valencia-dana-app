@@ -185,21 +185,23 @@ export const InfoMarkerDialog = ({ open, close, selectedMarker, handleDeleteMark
                             <img src={marker.img} className="rounded-xl" />
                         </div>
                     )}
-                    <div className="p-4 pt-0">
-                        <div className="flex gap-1 items-center text-md font-medium">Tipo:
+                    <div className="p-4 pt-0 flex flex-col gap-1">
+                        <div className="flex gap-1 items-center text-md font-medium"><Badge className={"w-[80px] bg-zinc-700"}>Tipo:</Badge>
                             <Icon
                                 icon={ASSISTANCE_TYPES[marker?.type].icon}
                                 width="20"
                                 height="20"
                             />
-                            <p className="font-bold">{ASSISTANCE_TYPES[marker?.type].label}</p>
+                            <p className="text-[14px] font-semibold">{ASSISTANCE_TYPES[marker?.type].label}</p>
                         </div>
-                        <p className=":text-md font-bold">Ayuda: {marker?.description === '' ? '-' : marker.description}</p>
-                        <p className="text-md font-bold">Teléfono: {marker?.telf === '' ? '-' : marker?.telf}</p>
+                        <p className="text-[14px] font-semibold flex gap-2 items-center"><Badge className={"w-[80px] bg-zinc-700"}>Ayuda</Badge>{marker?.description === '' ? '-' : marker.description}</p>
+                        <p className="text-[14px] font-semibold flex gap-2 items-center"><Badge className={"w-[80px] bg-zinc-700"}>Teléfono</Badge>{marker?.telf === '' ? '-' : marker?.telf}</p>
+                        <p className="text-[14px] font-semibold flex gap-2 items-center"><Badge className={"w-[80px] bg-zinc-700"}>Creado</Badge>{new Intl.DateTimeFormat('es-ES', DATE_OPTIONS).format(new Date(marker.created_at))}</p>
+
                         {direccion.calle ? (
-                            <div>
-                                <p className="font-bold"><span className="text-md font-medium">Calle:</span> {direccion.calle}</p>
-                                <p className="font-bold"><span className="text-md font-medium">Población:</span> {direccion.poblacion}</p>
+                            <div className="flex flex-col gap-1">
+                                <p className="text-[14px] font-semibold flex gap-2 items-center"><Badge className={"w-[80px] bg-zinc-700"}>Calle</Badge>{direccion.calle}</p>
+                                <p className="text-[14px] font-semibold flex gap-2 items-center"><Badge className={"w-[80px] bg-zinc-700"}>Población</Badge>{direccion.poblacion}</p>
                             </div>
                         ) : (
                             <p>Cargando dirección...</p>
@@ -225,7 +227,7 @@ export const InfoMarkerDialog = ({ open, close, selectedMarker, handleDeleteMark
                             </Button>
                         </div>
                         {marker?.telf && (
-                            <a href={`tel:+34${marker?.telf}`}>
+                            <a href={`tel:${marker?.telf}`}>
                                 <Button className="w-full mt-2 bg-blue-500 uppercase text-[12px] font-semibold">
                                     <Icon
                                         icon="solar:phone-calling-bold"
