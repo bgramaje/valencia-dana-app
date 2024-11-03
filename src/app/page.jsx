@@ -3,18 +3,18 @@
 import React, { useState, useEffect } from 'react';
 import { Map as ReactMap } from 'react-map-gl/maplibre';
 import { DeckGL } from '@deck.gl/react';
-import { Button } from '@/components/ui/button';
-import { Icon } from '@iconify/react';
 import Image from 'next/image';
 import Link from 'next/link';
 import { toast } from 'sonner';
 
 import { WarningDialog } from '@/components/dialogs/WarningDialog';
 import { InfoDialog } from '@/components/dialogs/InfoDialog';
-import { ASSISTANCE_TYPES, INITIAL_VIEW_STATE } from '@/lib/enums';
+import { INITIAL_VIEW_STATE } from '@/lib/enums';
 import { CreateDialog } from '@/components/dialogs/CreateDialog';
 import { InfoMarkerDialog } from '@/components/dialogs/InfoMarkerDialog';
 import { useMapLayers } from '@/hooks/useMapLayers';
+import { Legend } from '@/components/map/legend';
+import { ActionButtons } from '@/components/map/action-buttons';
 
 export default function Home() {
   const [viewState, setViewState] = useState(INITIAL_VIEW_STATE);
@@ -214,66 +214,13 @@ export default function Home() {
         className="flex absolute bottom-0 left-1/2 transform -translate-x-1/2 items-center gap-1
         flex-col-reverse md:flex-row -translate-y-4 md:-translate-y-1/2 "
       >
-        <div className="bg-white p-2 m-0 rounded-xl shadow flex gap-1 flex-wrap justify-between">
-          {Object.entries(ASSISTANCE_TYPES).map(([key, value]) => (
-            <div key={key} className="flex items-center mb-0">
-              <div
-                className="w-8 h-8 mr-2 rounded-full flex items-center justify-center"
-                style={{ backgroundColor: `rgb(${value.color.join(',')})` }}
-              >
-                <Icon
-                  icon={value.icon}
-                  width="20"
-                  height="20"
-                  style={{ color: 'white' }}
-                />
-              </div>
-              <span className="font-semibold w-[100px] text-[13px] uppercase leading-tight">{value.label}</span>
-            </div>
-          ))}
-        </div>
-        <div className="flex gap-2">
-          <Button
-            variant="outline"
-            size="icon"
-            className={`min-w-[60px] h-[60px] rounded-xl ${isSelectingLocation && 'animate-pulse bg-red-400'}`}
-            onClick={() => setIsSelectingLocation(true)}
-          >
-            <Icon
-              icon="lets-icons:add-ring"
-              width="40"
-              height="40"
-              className="text-red-300"
-              style={{ color: isSelectingLocation ? 'white' : 'black', width: 40, height: 40 }}
-            />
-          </Button>
-          <Button
-            onClick={(e) => {
-              e.preventDefault();
-              getLocation();
-            }}
-            variant="outline"
-            size="icon"
-            className="min-w-[60px] h-[60px] rounded-xl"
-          >
-            <Icon
-              icon="ph:map-pin-duotone"
-              width="40"
-              height="40"
-              className="text-red-300"
-              style={{ color: 'black', width: 40, height: 40 }}
-            />
-          </Button>
-          <Button onClick={() => setIsInfoOpen(true)} variant="outline" size="icon" className="min-w-[60px] h-[60px] rounded-xl">
-            <Icon
-              icon="ph:info-bold"
-              width="40"
-              height="40"
-              className="text-red-300"
-              style={{ color: 'black', width: 40, height: 40 }}
-            />
-          </Button>
-        </div>
+        <Legend />
+        <ActionButtons
+          isSelectingLocation={isSelectingLocation}
+          setIsSelectingLocation={setIsSelectingLocation}
+          getLocation={getLocation}
+          setIsInfoOpen={setIsInfoOpen}
+        />
         <Link href="https://github.com/bgramaje" passHref className="ml-1 hidden lg:block">
           <Image
             alt="github"

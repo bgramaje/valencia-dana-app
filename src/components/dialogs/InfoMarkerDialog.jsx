@@ -9,7 +9,7 @@ import { Button } from '@/components/ui/button';
 import { ASSISTANCE_TYPES, DATE_OPTIONS } from '@/lib/enums';
 import { getAddress, getGoogleMapsUrl } from '@/lib/getAdress';
 import {
-  Dialog, DialogContent, DialogHeader, DialogTitle,
+  Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription,
 } from '@/components/ui/dialog';
 
 import { isEmpty } from 'lodash';
@@ -82,6 +82,9 @@ export function InfoMarkerDialog({
               </Badge>
               )}
             </DialogTitle>
+            <DialogDescription className="text-center font-medium text-[12px] p-0 m-0 hidden">
+              Informacion de la ayuda solicitada
+            </DialogDescription>
           </DialogHeader>
           <div className="w-full flex items-center justify-center h-[150px]">
             <Icon
@@ -124,6 +127,9 @@ export function InfoMarkerDialog({
               </Badge>
               )}
             </DialogTitle>
+            <DialogDescription className="text-center font-medium text-[12px] p-0 m-0 hidden">
+              -
+            </DialogDescription>
           </DialogHeader>
           {marker?.img && (
             <div className="w-full p-1 px-4 rounded-xl max-h-52 overflow-auto">
@@ -131,10 +137,10 @@ export function InfoMarkerDialog({
                 src={marker.img}
                 alt="Preview"
                 className="max-h-33 mx-auto rounded-xl"
-                layout="responsive" // Para que ajuste su tamaño al contenedor
                 width={100}
                 height={100} // Ajusta el aspect ratio
                 style={{ width: 'fit-content', height: 'auto' }}
+                priority
               />
             </div>
           )}

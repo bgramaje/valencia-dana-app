@@ -17,7 +17,7 @@ import {
   Select, SelectContent, SelectItem, SelectTrigger, SelectValue,
 } from '@/components/ui/select';
 import {
-  Dialog, DialogContent, DialogFooter, DialogHeader, DialogTitle,
+  Dialog, DialogContent, DialogFooter, DialogHeader, DialogTitle, DialogDescription,
 } from '@/components/ui/dialog';
 
 import { VoiceInput } from '../custom/voice-input';
@@ -127,8 +127,11 @@ export function CreateDialog({
       <Dialog open={open} onOpenChange={close}>
         <DialogContent className="max-w-[90%] w-fit min-w-[350px] rounded-xl">
           <DialogHeader>
-            <DialogTitle className="text-left">Añadir nuevo marcador</DialogTitle>
+            <DialogTitle className="uppercase font-bold text-[14px]">Pedir ayuda</DialogTitle>
           </DialogHeader>
+          <DialogDescription className="text-center font-medium text-[12px] p-0 m-0">
+            Solicita ayuda debido al temporal DANA
+          </DialogDescription>
           <div className="flex flex-col gap-2">
             <Select
               value={newMarker.type}
@@ -180,6 +183,7 @@ export function CreateDialog({
                     width={100}
                     height={50} // Ajusta el aspect ratio
                     style={{ width: 'auto', height: 'auto' }}
+                    priority
                   />
                   <Button
                     variant="ghost"

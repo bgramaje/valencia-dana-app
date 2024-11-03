@@ -5,7 +5,7 @@ import { toast } from 'sonner';
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
 import { InputOTP, InputOTPGroup, InputOTPSlot } from '@/components/ui/input-otp';
 import {
-  Dialog, DialogContent, DialogFooter, DialogHeader, DialogTitle,
+  Dialog, DialogContent, DialogFooter, DialogHeader, DialogTitle, DialogDescription,
 } from '@/components/ui/dialog';
 
 export function CodeCrudDialog({
@@ -30,6 +30,9 @@ export function CodeCrudDialog({
         <DialogHeader>
           <DialogTitle className="uppercase font-bold text-[14px]">Código</DialogTitle>
         </DialogHeader>
+        <DialogDescription className="text-center font-medium text-[12px] p-0 m-0 hidden">
+          -
+        </DialogDescription>
         <div className="flex flex-col gap-0 justify-center items-center">
           <Alert>
             <AlertTitle />
