@@ -21,7 +21,7 @@ export function CodeCrudDialog({
       });
       return;
     }
-    callback();
+    callback(value);
   };
 
   return (

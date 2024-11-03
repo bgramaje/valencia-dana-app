@@ -1,4 +1,5 @@
 import { createClient } from '@supabase/supabase-js';
+import { isEqual } from 'lodash';
 
 const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL;
 const supabaseKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
@@ -36,7 +37,22 @@ export async function POST(request) {
 
 // Delete a marker from Supabase
 export async function DELETE(request) {
-  const { id } = await request.json();
+  const { id, code } = await request.json();
+
+  // Update the `status` field of the specified marker
+  const { data: marker, error: errorSelect } = await supabase
+    .from('markers')
+    .select('id, password')
+    .eq('id', id) // Reemplaza "id" con el valor del ID que buscas
+    .single(); // .single() devuelve un solo objeto en lugar de un array
+
+  if (errorSelect) {
+    return new Response(JSON.stringify({ error: errorSelect.message }), { status: 500 });
+  }
+
+  if (!isEqual(code, marker.password)) {
+    return new Response(JSON.stringify({ message: 'El código no es correcto' }), { status: 403 });
+  }
 
   const { error } = await supabase
     .from('markers')

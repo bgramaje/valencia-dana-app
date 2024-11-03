@@ -12,6 +12,7 @@ import {
   Dialog, DialogContent, DialogHeader, DialogTitle,
 } from '@/components/ui/dialog';
 
+import { isEmpty } from 'lodash';
 import { CodeCrudDialog } from './code/CodeCrudDialog';
 
 export function InfoMarkerDialog({
@@ -57,7 +58,7 @@ export function InfoMarkerDialog({
       <Dialog open={open} onOpenChange={close}>
         <DialogContent className="max-w-[90%] w-fit min-w-[350px] rounded-xl p-0">
           <DialogHeader className="pt-4">
-            <DialogTitle className="text-left flex flex-col items-center gap-1">
+            <DialogTitle className="uppercase font-bold text-[13px] flex flex-col items-center gap-1">
               Información
               {selectedMarker.status === 'completado' && (
               <Badge className="bg-green-500 text-green-900 animate-pulse hover:bg-green-500 hover:cursor-pointer">
@@ -99,7 +100,7 @@ export function InfoMarkerDialog({
       <Dialog open={open} onOpenChange={close}>
         <DialogContent className="max-w-[90%] w-fit min-w-[350px] rounded-xl p-0">
           <DialogHeader className="pt-4">
-            <DialogTitle className="text-left flex flex-col items-center gap-1">
+            <DialogTitle className="uppercase font-bold text-[13px] flex flex-col items-center gap-1">
               Información
               {selectedMarker.status === 'completado' && (
                 <Badge className="bg-green-500 text-green-900 animate-pulse hover:bg-green-500 hover:cursor-pointer">
@@ -109,18 +110,18 @@ export function InfoMarkerDialog({
                 </Badge>
               )}
               {selectedMarker.status === 'pendiente' && (
-                <Badge variant="outline" className="animate-pulse bg-red-500 text-red-900">
-                  <p className="uppercase text-[11px]">
-                    {selectedMarker.status}
-                  </p>
-                </Badge>
+              <Badge variant="outline" className="animate-pulse bg-red-500 text-red-900">
+                <p className="uppercase text-[11px]">
+                  {selectedMarker.status}
+                </p>
+              </Badge>
               )}
               {selectedMarker.status === 'asignado' && (
-                <Badge variant="outline" className="animate-pulse bg-orange-500 text-orange-900">
-                  <p className="uppercase text-[11px]">
-                    {selectedMarker.status}
-                  </p>
-                </Badge>
+              <Badge variant="outline" className="animate-pulse bg-orange-500 text-orange-900">
+                <p className="uppercase text-[11px]">
+                  {selectedMarker.status}
+                </p>
+              </Badge>
               )}
             </DialogTitle>
           </DialogHeader>
@@ -137,53 +138,54 @@ export function InfoMarkerDialog({
               />
             </div>
           )}
+
           <div className="p-4 pt-0 flex flex-col gap-1">
             <div className="flex gap-1 items-center text-md font-medium">
               <Badge className="w-[80px] bg-zinc-700">Tipo:</Badge>
               <Icon
-                icon={ASSISTANCE_TYPES[marker?.type].icon}
+                icon={ASSISTANCE_TYPES[marker?.type]?.icon}
                 width="20"
                 height="20"
               />
               <p className="text-[14px] font-semibold">{ASSISTANCE_TYPES[marker?.type].label}</p>
             </div>
-            <p className="text-[14px] font-semibold flex gap-2 items-center">
+
+            <div className="text-[14px] font-semibold flex gap-2 items-center">
               <Badge className="w-[80px] bg-zinc-700">Ayuda</Badge>
-              {marker?.description === '' ? '-' : marker.description}
-            </p>
-            <p className="text-[14px] font-semibold flex gap-2 items-center">
+              {isEmpty(marker.description) ? '-' : marker.description}
+            </div>
+            <div className="text-[14px] font-semibold flex gap-2 items-center">
               <Badge className="w-[80px] bg-zinc-700">Teléfono</Badge>
-              {marker?.telf === '' ? '-' : marker?.telf}
-            </p>
-            <p className="text-[14px] font-semibold flex gap-2 items-center">
+              {isEmpty(marker?.telf) ? '-' : marker?.telf}
+            </div>
+            <div className="text-[14px] font-semibold flex gap-2 items-center">
               <Badge className="w-[80px] bg-zinc-700">Creado</Badge>
               {new Intl.DateTimeFormat('es-ES', DATE_OPTIONS).format(new Date(marker.created_at))}
-            </p>
+            </div>
 
-            {direccion.calle ? (
+            {direccion.calle && (
               <div className="flex flex-col gap-1">
-                <p className="text-[14px] font-semibold flex gap-2 items-center">
+                <div className="text-[14px] font-semibold flex gap-2 items-center">
                   <Badge className="w-[80px] bg-zinc-700">Calle</Badge>
                   {direccion.calle}
-                </p>
-                <p className="text-[14px] font-semibold flex gap-2 items-center">
+                </div>
+                <div className="text-[14px] font-semibold flex gap-2 items-center">
                   <Badge className="w-[80px] bg-zinc-700">Población</Badge>
                   {direccion.poblacion}
-                </p>
+                </div>
               </div>
-            ) : (
-              <p>Cargando dirección...</p>
             )}
+
             <div className="flex gap-1">
               {marker?.status !== 'completado' && (
-              <Button onClick={handleComplete} className="w-full mt-2 bg-green-500 uppercase text-[12px] font-semibold">
-                <Icon
-                  icon="line-md:circle-twotone-to-confirm-circle-twotone-transition"
-                  width="20"
-                  height="20"
-                />
-                Completar
-              </Button>
+                <Button onClick={handleComplete} className="w-full mt-2 bg-green-500 uppercase text-[12px] font-semibold">
+                  <Icon
+                    icon="line-md:circle-twotone-to-confirm-circle-twotone-transition"
+                    width="20"
+                    height="20"
+                  />
+                  Completar
+                </Button>
               )}
               <Button onClick={handleDelete} variant="destructive" className="w-full mt-2 uppercase text-[12px] font-semibold">
                 <Icon
@@ -225,8 +227,8 @@ export function InfoMarkerDialog({
         open={showCodeDialog}
         close={setShowCodeDialog}
         selectedMarker={marker}
-        callback={() => {
-          handleDeleteMarker();
+        callback={(code) => {
+          handleDeleteMarker(code);
           close(false);
           toast.success('Marcador borrado correctamente', {
             description: new Intl.DateTimeFormat('es-ES', DATE_OPTIONS).format(new Date()),
@@ -249,8 +251,8 @@ export function InfoMarkerDialog({
         close={setShowCompleteDialog}
         handleDeleteMarker={handleDeleteMarker}
         selectedMarker={marker}
-        callback={() => {
-          handleCompleteMarker();
+        callback={(code) => {
+          handleCompleteMarker(code);
           close(false);
           toast.success('Marcador marcado como completado correctamente', {
             description: new Intl.DateTimeFormat('es-ES', DATE_OPTIONS).format(new Date()),

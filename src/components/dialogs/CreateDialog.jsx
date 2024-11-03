@@ -52,7 +52,7 @@ export function CreateDialog({
     };
 
     fetchAddress();
-  }, [newMarker]);
+  }, [newMarker.latitude, newMarker.longitude]);
 
   const handleClose = async () => {
     if (isEmpty(newMarker?.description) || isEmpty(newMarker?.telf)) {
@@ -95,7 +95,7 @@ export function CreateDialog({
     handleAddMarker({ password: c, img: base64Image, telf: phoneNumber.number });
   };
 
-  const onImageChange = (event) => {
+  const onImageChange = useCallback((event) => {
     if (event.target.files && event.target.files[0]) {
       const file = event.target.files[0];
       if (file.type.startsWith('image/')) {
@@ -104,9 +104,9 @@ export function CreateDialog({
         toast.warning('Por favor, selecciona solo archivos de imagen.');
       }
     }
-  };
+  }, []);
 
-  const removeImage = () => setImage(null);
+  const removeImage = useCallback(() => setImage(null), []);
 
   const handleDragOver = useCallback((event) => {
     event.preventDefault();
@@ -177,10 +177,9 @@ export function CreateDialog({
                     src={URL.createObjectURL(image)}
                     alt="Preview"
                     className="max-h-33 mx-auto rounded-xl"
-                    layout="responsive" // Para que ajuste su tamaño al contenedor
                     width={100}
                     height={50} // Ajusta el aspect ratio
-                    style={{ width: '100%', height: 'auto' }}
+                    style={{ width: 'auto', height: 'auto' }}
                   />
                   <Button
                     variant="ghost"

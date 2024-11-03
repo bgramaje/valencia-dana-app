@@ -3,7 +3,6 @@
 import React, { useState, useEffect } from 'react';
 import { Map as ReactMap } from 'react-map-gl/maplibre';
 import { DeckGL } from '@deck.gl/react';
-import { IconLayer, ScatterplotLayer } from '@deck.gl/layers';
 import { Button } from '@/components/ui/button';
 import { Icon } from '@iconify/react';
 import Image from 'next/image';
@@ -15,11 +14,11 @@ import { InfoDialog } from '@/components/dialogs/InfoDialog';
 import { ASSISTANCE_TYPES, INITIAL_VIEW_STATE } from '@/lib/enums';
 import { CreateDialog } from '@/components/dialogs/CreateDialog';
 import { InfoMarkerDialog } from '@/components/dialogs/InfoMarkerDialog';
+import { useMapLayers } from '@/hooks/useMapLayers';
 
 export default function Home() {
   const [viewState, setViewState] = useState(INITIAL_VIEW_STATE);
 
-  const [markers, setMarkers] = useState([]);
   const [newMarker, setNewMarker] = useState({
     type: 'WATER',
     description: '',
@@ -34,71 +33,14 @@ export default function Home() {
   const [isInfoOpen, setIsInfoOpen] = useState(false);
   const [userLocation, setUserLocation] = useState(null);
 
+  const {
+    markers, setMarkers, layers, fetchMarkers,
+  } = useMapLayers(userLocation, setSelectedMarker, setModalOpen);
+
   const closeWarningModal = () => {
     setWarningModalOpen(false);
     localStorage.setItem('warningModalClosed', 'true');
   };
-
-  const fetchMarkers = () => {
-    fetch('/api/markers')
-      .then((response) => response.json())
-      .then((data) => {
-        setMarkers(data);
-      })
-      .catch((error) => toast.error(`Error loading markers: ${error}`));
-  };
-
-  const layers = [
-    new ScatterplotLayer({
-      id: 'scatter-plot',
-      data: markers,
-      pickable: true,
-      opacity: 0.5,
-      filled: true,
-      radiusScale: 4,
-      radiusMinPixels: 20,
-      radiusMaxPixels: 20,
-      getPosition: (d) => [d.longitude, d.latitude],
-      getRadius: 5,
-      getFillColor: (d) => ASSISTANCE_TYPES[d.type].color,
-      onClick: ({ object }) => {
-        if (object) {
-          setSelectedMarker(object);
-          setModalOpen(true);
-        }
-      },
-    }),
-    new IconLayer({
-      id: 'icon-layer',
-      data: markers,
-      pickable: true,
-      getIcon: (d) => ({
-        url: ASSISTANCE_TYPES[d.type].iconMap,
-        width: 20,
-        height: 20,
-      }),
-      getPosition: (d) => [d.longitude, d.latitude],
-      getColor: (d) => ASSISTANCE_TYPES[d.type].color,
-      sizeScale: 1,
-      parameters: { depthTest: false },
-      getAngle: 0,
-      getSize: 20,
-      onClick: ({ object }) => {
-        if (object) {
-          setSelectedMarker(object);
-          setModalOpen(true);
-        }
-      },
-    }),
-    userLocation && new ScatterplotLayer({
-      id: 'user-location-layer',
-      data: [userLocation],
-      getPosition: (d) => [d.longitude, d.latitude],
-      getFillColor: [0, 0, 255],
-      getRadius: 100,
-      pickable: false,
-    }),
-  ].filter(Boolean);
 
   const handleMapClick = (event) => {
     if (isSelectingLocation && event.coordinate) {
@@ -131,13 +73,13 @@ export default function Home() {
       .catch((error) => toast.error(`Error adding marker: ${error}`));
   };
 
-  const handleCompleteMarker = () => {
+  const handleCompleteMarker = (code) => {
     fetch(`/api/markers/${selectedMarker.id}`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
       },
-      body: JSON.stringify({ id: selectedMarker.id, status: 'completado' }), // Envía el índice o ID
+      body: JSON.stringify({ id: selectedMarker.id, status: 'completado', code }), // Envía el índice o ID
     })
       .then((response) => response.json())
       .then(() => {
@@ -148,13 +90,13 @@ export default function Home() {
       .catch((error) => toast.error(`Error completing marker: ${error}`));
   };
 
-  const handleDeleteMarker = () => {
+  const handleDeleteMarker = (code) => {
     fetch('/api/markers', {
       method: 'DELETE',
       headers: {
         'Content-Type': 'application/json',
       },
-      body: JSON.stringify({ id: selectedMarker.id }), // Envía el índice o ID
+      body: JSON.stringify({ id: selectedMarker.id, code }), // Envía el índice o ID
     })
       .then((response) => response.json())
       .then(() => {
@@ -167,21 +109,30 @@ export default function Home() {
       .catch((error) => toast.error(`Error deleting marker: ${error}`));
   };
 
-  useEffect(() => {
+  const getLocation = () => {
     navigator.geolocation.getCurrentPosition(
       (position) => {
         const { latitude, longitude } = position.coords;
+        setUserLocation({ latitude, longitude });
+
         setViewState((prev) => ({
           ...prev,
           latitude,
           longitude,
           zoom: 13, // Ajusta el nivel de zoom inicial
         }));
-        setUserLocation({ latitude, longitude });
       },
       (error) => toast.error(`Error getting location: ${error}`),
       { enableHighAccuracy: true },
     );
+  };
+
+  const onViewStateChange = ({ viewState: _v }) => {
+    setViewState(_v);
+  };
+
+  useEffect(() => {
+    getLocation();
   }, []);
 
   useEffect(() => {
@@ -193,17 +144,14 @@ export default function Home() {
     if (!isModalOpen) setSelectedMarker(null);
   }, [isModalOpen]);
 
-  useEffect(() => {
-    fetchMarkers();
-  }, []);
-
   return (
     <div className="relative w-full h-dvh">
       <DeckGL
         height="100dvh"
-        initialViewState={viewState}
+        viewState={viewState}
         controller
         layers={layers}
+        onViewStateChange={onViewStateChange} // Escucha los cambios en viewState
         onClick={handleMapClick}
         getCursor={() => (isSelectingLocation ? 'crosshair' : 'grab')}
       >
@@ -297,6 +245,23 @@ export default function Home() {
               height="40"
               className="text-red-300"
               style={{ color: isSelectingLocation ? 'white' : 'black', width: 40, height: 40 }}
+            />
+          </Button>
+          <Button
+            onClick={(e) => {
+              e.preventDefault();
+              getLocation();
+            }}
+            variant="outline"
+            size="icon"
+            className="min-w-[60px] h-[60px] rounded-xl"
+          >
+            <Icon
+              icon="ph:map-pin-duotone"
+              width="40"
+              height="40"
+              className="text-red-300"
+              style={{ color: 'black', width: 40, height: 40 }}
             />
           </Button>
           <Button onClick={() => setIsInfoOpen(true)} variant="outline" size="icon" className="min-w-[60px] h-[60px] rounded-xl">
