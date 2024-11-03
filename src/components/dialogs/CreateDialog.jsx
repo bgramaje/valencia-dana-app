@@ -22,6 +22,7 @@ import {
 
 import { VoiceInput } from '../custom/voice-input';
 import { CodeCopyDialog } from './code/CodeCopyDialog';
+import { Badge } from '../ui/badge';
 
 const convertToBase64 = (file) => new Promise((resolve, reject) => {
   const reader = new FileReader();
@@ -196,7 +197,7 @@ export function CreateDialog({
               ) : (
                 <>
                   <Upload className="mx-auto h-8 w-8 text-gray-400" />
-                  <p className="mt-1 text-sm">Arrastra y suelta una imagen aquí, o haz clic para seleccionar</p>
+                  <p className="mt-1 text-sm">Arrasta o pulse para añadir una imagen de la ayuda a realizar</p>
                 </>
               )}
               <input
@@ -210,18 +211,24 @@ export function CreateDialog({
           </div>
 
           {direccion.calle ? (
-            <div>
-              <p>
-                <strong>Calle:</strong>
+            <div className="flex flex-col gap-1">
+              <p className="text-[14px] font-semibold flex gap-2 items-center">
+                <Badge className="w-[80px] bg-zinc-700">Calle</Badge>
                 {direccion.calle}
               </p>
-              <p>
-                <strong>Población:</strong>
+              <p className="text-[14px] font-semibold flex gap-2 items-center">
+                <Badge className="w-[80px] bg-zinc-700">Población</Badge>
                 {direccion.poblacion}
               </p>
             </div>
           ) : (
-            <p>Cargando dirección...</p>
+            <div className="flex flex-col gap-1">
+              <Icon
+                icon="line-md:loading-loop"
+                width="30"
+                height="30"
+              />
+            </div>
           )}
           <DialogFooter>
             <Button className="w-full mt-0 uppercase text-[12px] font-semibold" onClick={handleClose}>
