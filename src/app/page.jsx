@@ -9,7 +9,7 @@ import { toast } from 'sonner';
 
 import { WarningDialog } from '@/components/dialogs/WarningDialog';
 import { InfoDialog } from '@/components/dialogs/InfoDialog';
-import { INITIAL_VIEW_STATE } from '@/lib/enums';
+import { DATE_OPTIONS, INITIAL_VIEW_STATE, TOAST_ERROR_CLASSNAMES } from '@/lib/enums';
 import { CreateDialog } from '@/components/dialogs/CreateDialog';
 import { InfoMarkerDialog } from '@/components/dialogs/InfoMarkerDialog';
 import { useMapLayers } from '@/hooks/useMapLayers';
@@ -70,7 +70,10 @@ export default function Home() {
         }); // Reinicia el nuevo marcador
         setModalOpen(false);
       })
-      .catch((error) => toast.error(`Error adding marker: ${error}`));
+      .catch((error) => toast.error(`Error adding marker: ${error}`, {
+        duration: 2000,
+        classNames: TOAST_ERROR_CLASSNAMES,
+      }));
   };
 
   const handleCompleteMarker = (code) => {
@@ -81,32 +84,61 @@ export default function Home() {
       },
       body: JSON.stringify({ id: selectedMarker.id, status: 'completado', code }), // Envía el índice o ID
     })
-      .then((response) => response.json())
+      .then((response) => {
+        if (!response.ok) {
+          return response.json().then((errorData) => {
+            throw new Error(errorData.message || 'Forbidden'); // Use the message from the response or a default one
+          });
+        }
+        return response.json(); // Only parse the response if it's OK
+      })
       .then(() => {
         setModalOpen(false);
         setSelectedMarker(null);
         fetchMarkers();
-      })
-      .catch((error) => toast.error(`Error completing marker: ${error}`));
-  };
 
+        toast.success('Marcador marcado como completado correctamente', {
+          description: new Intl.DateTimeFormat('es-ES', DATE_OPTIONS).format(new Date()),
+          duration: 2000,
+        });
+      })
+      .catch((error) => toast.error(`${error}`, {
+        duration: 2000,
+        classNames: TOAST_ERROR_CLASSNAMES,
+      }));
+  };
   const handleDeleteMarker = (code) => {
     fetch('/api/markers', {
       method: 'DELETE',
       headers: {
         'Content-Type': 'application/json',
       },
-      body: JSON.stringify({ id: selectedMarker.id, code }), // Envía el índice o ID
+      body: JSON.stringify({ id: selectedMarker.id, code }), // Send the ID of the marker
     })
-      .then((response) => response.json())
+      .then((response) => {
+        if (!response.ok) {
+          return response.json().then((errorData) => {
+            throw new Error(errorData.message || 'Forbidden'); // Use the message from the response or a default one
+          });
+        }
+        return response.json(); // Only parse the response if it's OK
+      })
       .then(() => {
-        // Actualiza la lista de marcadores
         const updatedMarkers = markers.filter((marker) => marker !== selectedMarker);
         setMarkers(updatedMarkers);
+
         setModalOpen(false);
         setSelectedMarker(null);
+
+        toast.success('Marcador borrado correctamente', {
+          description: new Intl.DateTimeFormat('es-ES', DATE_OPTIONS).format(new Date()),
+          duration: 2000,
+        });
       })
-      .catch((error) => toast.error(`Error deleting marker: ${error}`));
+      .catch((error) => toast.error(`Error borrando marcador: ${error.message}`, {
+        duration: 2000,
+        classNames: TOAST_ERROR_CLASSNAMES,
+      })); // Use error.message for user-friendly output
   };
 
   const getLocation = () => {

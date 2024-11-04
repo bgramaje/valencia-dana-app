@@ -13,7 +13,7 @@ export async function GET(request, { params }) {
   // Update the `status` field of the specified marker
   const { data: marker, error } = await supabase
     .from('markers')
-    .select('*')
+    .select('id, created_at, type, telf, description, longitude, latitude, status, img, policy_accepted, data_usage')
     .eq('id', id) // Reemplaza "id" con el valor del ID que buscas
     .single(); // .single() devuelve un solo objeto en lugar de un array
 

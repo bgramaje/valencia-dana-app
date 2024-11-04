@@ -25,7 +25,7 @@ export async function POST(request) {
 
   const { data, error } = await supabase
     .from('markers')
-    .insert([newMarker])
+    .insert([{ ...newMarker, policy_accepted: true, data_usage: true }])
     .select();
 
   if (error) {

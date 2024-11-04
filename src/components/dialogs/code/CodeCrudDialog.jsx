@@ -1,7 +1,5 @@
 import React from 'react';
 
-import { toast } from 'sonner';
-
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
 import { InputOTP, InputOTPGroup, InputOTPSlot } from '@/components/ui/input-otp';
 import {
@@ -9,20 +7,11 @@ import {
 } from '@/components/ui/dialog';
 
 export function CodeCrudDialog({
-  open, close, selectedMarker, callback, children,
+  open, close, callback, children,
 }) {
   const [value, setValue] = React.useState('');
 
-  const handleClose = () => {
-    if (value !== selectedMarker?.password) {
-      toast.error('Error borrando marcador', {
-        description: 'El código de borrado no es correcto.',
-        duration: 2000,
-      });
-      return;
-    }
-    callback(value);
-  };
+  const handleClose = () => callback(value);
 
   return (
     <Dialog open={open} onOpenChange={close}>

@@ -30,3 +30,11 @@ export const DATE_OPTIONS = {
   minute: '2-digit', // Minutos en formato de dos dígitos
   hour12: false, // Formato de 12 horas con "AM" y "PM"
 };
+
+export const TOAST_ERROR_CLASSNAMES = {
+  toast: 'bg-red-800',
+  title: 'text-red-400 text-md',
+  description: 'text-red-400',
+  icon: 'text-red-400',
+  closeButton: 'bg-lime-400',
+};

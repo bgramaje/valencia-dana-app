@@ -14,6 +14,7 @@ import {
 
 import { isEmpty } from 'lodash';
 import { CodeCrudDialog } from './code/CodeCrudDialog';
+import { Alert, AlertDescription } from '../ui/alert';
 
 export function InfoMarkerDialog({
   open, close, selectedMarker, handleDeleteMarker, handleCompleteMarker,
@@ -101,9 +102,9 @@ export function InfoMarkerDialog({
   return (
     <>
       <Dialog open={open} onOpenChange={close}>
-        <DialogContent className="max-w-[90%] w-fit min-w-[350px] rounded-xl p-0">
+        <DialogContent className="max-w-[90%] w-fit min-w-[350px] rounded-xl p-0 overflow-y-auto max-h-[90%] gap-2">
           <DialogHeader className="pt-4">
-            <DialogTitle className="uppercase font-bold text-[13px] flex flex-col items-center gap-1">
+            <DialogTitle className="uppercase font-bold text-[13px] flex items-center gap-1 justify-center">
               Información
               {selectedMarker.status === 'completado' && (
                 <Badge className="bg-green-500 text-green-900 animate-pulse hover:bg-green-500 hover:cursor-pointer">
@@ -131,6 +132,26 @@ export function InfoMarkerDialog({
               -
             </DialogDescription>
           </DialogHeader>
+          <div className="px-4 py-0 m-0 text-xs">
+            <Alert className="text-xs">
+              <AlertDescription className="text-xs">
+                {marker.policy_accepted && (
+                <li>
+                  El usuario ha aceptado las
+                  {' '}
+                  <a href="/privacy-policy" className="text-blue-500 underline">políticas de privacidad</a>
+                </li>
+                )}
+                {marker.data_usage && (
+                <li>
+                  El usuario ha aceptado hacer visible la información introducida en el formulario.
+                  {' '}
+                </li>
+                )}
+              </AlertDescription>
+            </Alert>
+          </div>
+
           {marker?.img && (
             <div className="w-full p-1 px-4 rounded-xl max-h-52 overflow-auto">
               <Image
@@ -236,10 +257,6 @@ export function InfoMarkerDialog({
         callback={(code) => {
           handleDeleteMarker(code);
           close(false);
-          toast.success('Marcador borrado correctamente', {
-            description: new Intl.DateTimeFormat('es-ES', DATE_OPTIONS).format(new Date()),
-            duration: 2000,
-          });
         }}
       >
         <Button variant="destructive" className="w-full mt-2 uppercase text-[12px] font-semibold">
@@ -260,10 +277,6 @@ export function InfoMarkerDialog({
         callback={(code) => {
           handleCompleteMarker(code);
           close(false);
-          toast.success('Marcador marcado como completado correctamente', {
-            description: new Intl.DateTimeFormat('es-ES', DATE_OPTIONS).format(new Date()),
-            duration: 2000,
-          });
         }}
       >
         <Button className="w-full mt-2 bg-green-500 uppercase text-[12px] font-semibold">
