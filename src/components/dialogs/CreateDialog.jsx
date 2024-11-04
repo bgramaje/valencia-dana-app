@@ -76,13 +76,7 @@ export function CreateDialog({
     if (!acceptedPrivacyPolicy) {
       toast.error('Debes aceptar las políticas de privacidad para continuar.', {
         duration: 2000,
-        classNames: {
-          toast: 'bg-red-800',
-          title: 'text-red-400 text-md',
-          description: 'text-red-400',
-          icon: 'text-red-400',
-          closeButton: 'bg-lime-400',
-        },
+        classNames: TOAST_ERROR_CLASSNAMES,
       });
       return;
     }
@@ -98,13 +92,7 @@ export function CreateDialog({
     if (isEmpty(newMarker?.description) || isEmpty(newMarker?.telf)) {
       toast.error('Añade que necesitas en la ayuda y tu número de telefono', {
         duration: 2000,
-        classNames: {
-          toast: 'bg-red-800',
-          title: 'text-red-400 text-md',
-          description: 'text-red-400',
-          icon: 'text-red-400',
-          closeButton: 'bg-lime-400',
-        },
+        classNames: TOAST_ERROR_CLASSNAMES,
       });
       return;
     }
@@ -113,13 +101,7 @@ export function CreateDialog({
     if (!phoneNumber || !phoneNumber?.isValid()) {
       toast.error('El teléfono no es válido. Compruébalo', {
         duration: 2000,
-        classNames: {
-          toast: 'bg-red-800',
-          title: 'text-red-400 text-md',
-          description: 'text-red-400',
-          icon: 'text-red-400',
-          closeButton: 'bg-lime-400',
-        },
+        classNames: TOAST_ERROR_CLASSNAMES,
       });
       return;
     }
