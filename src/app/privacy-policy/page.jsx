@@ -1,10 +1,24 @@
 // app/privacy-policy/page.js
 import React from 'react';
+import Link from 'next/link'; // Importar Link de Next.js
+import { Button } from '@/components/ui/button';
+import { Icon } from '@iconify/react';
 
 export default function PrivacyPolicy() {
   return (
     <div className="max-w-3xl mx-auto p-6">
-      <h1 className="text-2xl font-bold mb-4">Política de Privacidad</h1>
+      <div className="flex items-center gap-2">
+        <Link href="/">
+          <Button size="icon" className="flex items-center justify-center">
+            <Icon
+              icon="ion:chevron-back-circle-outline"
+              style={{ width: 25, height: 25 }}
+            />
+          </Button>
+        </Link>
+        <h1 className="text-2xl font-bold mb-0">Política de Privacidad</h1>
+
+      </div>
 
       <h2 className="text-xl font-semibold mt-6">Responsable del Tratamiento</h2>
       <p>
@@ -61,6 +75,5 @@ export default function PrivacyPolicy() {
         para solicitar la eliminación de sus datos.
       </p>
     </div>
-
   );
 }
