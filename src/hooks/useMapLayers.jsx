@@ -39,14 +39,16 @@ export const useMapLayers = (userLocation, setSelectedMarker, setModalOpen) => {
         id: 'scatter-plot',
         data: markers,
         pickable: true,
-        opacity: 0.5,
+        opacity: 0.8,
         filled: true,
         radiusScale: 4,
         radiusMinPixels: 20,
         radiusMaxPixels: 20,
         getPosition: (d) => [d.longitude, d.latitude],
         getRadius: 5,
-        getFillColor: (d) => ASSISTANCE_TYPES[d.type].color,
+        getFillColor: (d) => (d.status === 'completado'
+          ? [140, 140, 140, 200]
+          : ASSISTANCE_TYPES[d.type].color),
         onClick: ({ object }) => {
           if (object) {
             setSelectedMarker(object);
@@ -64,7 +66,9 @@ export const useMapLayers = (userLocation, setSelectedMarker, setModalOpen) => {
           height: 20,
         }),
         getPosition: (d) => [d.longitude, d.latitude],
-        getColor: (d) => ASSISTANCE_TYPES[d.type].color,
+        getColor: (d) => (d.status === 'completado'
+          ? [140, 140, 140, 60]
+          : ASSISTANCE_TYPES[d.type].color),
         sizeScale: 1,
         parameters: { depthTest: false },
         getAngle: 0,
@@ -74,6 +78,9 @@ export const useMapLayers = (userLocation, setSelectedMarker, setModalOpen) => {
             setSelectedMarker(object);
             setModalOpen(true);
           }
+        },
+        updateTriggers: {
+          getColor: [markers],
         },
       }),
     ],

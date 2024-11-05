@@ -4,7 +4,6 @@ import React, { useState } from 'react';
 import { toast } from 'sonner';
 
 import { Icon } from '@iconify/react';
-import { DATE_OPTIONS } from '@/lib/enums';
 import { Button } from '@/components/ui/button';
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
 import { InputOTP, InputOTPGroup, InputOTPSlot } from '@/components/ui/input-otp';
@@ -12,7 +11,12 @@ import {
   Dialog, DialogContent, DialogFooter, DialogHeader, DialogTitle, DialogDescription,
 } from '@/components/ui/dialog';
 
-export function CodeCopyDialog({ open, close, code }) {
+export function CodeCopyDialog({
+  open, close,
+  code,
+  title = 'Se ha añadido tu marcador!',
+  subtitle = 'Guarda el siguiente código generado para poder borrar el marcador generado',
+}) {
   const [copied, setCopied] = useState(false);
 
   const copyCode = () => {
@@ -35,13 +39,12 @@ export function CodeCopyDialog({ open, close, code }) {
         </DialogDescription>
         <div className="flex flex-col gap-0 justify-center items-center">
           <Alert>
-            <AlertTitle>Se ha añadido tu marcador!</AlertTitle>
+            <AlertTitle>{title}</AlertTitle>
             <AlertDescription>
               <p
                 className="text-[13px] max-w-[260px] text-left mb-2"
               >
-                Guarda el siguiente código generado para poder borrar
-                el marcador generado
+                {subtitle}
               </p>
               <div className="w-full flex items-start justify-start gap-2">
                 <InputOTP
@@ -79,10 +82,6 @@ export function CodeCopyDialog({ open, close, code }) {
             className="w-full mt-0"
             onClick={() => {
               close(false);
-              toast.success('Marcador creado correctamente', {
-                description: new Intl.DateTimeFormat('es-ES', DATE_OPTIONS).format(new Date()),
-                duration: 2000,
-              });
             }}
           >
             Aceptar

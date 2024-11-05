@@ -14,11 +14,13 @@ import {
 
 import { isEmpty } from 'lodash';
 import { CodeCrudDialog } from './code/CodeCrudDialog';
-import { Alert, AlertDescription } from '../ui/alert';
+import { Alert, AlertDescription, AlertTitle } from '../ui/alert';
+import { HelperDialog } from './HelperDialog';
 
 export function InfoMarkerDialog({
-  open, close, selectedMarker, handleDeleteMarker, handleCompleteMarker,
+  open, close, selectedMarker, handleDeleteMarker, handleAssignMarker, handleCompleteMarker,
 }) {
+  const [showHelperDialog, setShowHelperDialog] = useState(false);
   const [showCodeDialog, setShowCodeDialog] = useState(false);
   const [showCompleteDialog, setShowCompleteDialog] = useState(false);
   const [marker, setMarker] = useState(null);
@@ -53,6 +55,7 @@ export function InfoMarkerDialog({
 
   const handleDelete = () => setShowCodeDialog(true);
   const handleComplete = () => setShowCompleteDialog(true);
+  const handleHelper = () => setShowHelperDialog(true);
 
   if (loading || marker === null || marker === undefined) {
     return (
@@ -61,27 +64,6 @@ export function InfoMarkerDialog({
           <DialogHeader className="pt-4">
             <DialogTitle className="uppercase font-bold text-[13px] flex flex-col items-center gap-1">
               Información
-              {selectedMarker.status === 'completado' && (
-              <Badge className="bg-green-500 text-green-900 animate-pulse hover:bg-green-500 hover:cursor-pointer">
-                <p className="uppercase text-[11px]">
-                  {selectedMarker.status}
-                </p>
-              </Badge>
-              )}
-              {selectedMarker.status === 'pendiente' && (
-              <Badge variant="outline" className="animate-pulse bg-red-500 text-red-900">
-                <p className="uppercase text-[11px]">
-                  {selectedMarker.status}
-                </p>
-              </Badge>
-              )}
-              {selectedMarker.status === 'asignado' && (
-              <Badge variant="outline" className="animate-pulse bg-orange-500 text-orange-900">
-                <p className="uppercase text-[11px]">
-                  {selectedMarker.status}
-                </p>
-              </Badge>
-              )}
             </DialogTitle>
             <DialogDescription className="text-center font-medium text-[12px] p-0 m-0 hidden">
               Informacion de la ayuda solicitada
@@ -106,50 +88,75 @@ export function InfoMarkerDialog({
           <DialogHeader className="pt-4">
             <DialogTitle className="uppercase font-bold text-[13px] flex items-center gap-1 justify-center">
               Información
-              {selectedMarker.status === 'completado' && (
+              {marker.status === 'completado' && (
                 <Badge className="bg-green-500 text-green-900 animate-pulse hover:bg-green-500 hover:cursor-pointer">
                   <p className="uppercase text-[11px]">
-                    {selectedMarker.status}
+                    {marker.status}
                   </p>
                 </Badge>
               )}
-              {selectedMarker.status === 'pendiente' && (
-              <Badge variant="outline" className="animate-pulse bg-red-500 text-red-900">
-                <p className="uppercase text-[11px]">
-                  {selectedMarker.status}
-                </p>
-              </Badge>
+              {marker.status === 'pendiente' && (
+                <Badge variant="outline" className="animate-pulse bg-red-500 text-red-900">
+                  <p className="uppercase text-[11px]">
+                    {marker.status}
+                  </p>
+                </Badge>
               )}
-              {selectedMarker.status === 'asignado' && (
-              <Badge variant="outline" className="animate-pulse bg-orange-500 text-orange-900">
-                <p className="uppercase text-[11px]">
-                  {selectedMarker.status}
-                </p>
-              </Badge>
+              {marker.status === 'asignado' && (
+                <Badge variant="outline" className="animate-pulse bg-orange-500 text-orange-900">
+                  <p className="uppercase text-[11px]">
+                    {marker.status}
+                  </p>
+                </Badge>
               )}
             </DialogTitle>
             <DialogDescription className="text-center font-medium text-[12px] p-0 m-0 hidden">
               -
             </DialogDescription>
           </DialogHeader>
-          <div className="px-4 py-0 m-0 text-xs">
+          <div className="px-4 py-0 m-0 text-xs flex flex-col gap-1">
             <Alert className="text-xs">
               <AlertDescription className="text-xs">
                 {marker.policy_accepted && (
-                <li>
-                  El usuario ha aceptado las
-                  {' '}
-                  <a href="/privacy-policy" className="text-blue-500 underline">políticas de privacidad</a>
-                </li>
+                  <li>
+                    Tanto solicitante como voluntario han aceptado las
+                    {' '}
+                    <a href="/privacy-policy" className="text-blue-500 underline">políticas de privacidad</a>
+                  </li>
                 )}
                 {marker.data_usage && (
-                <li>
-                  El usuario ha aceptado hacer visible la información introducida en el formulario.
-                  {' '}
-                </li>
+                  <li>
+                    Tanto solicitante como voluntario han aceptado  hacer visible la información introducida en el formulario.
+                    {' '}
+                  </li>
                 )}
               </AlertDescription>
             </Alert>
+            {marker.status === 'asignado' && (
+              <Alert className="text-xs border-orange-500 bg-orange-100 animate-pulse">
+                <AlertTitle className="uppercase text-[11px] m-0 p-0 font-medium">
+                  Voluntario Asignado
+                </AlertTitle>
+                <AlertDescription className="text-xs flex items-center gap-1 font-semibold">
+                  <Icon
+                    icon="akar-icons:person"
+                    width="16"
+                    height="16"
+                  />
+                  <p className="uppercase flex gap-1">
+                    <span>
+                      {marker.helper_name}
+                    </span>
+                    <span>
+                      /
+                    </span>
+                    <span>
+                      {marker.helper_telf}
+                    </span>
+                  </p>
+                </AlertDescription>
+              </Alert>
+            )}
           </div>
 
           {marker?.img && (
@@ -206,8 +213,11 @@ export function InfoMarkerDialog({
             )}
 
             <div className="flex gap-1">
-              {marker?.status !== 'completado' && (
-                <Button onClick={handleComplete} className="w-full mt-2 bg-green-500 uppercase text-[12px] font-semibold">
+              {marker?.status === 'asignado' && (
+                <Button
+                  onClick={handleComplete}
+                  className="w-full mt-2 bg-green-500 uppercase text-[12px] font-semibold"
+                >
                   <Icon
                     icon="line-md:circle-twotone-to-confirm-circle-twotone-transition"
                     width="20"
@@ -216,26 +226,47 @@ export function InfoMarkerDialog({
                   Completar
                 </Button>
               )}
-              <Button onClick={handleDelete} variant="destructive" className="w-full mt-2 uppercase text-[12px] font-semibold">
-                <Icon
-                  icon="ic:twotone-delete"
-                  width="20"
-                  height="20"
-                />
-                Eliminar
-              </Button>
+              {marker?.status === 'completado' && (
+                <Button
+                  onClick={handleDelete}
+                  variant="destructive"
+                  className="w-full mt-2 uppercase text-[12px] font-semibold"
+                >
+                  <Icon
+                    icon="ic:twotone-delete"
+                    width="20"
+                    height="20"
+                  />
+                  Eliminar
+                </Button>
+              )}
             </div>
-            {marker?.telf && (
-            <a href={`tel:${marker?.telf}`}>
-              <Button className="w-full mt-0.5 bg-blue-500 uppercase text-[12px] font-semibold">
+            {marker?.status === 'pendiente' && (
+              <Button
+                onClick={handleHelper}
+                className="w-full bg-orange-500 uppercase text-[12px] font-semibold"
+              >
                 <Icon
-                  icon="solar:phone-calling-bold"
+                  icon="akar-icons:person"
                   width="20"
                   height="20"
                 />
-                Llamar
+                Ofrecerme voluntario
               </Button>
-            </a>
+            )}
+            {marker?.telf && (
+              <a href={`tel:${marker?.telf}`}>
+                <Button
+                  className="w-full bg-blue-500 uppercase text-[12px] font-semibold"
+                >
+                  <Icon
+                    icon="solar:phone-calling-bold"
+                    width="20"
+                    height="20"
+                  />
+                  Llamar afectado
+                </Button>
+              </a>
             )}
 
             <Button
@@ -252,6 +283,18 @@ export function InfoMarkerDialog({
           </div>
         </DialogContent>
       </Dialog>
+
+      <HelperDialog
+        open={showHelperDialog}
+        close={setShowHelperDialog}
+        selectedMarker={marker}
+        callback={(body) => {
+          setShowHelperDialog(false);
+          handleAssignMarker(body);
+          fetchMarker(selectedMarker.id);
+        }}
+      />
+
       <CodeCrudDialog
         open={showCodeDialog}
         close={setShowCodeDialog}
@@ -277,7 +320,7 @@ export function InfoMarkerDialog({
         handleDeleteMarker={handleDeleteMarker}
         selectedMarker={marker}
         callback={(code) => {
-          handleCompleteMarker(code);
+          handleCompleteMarker({ status: 'completado', code });
           close(false);
         }}
       >

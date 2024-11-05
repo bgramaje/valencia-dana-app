@@ -1,30 +1,5 @@
-// Add a new marker to Supabase
-
 import { isEqual } from 'lodash';
-import { supabase } from '../route';
-
-export async function GET(request, { params }) {
-  const { id } = await params; // Get the `id` from the URL params
-
-  if (!id) {
-    return new Response(JSON.stringify({ error: 'ID is required' }), { status: 400 });
-  }
-
-  // Update the `status` field of the specified marker
-  const { data: marker, error } = await supabase
-    .from('markers')
-    .select(
-      'id, created_at, type, telf, description, longitude, latitude, status, img, policy_accepted, data_usage, helper_telf, helper_name',
-    )
-    .eq('id', id) // Reemplaza "id" con el valor del ID que buscas
-    .single(); // .single() devuelve un solo objeto en lugar de un array
-
-  if (error) {
-    return new Response(JSON.stringify({ error: error.message }), { status: 500 });
-  }
-
-  return new Response(JSON.stringify(marker), { status: 200 });
-}
+import { supabase } from '../../route';
 
 export async function PUT(request, { params }) {
   const { id } = await params; // Get the `id` from the URL params
@@ -46,7 +21,7 @@ export async function PUT(request, { params }) {
     return new Response(JSON.stringify({ error: errorSelect.message }), { status: 500 });
   }
 
-  if (!isEqual(code, marker.password)) {
+  if (!isEqual(code, marker.password) && !isEqual(code, marker.helper_password)) {
     return new Response(JSON.stringify({ message: 'El código no es correcto' }), { status: 403 });
   }
 

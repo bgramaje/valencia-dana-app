@@ -69,6 +69,10 @@ export default function Home() {
           type: 'WATER', description: '', longitude: 0, latitude: 0,
         }); // Reinicia el nuevo marcador
         setModalOpen(false);
+        toast.success('Marcador creado correctamente', {
+          description: new Intl.DateTimeFormat('es-ES', DATE_OPTIONS).format(new Date()),
+          duration: 2000,
+        });
       })
       .catch((error) => toast.error(`Error adding marker: ${error}`, {
         duration: 2000,
@@ -76,13 +80,13 @@ export default function Home() {
       }));
   };
 
-  const handleCompleteMarker = (code) => {
+  const handleEditMarker = (body) => {
     fetch(`/api/markers/${selectedMarker.id}`, {
-      method: 'POST',
+      method: 'PUT',
       headers: {
         'Content-Type': 'application/json',
       },
-      body: JSON.stringify({ id: selectedMarker.id, status: 'completado', code }), // Envía el índice o ID
+      body: JSON.stringify({ id: selectedMarker.id, ...body }), // Envía el índice o ID
     })
       .then((response) => {
         if (!response.ok) {
@@ -107,6 +111,71 @@ export default function Home() {
         classNames: TOAST_ERROR_CLASSNAMES,
       }));
   };
+
+  const handleAssignMarker = (body) => {
+    fetch(`/api/markers/assign/${selectedMarker.id}`, {
+      method: 'PUT',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({ id: selectedMarker.id, ...body }), // Envía el índice o ID
+    })
+      .then((response) => {
+        if (!response.ok) {
+          return response.json().then((errorData) => {
+            throw new Error(errorData.message || 'Forbidden'); // Use the message from the response or a default one
+          });
+        }
+        return response.json(); // Only parse the response if it's OK
+      })
+      .then(() => {
+        // setModalOpen(false);
+        // setSelectedMarker(null);
+        fetchMarkers();
+
+        toast.success('Marcador asignado correctamente', {
+          description: new Intl.DateTimeFormat('es-ES', DATE_OPTIONS).format(new Date()),
+          duration: 2000,
+        });
+      })
+      .catch((error) => toast.error(`${error}`, {
+        duration: 2000,
+        classNames: TOAST_ERROR_CLASSNAMES,
+      }));
+  };
+
+  const handleCompleteMarker = (body) => {
+    fetch(`/api/markers/complete/${selectedMarker.id}`, {
+      method: 'PUT',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({ id: selectedMarker.id, ...body }), // Envía el índice o ID
+    })
+      .then((response) => {
+        if (!response.ok) {
+          return response.json().then((errorData) => {
+            throw new Error(errorData.message || 'Forbidden'); // Use the message from the response or a default one
+          });
+        }
+        return response.json(); // Only parse the response if it's OK
+      })
+      .then(() => {
+        setModalOpen(false);
+        setSelectedMarker(null);
+        fetchMarkers();
+
+        toast.success('Marcador completado correctamente', {
+          description: new Intl.DateTimeFormat('es-ES', DATE_OPTIONS).format(new Date()),
+          duration: 2000,
+        });
+      })
+      .catch((error) => toast.error(`${error}`, {
+        duration: 2000,
+        classNames: TOAST_ERROR_CLASSNAMES,
+      }));
+  };
+
   const handleDeleteMarker = (code) => {
     fetch('/api/markers', {
       method: 'DELETE',
@@ -229,6 +298,8 @@ export default function Home() {
             close={setModalOpen}
             selectedMarker={selectedMarker}
             handleDeleteMarker={handleDeleteMarker}
+            handleEditMarker={handleEditMarker}
+            handleAssignMarker={handleAssignMarker}
             handleCompleteMarker={handleCompleteMarker}
           />
         )
