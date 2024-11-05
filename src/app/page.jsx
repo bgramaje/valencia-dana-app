@@ -111,9 +111,6 @@ export default function Home() {
           duration: 2000,
           classNames: TOAST_ERROR_CLASSNAMES,
         });
-      })
-      .finally(() => {
-
       });
   };
 
