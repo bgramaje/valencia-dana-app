@@ -80,38 +80,6 @@ export default function Home() {
       }));
   };
 
-  const handleEditMarker = (body) => {
-    fetch(`/api/markers/${selectedMarker.id}`, {
-      method: 'PUT',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify({ id: selectedMarker.id, ...body }), // Envía el índice o ID
-    })
-      .then((response) => {
-        if (!response.ok) {
-          return response.json().then((errorData) => {
-            throw new Error(errorData.message || 'Forbidden'); // Use the message from the response or a default one
-          });
-        }
-        return response.json(); // Only parse the response if it's OK
-      })
-      .then(() => {
-        setModalOpen(false);
-        setSelectedMarker(null);
-        fetchMarkers();
-
-        toast.success('Marcador marcado como completado correctamente', {
-          description: new Intl.DateTimeFormat('es-ES', DATE_OPTIONS).format(new Date()),
-          duration: 2000,
-        });
-      })
-      .catch((error) => toast.error(`${error}`, {
-        duration: 2000,
-        classNames: TOAST_ERROR_CLASSNAMES,
-      }));
-  };
-
   const handleAssignMarker = (body) => {
     fetch(`/api/markers/assign/${selectedMarker.id}`, {
       method: 'PUT',
@@ -128,9 +96,9 @@ export default function Home() {
         }
         return response.json(); // Only parse the response if it's OK
       })
-      .then(() => {
+      .then((data) => {
         // setModalOpen(false);
-        // setSelectedMarker(null);
+        setSelectedMarker(data);
         fetchMarkers();
 
         toast.success('Marcador asignado correctamente', {
@@ -138,10 +106,15 @@ export default function Home() {
           duration: 2000,
         });
       })
-      .catch((error) => toast.error(`${error}`, {
-        duration: 2000,
-        classNames: TOAST_ERROR_CLASSNAMES,
-      }));
+      .catch((error) => {
+        toast.error(`${error}`, {
+          duration: 2000,
+          classNames: TOAST_ERROR_CLASSNAMES,
+        });
+      })
+      .finally(() => {
+
+      });
   };
 
   const handleCompleteMarker = (body) => {
@@ -161,8 +134,8 @@ export default function Home() {
         return response.json(); // Only parse the response if it's OK
       })
       .then(() => {
-        setModalOpen(false);
-        setSelectedMarker(null);
+        // setModalOpen(false);
+        // setSelectedMarker(null);
         fetchMarkers();
 
         toast.success('Marcador completado correctamente', {
@@ -298,7 +271,6 @@ export default function Home() {
             close={setModalOpen}
             selectedMarker={selectedMarker}
             handleDeleteMarker={handleDeleteMarker}
-            handleEditMarker={handleEditMarker}
             handleAssignMarker={handleAssignMarker}
             handleCompleteMarker={handleCompleteMarker}
           />

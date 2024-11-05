@@ -37,6 +37,7 @@ export function InfoMarkerDialog({
       .then((response) => response.json())
       .then((data) => {
         setMarker(data);
+        setLoading(false);
       })
       .catch((error) => toast.error(`Error loading marker ${error}`));
   };
@@ -46,12 +47,11 @@ export function InfoMarkerDialog({
     const fetchAddress = async () => {
       const addressData = await getAddress(selectedMarker.latitude, selectedMarker.longitude);
       setDireccion(addressData);
+      fetchMarker(selectedMarker.id);
     };
 
     fetchAddress();
-    fetchMarker(selectedMarker.id);
-    setLoading(false);
-  }, [selectedMarker]);
+  }, [selectedMarker.id, selectedMarker.latitude, selectedMarker.longitude]);
 
   const handleDelete = () => setShowCodeDialog(true);
   const handleComplete = () => setShowCompleteDialog(true);
@@ -291,6 +291,7 @@ export function InfoMarkerDialog({
         callback={(body) => {
           setShowHelperDialog(false);
           handleAssignMarker(body);
+          // setLoading(true);
           fetchMarker(selectedMarker.id);
         }}
       />

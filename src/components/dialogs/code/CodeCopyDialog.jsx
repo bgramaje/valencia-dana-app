@@ -72,7 +72,7 @@ export function CodeCopyDialog({
               </div>
 
               {copied && (
-              <p className="text-green-500 text-xs mt-1 font-semibold">Código copiado con éxito!</p>
+                <p className="text-green-500 text-xs mt-1 font-semibold">Código copiado con éxito!</p>
               )}
             </AlertDescription>
           </Alert>
