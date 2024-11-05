@@ -91,21 +91,21 @@ export function InfoMarkerDialog({
               {marker.status === 'completado' && (
                 <Badge className="bg-green-500 text-green-900 animate-pulse hover:bg-green-500 hover:cursor-pointer">
                   <p className="uppercase text-[11px]">
-                    {marker.status}
+                    {marker?.status}
                   </p>
                 </Badge>
               )}
               {marker.status === 'pendiente' && (
                 <Badge variant="outline" className="animate-pulse bg-red-500 text-red-900">
                   <p className="uppercase text-[11px]">
-                    {marker.status}
+                    {marker?.status}
                   </p>
                 </Badge>
               )}
               {marker.status === 'asignado' && (
                 <Badge variant="outline" className="animate-pulse bg-orange-500 text-orange-900">
                   <p className="uppercase text-[11px]">
-                    {marker.status}
+                    {marker?.status}
                   </p>
                 </Badge>
               )}
@@ -117,14 +117,14 @@ export function InfoMarkerDialog({
           <div className="px-4 py-0 m-0 text-xs flex flex-col gap-1">
             <Alert className="text-xs">
               <AlertDescription className="text-xs">
-                {marker.policy_accepted && (
+                {marker?.policy_accepted && (
                   <li>
                     Tanto solicitante como voluntario han aceptado las
                     {' '}
                     <a href="/privacy-policy" className="text-blue-500 underline">políticas de privacidad</a>
                   </li>
                 )}
-                {marker.data_usage && (
+                {marker?.data_usage && (
                   <li>
                     Tanto solicitante como voluntario han aceptado  hacer visible la información introducida en el formulario.
                     {' '}
@@ -132,7 +132,7 @@ export function InfoMarkerDialog({
                 )}
               </AlertDescription>
             </Alert>
-            {marker.status === 'asignado' && (
+            {marker?.status === 'asignado' && (
               <Alert className="text-xs border-orange-500 bg-orange-100 animate-pulse">
                 <AlertTitle className="uppercase text-[11px] m-0 p-0 font-medium">
                   Voluntario Asignado
@@ -145,13 +145,13 @@ export function InfoMarkerDialog({
                   />
                   <p className="uppercase flex gap-1">
                     <span>
-                      {marker.helper_name}
+                      {marker?.helper_name}
                     </span>
                     <span>
                       /
                     </span>
                     <span>
-                      {marker.helper_telf}
+                      {marker?.helper_telf}
                     </span>
                   </p>
                 </AlertDescription>
@@ -181,13 +181,13 @@ export function InfoMarkerDialog({
                 width="20"
                 height="20"
               />
-              <p className="text-[14px] font-semibold">{ASSISTANCE_TYPES[marker?.type].label}</p>
+              <p className="text-[14px] font-semibold">{ASSISTANCE_TYPES[marker?.type]?.label}</p>
             </div>
 
             <div className="text-[14px] font-semibold flex gap-2 items-center">
               <Badge className="w-[80px] bg-zinc-700">Ayuda</Badge>
               <p className="w-[73%]">
-                {isEmpty(marker.description) ? '-' : marker.description}
+                {isEmpty(marker?.description) ? '-' : marker?.description}
               </p>
             </div>
             <div className="text-[14px] font-semibold flex gap-2 items-center">
@@ -196,18 +196,18 @@ export function InfoMarkerDialog({
             </div>
             <div className="text-[14px] font-semibold flex gap-2 items-center">
               <Badge className="w-[80px] bg-zinc-700">Creado</Badge>
-              {new Intl.DateTimeFormat('es-ES', DATE_OPTIONS).format(new Date(marker.created_at))}
+              {new Intl.DateTimeFormat('es-ES', DATE_OPTIONS).format(new Date(marker?.created_at))}
             </div>
 
-            {direccion.calle && (
+            {direccion?.calle && (
               <div className="flex flex-col gap-1">
                 <div className="text-[14px] font-semibold flex gap-2 items-center">
                   <Badge className="w-[80px] bg-zinc-700">Calle</Badge>
-                  {direccion.calle}
+                  {direccion?.calle}
                 </div>
                 <div className="text-[14px] font-semibold flex gap-2 items-center">
                   <Badge className="w-[80px] bg-zinc-700">Población</Badge>
-                  {direccion.poblacion}
+                  {direccion?.poblacion}
                 </div>
               </div>
             )}
