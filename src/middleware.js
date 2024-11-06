@@ -4,6 +4,7 @@ import { NextResponse } from 'next/server';
 
 export async function middleware(req) {
   // Obtener los dominios permitidos desde las variables de entorno
+  /*
   const allowedOrigins = process.env.ALLOWED_ORIGINS
     ? process.env.ALLOWED_ORIGINS.split(',')
     : [];
@@ -24,6 +25,14 @@ export async function middleware(req) {
     // Si el origen no está permitido, devolver 403 Forbidden
     return new NextResponse('Forbidden', { status: 403 });
   }
+
+  */
+
+  const res = NextResponse.next();
+
+  res.headers.set('Access-Control-Allow-Origin', origin);
+  res.headers.set('Access-Control-Allow-Methods', 'GET, POST, OPTIONS');
+  res.headers.set('Access-Control-Allow-Headers', 'Content-Type, Authorization');
 
   return res;
 }
