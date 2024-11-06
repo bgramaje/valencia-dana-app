@@ -5,11 +5,14 @@ import { Button } from '@/components/ui/button';
 import {
   Dialog, DialogContent, DialogFooter, DialogHeader, DialogTitle,
 } from '@/components/ui/dialog';
+import { DialogDescription } from '@radix-ui/react-dialog';
 
 export function InfoDialog({ open, close }) {
+  const commitSha = process.env.NEXT_PUBLIC_COMMIT_SHA;
+
   return (
     <Dialog open={open} onOpenChange={close}>
-      <DialogContent className="rounded-xl">
+      <DialogContent className="rounded-xl gap-2">
         <DialogHeader className="flex-row gap-1 items-center m-0">
           <Icon
             icon="ph:info-bold"
@@ -19,6 +22,14 @@ export function InfoDialog({ open, close }) {
           />
           <DialogTitle className="text-blue-600 m-0 pt-0 mb-1">Instrucciones para un buen uso</DialogTitle>
         </DialogHeader>
+        {commitSha && (
+        <DialogDescription className="text-center uppercase font-medium text-[12px]">
+          <p>
+            v.
+            {commitSha || 'No disponible'}
+          </p>
+        </DialogDescription>
+        )}
         <div className="flex-col gap-0">
           <p>
             1. Para añadir un marcador, pulsa en el botón
