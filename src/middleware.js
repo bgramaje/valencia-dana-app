@@ -2,7 +2,7 @@
 
 import { NextResponse } from 'next/server';
 
-export async function middleware(req) {
+export async function middleware() {
   // Obtener los dominios permitidos desde las variables de entorno
   /*
   const allowedOrigins = process.env.ALLOWED_ORIGINS
