@@ -214,20 +214,18 @@ export function InfoMarkerDialog({
                   Completar
                 </Button>
               )}
-              {marker?.status === MARKER_STATUS.COMPLETADO && (
-                <Button
-                  onClick={handleDelete}
-                  variant="destructive"
-                  className="w-full mt-2 uppercase text-[12px] font-semibold"
-                >
-                  <Icon
-                    icon="ic:twotone-delete"
-                    width="20"
-                    height="20"
-                  />
-                  Eliminar
-                </Button>
-              )}
+              <Button
+                onClick={handleDelete}
+                variant="destructive"
+                className="w-full mt-2 uppercase text-[12px] font-semibold"
+              >
+                <Icon
+                  icon="ic:twotone-delete"
+                  width="20"
+                  height="20"
+                />
+                Eliminar
+              </Button>
             </div>
 
             {marker?.status === MARKER_STATUS.PENDIENTE && (
