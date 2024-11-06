@@ -9,12 +9,13 @@ import { toast } from 'sonner';
 
 import { WarningDialog } from '@/components/dialogs/WarningDialog';
 import { InfoDialog } from '@/components/dialogs/InfoDialog';
-import { DATE_OPTIONS, INITIAL_VIEW_STATE, TOAST_ERROR_CLASSNAMES } from '@/lib/enums';
+import { INITIAL_VIEW_STATE } from '@/lib/enums';
 import { CreateDialog } from '@/components/dialogs/CreateDialog';
 import { InfoMarkerDialog } from '@/components/dialogs/InfoMarkerDialog';
 import { useMapLayers } from '@/hooks/useMapLayers';
 import { Legend } from '@/components/map/legend';
 import { ActionButtons } from '@/components/map/action-buttons';
+import { fetcher } from '@/lib/utils';
 
 export default function Home() {
   const [viewState, setViewState] = useState(INITIAL_VIEW_STATE);
@@ -55,129 +56,55 @@ export default function Home() {
   };
 
   const handleAddMarker = (body) => {
-    fetch('/api/markers', {
+    fetcher('/api/markers', {
       method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-      },
+      headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ ...newMarker, ...body }),
-    })
-      .then((response) => response.json())
+    }, 'Marcador creado correctamente')
       .then((data) => {
-        setMarkers((prevMarkers) => [...prevMarkers, data]); // Actualiza los marcadores en el estado
+        setMarkers((prevMarkers) => [...prevMarkers, data]);
         setNewMarker({
           type: 'WATER', description: '', longitude: 0, latitude: 0,
-        }); // Reinicia el nuevo marcador
-        setModalOpen(false);
-        toast.success('Marcador creado correctamente', {
-          description: new Intl.DateTimeFormat('es-ES', DATE_OPTIONS).format(new Date()),
-          duration: 2000,
         });
-      })
-      .catch((error) => toast.error(`Error adding marker: ${error}`, {
-        duration: 2000,
-        classNames: TOAST_ERROR_CLASSNAMES,
-      }));
+        setModalOpen(false);
+      });
   };
 
-  const handleAssignMarker = (body) => {
-    fetch(`/api/markers/assign/${selectedMarker.id}`, {
+  const handleAssignMarker = (body, cb = undefined) => {
+    fetcher(`/api/markers/assign/${selectedMarker.id}`, {
       method: 'PUT',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify({ id: selectedMarker.id, ...body }), // Envía el índice o ID
-    })
-      .then((response) => {
-        if (!response.ok) {
-          return response.json().then((errorData) => {
-            throw new Error(errorData.message || 'Forbidden'); // Use the message from the response or a default one
-          });
-        }
-        return response.json(); // Only parse the response if it's OK
-      })
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ id: selectedMarker.id, ...body }),
+    }, 'Marcador asignado correctamente')
       .then((data) => {
-        // setModalOpen(false);
         setSelectedMarker(data);
         fetchMarkers();
-
-        toast.success('Marcador asignado correctamente', {
-          description: new Intl.DateTimeFormat('es-ES', DATE_OPTIONS).format(new Date()),
-          duration: 2000,
-        });
-      })
-      .catch((error) => {
-        toast.error(`${error}`, {
-          duration: 2000,
-          classNames: TOAST_ERROR_CLASSNAMES,
-        });
+        if (cb) cb();
       });
   };
 
   const handleCompleteMarker = (body) => {
-    fetch(`/api/markers/complete/${selectedMarker.id}`, {
+    fetcher(`/api/markers/complete/${selectedMarker.id}`, {
       method: 'PUT',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify({ id: selectedMarker.id, ...body }), // Envía el índice o ID
-    })
-      .then((response) => {
-        if (!response.ok) {
-          return response.json().then((errorData) => {
-            throw new Error(errorData.message || 'Forbidden'); // Use the message from the response or a default one
-          });
-        }
-        return response.json(); // Only parse the response if it's OK
-      })
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ id: selectedMarker.id, ...body }),
+    }, 'Marcador completado correctamente')
       .then(() => {
-        // setModalOpen(false);
-        // setSelectedMarker(null);
         fetchMarkers();
-
-        toast.success('Marcador completado correctamente', {
-          description: new Intl.DateTimeFormat('es-ES', DATE_OPTIONS).format(new Date()),
-          duration: 2000,
-        });
-      })
-      .catch((error) => toast.error(`${error}`, {
-        duration: 2000,
-        classNames: TOAST_ERROR_CLASSNAMES,
-      }));
+      });
   };
 
   const handleDeleteMarker = (code) => {
-    fetch('/api/markers', {
+    fetcher('/api/markers', {
       method: 'DELETE',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify({ id: selectedMarker.id, code }), // Send the ID of the marker
-    })
-      .then((response) => {
-        if (!response.ok) {
-          return response.json().then((errorData) => {
-            throw new Error(errorData.message || 'Forbidden'); // Use the message from the response or a default one
-          });
-        }
-        return response.json(); // Only parse the response if it's OK
-      })
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ id: selectedMarker.id, code }),
+    }, 'Marcador borrado correctamente')
       .then(() => {
-        const updatedMarkers = markers.filter((marker) => marker !== selectedMarker);
-        setMarkers(updatedMarkers);
-
+        setMarkers((prevMarkers) => prevMarkers.filter((marker) => marker !== selectedMarker));
         setModalOpen(false);
         setSelectedMarker(null);
-
-        toast.success('Marcador borrado correctamente', {
-          description: new Intl.DateTimeFormat('es-ES', DATE_OPTIONS).format(new Date()),
-          duration: 2000,
-        });
-      })
-      .catch((error) => toast.error(`Error borrando marcador: ${error.message}`, {
-        duration: 2000,
-        classNames: TOAST_ERROR_CLASSNAMES,
-      })); // Use error.message for user-friendly output
+      });
   };
 
   const getLocation = () => {
@@ -212,7 +139,16 @@ export default function Home() {
   }, []);
 
   useEffect(() => {
-    if (!isModalOpen) setSelectedMarker(null);
+    if (!isModalOpen) {
+      setSelectedMarker(null);
+      setNewMarker({
+        type: 'WATER',
+        description: '',
+        longitude: 0,
+        latitude: 0,
+        telf: '',
+      });
+    }
   }, [isModalOpen]);
 
   return (

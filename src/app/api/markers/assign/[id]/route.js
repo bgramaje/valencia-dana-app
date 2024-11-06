@@ -1,17 +1,40 @@
-import { supabase } from '../../route';
+import { hasAnyAttribute } from '@/lib/utils';
+import { markersTable, supabase } from '../../route';
 
 export async function PUT(request, { params }) {
   const { id } = await params; // Get the `id` from the URL params
   const { code, ...rest } = await request.json(); // Get the `status` from the request body
 
-  // Validate if id and status are provided
   if (!id) {
     return new Response(JSON.stringify({ error: 'ID is required' }), { status: 400 });
   }
 
-  // Update the `status` field of the specified marker
+  const { data: markerDB, error: errorSelect } = await supabase
+    .from(markersTable)
+    .select('*')
+    .eq('id', id)
+    .single();
+
+  if (errorSelect) {
+    return new Response(
+      JSON.stringify(
+        { error: errorSelect.message },
+      ),
+      { status: 500 },
+    );
+  }
+
+  if (hasAnyAttribute(markerDB, ['helper_name', 'helper_password', 'helper_telf'])) {
+    return new Response(
+      JSON.stringify(
+        { error: 'El marcador ya ha sido asignado a alguien. Refresca' },
+      ),
+      { status: 204 },
+    );
+  }
+
   const { data, error } = await supabase
-    .from('markers')
+    .from(markersTable)
     .update(rest)
     .eq('id', id)
     .select();

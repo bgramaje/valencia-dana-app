@@ -38,3 +38,9 @@ export const TOAST_ERROR_CLASSNAMES = {
   icon: 'text-red-400',
   closeButton: 'bg-lime-400',
 };
+
+export const MARKER_STATUS = {
+  COMPLETADO: 'completado',
+  ASIGNADO: 'asignado',
+  PENDIENTE: 'pendiente',
+};

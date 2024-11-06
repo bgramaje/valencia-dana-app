@@ -1,7 +1,7 @@
 // Add a new marker to Supabase
 
 import { isEqual } from 'lodash';
-import { supabase } from '../route';
+import { markersTable, supabase } from '../route';
 
 export async function GET(request, { params }) {
   const { id } = await params; // Get the `id` from the URL params
@@ -12,7 +12,7 @@ export async function GET(request, { params }) {
 
   // Update the `status` field of the specified marker
   const { data: marker, error } = await supabase
-    .from('markers')
+    .from(markersTable)
     .select(
       'id, created_at, type, telf, description, longitude, latitude, status, img, policy_accepted, data_usage, helper_telf, helper_name',
     )
@@ -37,7 +37,7 @@ export async function PUT(request, { params }) {
 
   // Update the `status` field of the specified marker
   const { data: marker, error: errorSelect } = await supabase
-    .from('markers')
+    .from(markersTable)
     .select('*')
     .eq('id', id) // Reemplaza "id" con el valor del ID que buscas
     .single(); // .single() devuelve un solo objeto en lugar de un array
@@ -52,7 +52,7 @@ export async function PUT(request, { params }) {
 
   // Update the `status` field of the specified marker
   const { data, error } = await supabase
-    .from('markers')
+    .from(markersTable)
     .update(rest)
     .eq('id', id)
     .select();

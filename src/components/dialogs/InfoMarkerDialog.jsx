@@ -6,7 +6,7 @@ import Image from 'next/image';
 import { Icon } from '@iconify/react';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
-import { ASSISTANCE_TYPES, DATE_OPTIONS } from '@/lib/enums';
+import { ASSISTANCE_TYPES, DATE_OPTIONS, MARKER_STATUS } from '@/lib/enums';
 import { getAddress, getGoogleMapsUrl } from '@/lib/getAdress';
 import {
   Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription,
@@ -16,6 +16,7 @@ import { isEmpty } from 'lodash';
 import { CodeCrudDialog } from './code/CodeCrudDialog';
 import { Alert, AlertDescription, AlertTitle } from '../ui/alert';
 import { HelperDialog } from './HelperDialog';
+import { MarkerBadge } from '../custom/marker-badge';
 
 export function InfoMarkerDialog({
   open, close, selectedMarker, handleDeleteMarker, handleAssignMarker, handleCompleteMarker,
@@ -57,6 +58,13 @@ export function InfoMarkerDialog({
   const handleComplete = () => setShowCompleteDialog(true);
   const handleHelper = () => setShowHelperDialog(true);
 
+  const handleWhatsapp = () => {
+    // Redirige a WhatsApp con el número proporcionado
+
+    const whatsappUrl = `https://wa.me/${marker.telf.replace('+', '')}`;
+    window.open(whatsappUrl, '_blank');
+  };
+
   if (loading || marker === null || marker === undefined) {
     return (
       <Dialog open={open} onOpenChange={close}>
@@ -66,10 +74,10 @@ export function InfoMarkerDialog({
               Información
             </DialogTitle>
             <DialogDescription className="text-center font-medium text-[12px] p-0 m-0 hidden">
-              Informacion de la ayuda solicitada
+              -
             </DialogDescription>
           </DialogHeader>
-          <div className="w-full flex items-center justify-center h-[150px]">
+          <div className="w-full flex items-center justify-center h-[170px]">
             <Icon
               icon="line-md:loading-loop"
               width="30"
@@ -88,27 +96,7 @@ export function InfoMarkerDialog({
           <DialogHeader className="pt-4">
             <DialogTitle className="uppercase font-bold text-[13px] flex items-center gap-1 justify-center">
               Información
-              {marker.status === 'completado' && (
-                <Badge className="bg-green-500 text-green-900 animate-pulse hover:bg-green-500 hover:cursor-pointer">
-                  <p className="uppercase text-[11px]">
-                    {marker?.status}
-                  </p>
-                </Badge>
-              )}
-              {marker.status === 'pendiente' && (
-                <Badge variant="outline" className="animate-pulse bg-red-500 text-red-900">
-                  <p className="uppercase text-[11px]">
-                    {marker?.status}
-                  </p>
-                </Badge>
-              )}
-              {marker.status === 'asignado' && (
-                <Badge variant="outline" className="animate-pulse bg-orange-500 text-orange-900">
-                  <p className="uppercase text-[11px]">
-                    {marker?.status}
-                  </p>
-                </Badge>
-              )}
+              <MarkerBadge marker={marker} />
             </DialogTitle>
             <DialogDescription className="text-center font-medium text-[12px] p-0 m-0 hidden">
               -
@@ -132,7 +120,7 @@ export function InfoMarkerDialog({
                 )}
               </AlertDescription>
             </Alert>
-            {marker?.status === 'asignado' && (
+            {marker?.status === MARKER_STATUS.ASIGNADO && (
               <Alert className="text-xs border-orange-500 bg-orange-100 animate-pulse">
                 <AlertTitle className="uppercase text-[11px] m-0 p-0 font-medium">
                   Voluntario Asignado
@@ -213,7 +201,7 @@ export function InfoMarkerDialog({
             )}
 
             <div className="flex gap-1">
-              {marker?.status === 'asignado' && (
+              {marker?.status === MARKER_STATUS.ASIGNADO && (
                 <Button
                   onClick={handleComplete}
                   className="w-full mt-2 bg-green-500 uppercase text-[12px] font-semibold"
@@ -226,7 +214,7 @@ export function InfoMarkerDialog({
                   Completar
                 </Button>
               )}
-              {marker?.status === 'completado' && (
+              {marker?.status === MARKER_STATUS.COMPLETADO && (
                 <Button
                   onClick={handleDelete}
                   variant="destructive"
@@ -241,7 +229,8 @@ export function InfoMarkerDialog({
                 </Button>
               )}
             </div>
-            {marker?.status === 'pendiente' && (
+
+            {marker?.status === MARKER_STATUS.PENDIENTE && (
               <Button
                 onClick={handleHelper}
                 className="w-full bg-orange-500 uppercase text-[12px] font-semibold"
@@ -254,19 +243,33 @@ export function InfoMarkerDialog({
                 Ofrecerme voluntario
               </Button>
             )}
+
             {marker?.telf && (
-              <a href={`tel:${marker?.telf}`}>
+              <div className="flex gap-2">
+                <a href={`tel:${marker?.telf}`} className="w-full">
+                  <Button
+                    className="w-full bg-blue-500 uppercase text-[12px] font-semibold grow-1"
+                  >
+                    <Icon
+                      icon="solar:phone-calling-bold"
+                      width="20"
+                      height="20"
+                    />
+                    Llamar
+                  </Button>
+                </a>
                 <Button
-                  className="w-full bg-blue-500 uppercase text-[12px] font-semibold"
+                  onClick={handleWhatsapp}
+                  className="w-full bg-green-700 uppercase text-[12px] font-semibold grow-1"
                 >
                   <Icon
-                    icon="solar:phone-calling-bold"
+                    icon="ic:outline-whatsapp"
                     width="20"
                     height="20"
                   />
-                  Llamar afectado
+                  Hablar
                 </Button>
-              </a>
+              </div>
             )}
 
             <Button
@@ -290,9 +293,7 @@ export function InfoMarkerDialog({
         selectedMarker={marker}
         callback={(body) => {
           setShowHelperDialog(false);
-          handleAssignMarker(body);
-          // setLoading(true);
-          fetchMarker(selectedMarker.id);
+          handleAssignMarker(body, () => fetchMarker(selectedMarker.id));
         }}
       />
 
@@ -305,7 +306,10 @@ export function InfoMarkerDialog({
           close(false);
         }}
       >
-        <Button variant="destructive" className="w-full mt-2 uppercase text-[12px] font-semibold">
+        <Button
+          variant="destructive"
+          className="w-full mt-2 uppercase text-[12px] font-semibold"
+        >
           <Icon
             icon="ic:twotone-delete"
             width="20"
