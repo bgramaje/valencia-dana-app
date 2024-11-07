@@ -264,53 +264,33 @@ export function InfoMarkerDialog({
 
             {marker?.telf && (
               <div className="flex gap-1">
-                {marker?.status === MARKER_STATUS.ASIGNADO && (
-                  <a href={`tel:${marker?.telf}`} className="flex-1">
-                    <Button
-                      className="w-full bg-blue-500 uppercase text-[12px] font-semibold"
-                    >
-                      <Icon
-                        icon="solar:phone-calling-bold"
-                        width="20"
-                        height="20"
-                      />
-                      Llamar
-                    </Button>
-                  </a>
-                )}
+                <a href={`tel:${marker?.telf}`} className="flex-1">
+                  <Button
+                    className="w-full bg-blue-500 uppercase text-[12px] font-semibold"
+                  >
+                    <Icon
+                      icon="solar:phone-calling-bold"
+                      width="20"
+                      height="20"
+                    />
+                    Llamar
+                  </Button>
+                </a>
                 <a
                   href={`
                     https://wa.me/${marker.telf.replace('+', '')}?text=${encodeURIComponent(`
-                      📅 Fecha de solicitud: ${formatDate(marker.created_at)}
-                      📝 Descripción: ${marker.description || 'No especificada'}
-                      📍 Ubicación: Latitud ${marker.latitude}, Longitud ${marker.longitude}
+                      📅 Fecha de solicitud: ${formatDate(marker.created_at)}%0A
+                      📝 Descripción: ${marker.description || 'No especificada'}%0A
+                      📍 Ubicación: Latitud ${marker.latitude}, Longitud ${marker.longitude}%0A
                       🗺️ Ver en Google Maps: https://www.google.com/maps?q=${marker.latitude},${marker.longitude}
                     `)}
-                    `}
+                  `}
                   target="_blank"
                   className="flex-1"
                   rel="noreferrer"
                 >
                   <Button className="w-full bg-green-700 uppercase text-[12px] font-semibold flex-1">
                     <Icon icon="ic:outline-whatsapp" width="20" height="20" />
-                    Hablar
-                  </Button>
-                </a>
-
-                <a
-                  href={`https://wa.me/${marker.telf.replace('+', '')}`}
-                  target="_blank"
-                  className="flex-1"
-                  rel="noreferrer"
-                >
-                  <Button
-                    className="w-full bg-green-700 uppercase text-[12px] font-semibold flex-1"
-                  >
-                    <Icon
-                      icon="ic:outline-whatsapp"
-                      width="20"
-                      height="20"
-                    />
                     Hablar
                   </Button>
                 </a>
