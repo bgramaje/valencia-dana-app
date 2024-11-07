@@ -47,7 +47,7 @@ function LayersFilter({ activeLayers, setActiveLayers }) {
           Seleccionar Capas
         </DialogTitle>
         <DialogDescription className="text-center font-medium text-[12px]">
-          Marca lo que quieres ver en el mapa
+          Activa los tipos de marcadores que ver.
         </DialogDescription>
         <div className="flex space-x-2 mt-2">
           {Object.keys(MARKER_LAYERS).map((key) => {
@@ -57,11 +57,11 @@ function LayersFilter({ activeLayers, setActiveLayers }) {
                 key={key}
                 onClick={() => handleLayerToggle(key)}
                 className={`flex flex-col items-center justify-center cursor-pointer p-4 w-24 h-24 rounded-2xl 
-                    uppercase font-semibold ${activeLayers[key] ? 'bg-blue-500 text-white animate-pulse' : 'bg-gray-200'}
+                    uppercase font-semibold ring-2 ring-blue-900 ${activeLayers[key] ? 'bg-blue-500 text-blue-900' : 'bg-gray-100'}
                 `}
               >
-                <Icon icon={icon} width={30} height={30} />
-                <span className="mt-2 text-[11px]">{label}</span>
+                <Icon icon={icon} width={34} height={34} />
+                <span className="mt-1 text-[11px]">{label}</span>
               </div>
             );
           })}
