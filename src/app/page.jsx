@@ -16,9 +16,16 @@ import { useMapLayers } from '@/hooks/useMapLayers';
 import { Legend } from '@/components/map/legend';
 import { ActionButtons } from '@/components/map/action-buttons';
 import { fetcher } from '@/lib/utils';
+import LayersFilter from '@/components/map/layers-filter';
 
 export default function Home() {
   const [viewState, setViewState] = useState(INITIAL_VIEW_STATE);
+
+  const [activeLayers, setActiveLayers] = useState({
+    AFECTADO: true,
+    VOLUNTARIO: true,
+    PUNTO: true,
+  });
 
   const [newMarker, setNewMarker] = useState({
     type: 'WATER',
@@ -35,8 +42,17 @@ export default function Home() {
   const [userLocation, setUserLocation] = useState(null);
 
   const {
-    markers, setMarkers, layers, fetchMarkers,
-  } = useMapLayers(userLocation, setSelectedMarker, setModalOpen, viewState);
+    markers,
+    setMarkers,
+    layers,
+    fetchMarkers,
+  } = useMapLayers(
+    userLocation,
+    setSelectedMarker,
+    setModalOpen,
+    viewState,
+    activeLayers,
+  );
 
   const closeWarningModal = () => {
     setWarningModalOpen(false);
@@ -170,13 +186,20 @@ export default function Home() {
         />
       </DeckGL>
 
-      <div className="flex absolute top-10 left-1/2 transform -translate-x-1/2 -translate-y-1/2 items-center gap-4">
+      <div
+        className="w-full px-3 flex absolute top-10 left-1/2 transform -translate-x-1/2 -translate-y-1/2 items-center gap-4 justify-between"
+      >
+        <div className="w-[36px]" />
         <div className="bg-white p-2 py-2 m-0 rounded-xl shadow flex gap-1 flex-wrap justify-between">
           <span className="font-semibold text-[13px] uppercase leading-tight text-blue-500 text-center font-bold">
             Total Marcadores:
             {markers.length}
           </span>
         </div>
+        <LayersFilter
+          activeLayers={activeLayers}
+          setActiveLayers={setActiveLayers}
+        />
       </div>
 
       {isSelectingLocation && (

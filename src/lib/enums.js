@@ -44,3 +44,18 @@ export const MARKER_STATUS = {
   ASIGNADO: 'asignado',
   PENDIENTE: 'pendiente',
 };
+
+export const MARKER_LAYERS = {
+  AFECTADO: {
+    label: 'afectados',
+    icon: 'icon-park-outline:love-and-help',
+  },
+  VOLUNTARIO: {
+    label: 'voluntarios',
+    icon: 'material-symbols:volunteer-activism-rounded',
+  },
+  PUNTO: {
+    label: 'puntos',
+    icon: 'ph:package',
+  },
+};

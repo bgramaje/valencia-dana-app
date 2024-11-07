@@ -8,7 +8,17 @@ import { toast } from 'sonner';
 import { isEmpty } from 'lodash';
 
 const ZOOM_LIMIT = 12;
-export const useMapLayers = (userLocation, setSelectedMarker, setModalOpen, viewState) => {
+export const useMapLayers = (
+  userLocation,
+  setSelectedMarker,
+  setModalOpen,
+  viewState,
+  activeLayers = {
+    AFECTADO: true,
+    VOLUNTARIO: true,
+    PUNTO: true,
+  },
+) => {
   const { zoom } = viewState;
   const [markers, setMarkers] = useState([]);
   const [pulseRadius, setPulseRadius] = useState(100);
@@ -47,12 +57,8 @@ export const useMapLayers = (userLocation, setSelectedMarker, setModalOpen, view
       .catch((error) => toast.error(`Error loading markers: ${error}`));
   };
 
-  // Llama a fetchMarkers cuando el componente se monta
-  useEffect(() => {
-    fetchMarkers();
-  }, []);
+  useEffect(() => fetchMarkers(), []);
 
-  // Configura el efecto de pulso en userLocation
   useEffect(() => {
     const interval = setInterval(() => {
       const time = Date.now() * 0.005;
@@ -86,7 +92,11 @@ export const useMapLayers = (userLocation, setSelectedMarker, setModalOpen, view
             setModalOpen(true);
           }
         },
-        visible: zoom >= ZOOM_LIMIT, // Mostrar los marcadores individuales cuando el zoom es mayor o igual a 10
+        visible: (activeLayers?.AFECTADO && zoom >= ZOOM_LIMIT), // Mostrar los marcadores individuales cuando el zoom es mayor o igual a 10
+        updateTriggers: {
+          getColor: [markers],
+          visible: [zoom, activeLayers],
+        },
       }),
       new IconLayer({
         id: 'icon-layer',
@@ -105,7 +115,7 @@ export const useMapLayers = (userLocation, setSelectedMarker, setModalOpen, view
         parameters: { depthTest: false },
         getAngle: 0,
         getSize: 20,
-        visible: zoom >= ZOOM_LIMIT, // Mostrar los iconos cuando el zoom es mayor o igual a 10
+        visible: (activeLayers?.AFECTADO && zoom >= ZOOM_LIMIT), // Mostrar los marcadores individuales cuando el zoom es mayor o igual a 10
         onClick: ({ object }) => {
           if (object) {
             setSelectedMarker(object);
@@ -118,7 +128,7 @@ export const useMapLayers = (userLocation, setSelectedMarker, setModalOpen, view
         },
       }),
     ],
-    [markers, setSelectedMarker, setModalOpen, zoom],
+    [markers, setSelectedMarker, setModalOpen, zoom, activeLayers],
   );
 
   const centroidLayers = useMemo(
@@ -135,7 +145,10 @@ export const useMapLayers = (userLocation, setSelectedMarker, setModalOpen, view
         getPosition: (d) => [d.longitude, d.latitude],
         getRadius: 6, // Slightly larger than the inner fill layer
         getFillColor: [143, 88, 37], // Border color (e.g., black)
-        visible: zoom < ZOOM_LIMIT,
+        visible: (activeLayers?.AFECTADO && zoom < ZOOM_LIMIT),
+        updateTriggers: {
+          visible: [zoom, activeLayers],
+        },
       }),
       new ScatterplotLayer({
         id: 'scatter-plot-centroid',
@@ -149,9 +162,9 @@ export const useMapLayers = (userLocation, setSelectedMarker, setModalOpen, view
         getPosition: (d) => [d.longitude, d.latitude],
         getRadius: 5,
         getFillColor: [255, 168, 87],
-        visible: zoom < ZOOM_LIMIT,
+        visible: (activeLayers?.AFECTADO && zoom < ZOOM_LIMIT),
         updateTriggers: {
-          visible: [zoom],
+          visible: [zoom, activeLayers],
         },
       }),
       new TextLayer({
@@ -166,14 +179,14 @@ export const useMapLayers = (userLocation, setSelectedMarker, setModalOpen, view
         getColor: [0, 0, 0, 255], // Color of the text
         getTextAnchor: 'middle',
         getAlignmentBaseline: 'center',
-        visible: zoom < ZOOM_LIMIT,
+        visible: (activeLayers?.AFECTADO && zoom < ZOOM_LIMIT),
         updateTriggers: {
-          visible: [zoom],
+          visible: [zoom, activeLayers],
         },
       }),
 
     ],
-    [cityCenters, zoom],
+    [cityCenters, zoom, activeLayers],
   );
 
   // Capa con efecto de pulso para userLocation
