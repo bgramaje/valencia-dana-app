@@ -14,7 +14,7 @@ export async function getAddress(lat, lon) {
     } = data?.address ?? {
       road: '', city: '', town: '', village: '',
     };
-    const calle = `${road ?? ''}, ${houseNumber ?? ''}` || 'Calle no disponible';
+    const calle = `${road ?? ''} ${houseNumber ?? ''}` || 'Calle no disponible';
     const poblacion = city || town || village || 'Población no disponible';
     const direccionCompleta = data.display_name;
 

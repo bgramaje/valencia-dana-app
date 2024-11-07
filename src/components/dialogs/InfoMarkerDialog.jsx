@@ -5,12 +5,11 @@ import { isEmpty } from 'lodash';
 
 import Image from 'next/image';
 import { Icon } from '@iconify/react';
-import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { getAddress, getGoogleMapsUrl } from '@/lib/getAdress';
 import { formatDate } from '@/lib/date';
 
-import { ASSISTANCE_TYPES, DATE_OPTIONS, MARKER_STATUS } from '@/lib/enums';
+import { ASSISTANCE_TYPES, MARKER_STATUS } from '@/lib/enums';
 import {
   Accordion, AccordionContent, AccordionItem, AccordionTrigger,
 } from '@/components/ui/accordion';
@@ -23,6 +22,7 @@ import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
 import { HelperDialog } from './HelperDialog';
 import { MarkerBadge } from '../custom/marker-badge';
 import { CodeCrudDialog } from './code/CodeCrudDialog';
+import { Separator } from '../ui/separator';
 
 export function InfoMarkerDialog({
   open, close, selectedMarker, handleDeleteMarker, handleAssignMarker, handleCompleteMarker,
@@ -180,39 +180,57 @@ export function InfoMarkerDialog({
           )}
 
           <div className="p-4 pt-0 flex flex-col gap-1">
-            <div className="flex gap-1 items-center text-md font-medium">
-              <Badge className="w-[80px] bg-zinc-700">Tipo:</Badge>
+            <div className="flex gap-2 items-center text-md font-medium">
+              <div className="flex gap-1.5 bg-zinc-200 rounded-sm px-2 py-0.5 items-center w-[85px]">
+                <p className="text-[12px] font-regular">Necesita</p>
+              </div>
+              <Separator orientation="vertical" />
               <Icon
                 icon={ASSISTANCE_TYPES[marker?.type]?.icon}
                 width="20"
                 height="20"
               />
-              <p className="text-[14px] font-semibold">{ASSISTANCE_TYPES[marker?.type]?.label}</p>
+              <p className="text-[14px] font-semibold -ml-1">{ASSISTANCE_TYPES[marker?.type]?.label}</p>
             </div>
 
             <div className="text-[14px] font-semibold flex gap-2 items-center">
-              <Badge className="w-[80px] bg-zinc-700">Ayuda</Badge>
+              <div className="flex gap-1.5 bg-zinc-200 rounded-sm px-2 py-0.5 items-center w-[85px]">
+                <p className="text-[12px] font-regular">Descripción</p>
+              </div>
+              <Separator orientation="vertical" />
               <p className="w-[73%] max-h-[150px] overflow-y-auto text-justify">
                 {isEmpty(marker?.description) ? '-' : marker?.description}
               </p>
             </div>
-            <div className="text-[14px] font-semibold flex gap-2 items-center">
-              <Badge className="w-[80px] bg-zinc-700">Teléfono</Badge>
+            <div className="text-[14px] font-medium flex gap-2 items-center">
+              <div className="flex gap-1.5 bg-zinc-200 rounded-sm px-2 py-0.5 items-center w-[85px] ">
+                <p className="text-[12px] font-medium">Teléfono</p>
+              </div>
+              <Separator orientation="vertical" />
               {isEmpty(marker?.telf) ? '-' : marker?.telf}
             </div>
-            <div className="text-[14px] font-semibold flex gap-2 items-center">
-              <Badge className="w-[80px] bg-zinc-700">Creado</Badge>
-              {new Intl.DateTimeFormat('es-ES', DATE_OPTIONS).format(new Date(marker?.created_at))}
+            <div className="text-[14px] font-medium  flex gap-2 items-center">
+              <div className="flex gap-1.5 bg-zinc-200 rounded-sm px-2 py-0.5 items-center w-[85px] ">
+                <p className="text-[12px] font-medium">Creado</p>
+              </div>
+              <Separator orientation="vertical" />
+              {formatDate(marker?.created_at)}
             </div>
 
             {direccion?.calle && (
               <div className="flex flex-col gap-1">
-                <div className="text-[14px] font-semibold flex gap-2 items-center">
-                  <Badge className="w-[80px] bg-zinc-700">Calle</Badge>
+                <div className="text-[14px] font-medium flex gap-2 items-center">
+                  <div className="flex gap-1.5 bg-zinc-200 rounded-sm px-2 py-0.5 items-center w-[85px] ">
+                    <p className="text-[12px] font-medium">Calle</p>
+                  </div>
+                  <Separator orientation="vertical" />
                   {direccion?.calle}
                 </div>
-                <div className="text-[14px] font-semibold flex gap-2 items-center">
-                  <Badge className="w-[80px] bg-zinc-700">Población</Badge>
+                <div className="text-[14px] font-medium flex gap-2 items-center">
+                  <div className="flex gap-1.5 bg-zinc-200 rounded-sm px-2 py-0.5 items-center w-[85px] ">
+                    <p className="text-[12px] font-medium">Población</p>
+                  </div>
+                  <Separator orientation="vertical" />
                   {direccion?.poblacion}
                 </div>
               </div>

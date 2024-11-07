@@ -189,7 +189,18 @@ export default function Home() {
       <div
         className="w-full px-3 flex absolute top-10 left-1/2 transform -translate-x-1/2 -translate-y-1/2 items-center gap-4 justify-between"
       >
-        <div className="w-[36px]" />
+        <div className="block xl:hidden md:hidden">
+          <Link href="https://github.com/bgramaje" passHref target="_blank">
+            <Image
+              alt="github"
+              src="https://avatars.githubusercontent.com/u/56760866?s=400&u=85f1f7114a7c9f4afc1c63e3d06d35a7e204ce1a&v=4"
+              width={36}
+              height={36}
+              className="rounded-xl p-1 bg-white"
+            />
+          </Link>
+        </div>
+
         <div className="bg-white p-2 py-2 m-0 rounded-xl shadow flex gap-1 flex-wrap justify-between">
           <span className="font-semibold text-[13px] uppercase leading-tight text-blue-500 text-center font-bold">
             Total Marcadores:
@@ -252,7 +263,7 @@ export default function Home() {
           getLocation={getLocation}
           setIsInfoOpen={setIsInfoOpen}
         />
-        <Link href="https://github.com/bgramaje" passHref className="ml-1 hidden lg:block">
+        <Link target="_blank" href="https://github.com/bgramaje" passHref className="ml-1 hidden lg:block">
           <Image
             alt="github"
             src="https://avatars.githubusercontent.com/u/56760866?s=400&u=85f1f7114a7c9f4afc1c63e3d06d35a7e204ce1a&v=4"
