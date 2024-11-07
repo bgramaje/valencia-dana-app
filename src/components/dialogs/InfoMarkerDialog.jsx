@@ -297,7 +297,7 @@ export function InfoMarkerDialog({
                       https://wa.me/${marker.telf.replace('+', '')}?text=${
                     `📅 Fecha de solicitud: ${formatDate(marker.created_at)}%0A`
                         + `📝 Descripción: ${marker.description || 'No especificada'}%0A`
-                        + `📍 Ubicación: Latitud ${marker.latitude}, Longitud ${marker.longitude}%0A`
+                        + `📍 Ubicación: ${marker.city}%0A`
                         + `🗺️ Ver en Google Maps: ${encodeURIComponent(
                           `https://www.google.com/maps?q=${marker.latitude},${marker.longitude}`,
                         )}`}

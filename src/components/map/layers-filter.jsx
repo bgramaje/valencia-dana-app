@@ -34,11 +34,11 @@ function LayersFilter({ activeLayers, setActiveLayers }) {
           <Icon icon="solar:layers-bold-duotone" width={20} height={20} />
           {/* Badge con el número de capas activas */}
           {activeLayerCount > 0 && (
-          <span
-            className="absolute -top-2 -right-2 bg-blue-500 text-white text-[9px] rounded-full w-5 h-5 flex items-center justify-center"
-          >
-            {activeLayerCount}
-          </span>
+            <span
+              className="absolute -top-2 -right-2 bg-blue-500 text-white text-[9px] rounded-full w-5 h-5 flex items-center justify-center"
+            >
+                {activeLayerCount}
+            </span>
           )}
         </Button>
       </DialogTrigger>
