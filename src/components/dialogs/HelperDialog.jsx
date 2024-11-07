@@ -127,13 +127,18 @@ export function HelperDialog({
             <DialogTitle className="uppercase font-bold text-[14px] text-center">
               Asistencia para emergencia
             </DialogTitle>
-            <DialogDescription className="text-center font-medium text-[12px] max-h-[120px] overflow-y-auto">
-              Ingresa tus datos para ofrecer ayuda a
-              <br />
-              &quot;
-              {selectedMarker?.description ?? '-'}
-              &quot;
-            </DialogDescription>
+            <div className="text-center font-medium text-[12px] max-h-[120px] overflow-y-auto">
+              <DialogDescription className="text-[12px]">
+                Ingresa tus datos para ofrecer ayuda a:
+                <br />
+              </DialogDescription>
+              <p className="text-justify w-full font-medium">
+                &quot;
+                {selectedMarker?.description ?? '-'}
+                &quot;
+              </p>
+            </div>
+
           </DialogHeader>
 
           <div className="flex flex-col gap-2">

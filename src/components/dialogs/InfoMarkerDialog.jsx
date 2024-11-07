@@ -192,7 +192,7 @@ export function InfoMarkerDialog({
 
             <div className="text-[14px] font-semibold flex gap-2 items-center">
               <Badge className="w-[80px] bg-zinc-700">Ayuda</Badge>
-              <p className="w-[73%] max-h-[150px] overflow-y-auto">
+              <p className="w-[73%] max-h-[150px] overflow-y-auto text-justify">
                 {isEmpty(marker?.description) ? '-' : marker?.description}
               </p>
             </div>
