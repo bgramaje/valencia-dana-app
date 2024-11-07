@@ -186,6 +186,7 @@ export function CreateDialog({
       password: c,
       img: base64Image,
       telf: phoneNumber.number,
+      city: direccion?.poblacion ?? 'unknown',
     });
   };
 

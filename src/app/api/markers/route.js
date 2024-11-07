@@ -12,7 +12,7 @@ export const supabase = createClient(supabaseUrl, supabaseKey);
 export async function GET(request) {
   const { data: markers, error } = await supabase
     .from(markersTable)
-    .select('id, type, longitude, latitude, status');
+    .select('id, type, longitude, latitude, status, city');
 
   if (error) {
     return new Response(JSON.stringify({ error: error.message }), { status: 500 });

@@ -17,7 +17,7 @@ export const Legend = memo(() => (
             icon={value.icon}
             width="20"
             height="20"
-            style={{ color: 'white' }}
+            style={{ color: '#202020' }}
           />
         </div>
         <span className="font-semibold w-[100px] text-[13px] uppercase leading-tight">{value.label}</span>

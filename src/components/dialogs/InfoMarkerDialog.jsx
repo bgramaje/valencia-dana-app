@@ -1,22 +1,28 @@
 import React, { useEffect, useState } from 'react';
 
 import { toast } from 'sonner';
+import { isEmpty } from 'lodash';
 
 import Image from 'next/image';
 import { Icon } from '@iconify/react';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
-import { ASSISTANCE_TYPES, DATE_OPTIONS, MARKER_STATUS } from '@/lib/enums';
 import { getAddress, getGoogleMapsUrl } from '@/lib/getAdress';
+import { formatDate } from '@/lib/date';
+
+import { ASSISTANCE_TYPES, DATE_OPTIONS, MARKER_STATUS } from '@/lib/enums';
 import {
-  Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription,
+  Accordion, AccordionContent, AccordionItem, AccordionTrigger,
+} from '@/components/ui/accordion';
+import {
+  Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle,
 } from '@/components/ui/dialog';
 
-import { isEmpty } from 'lodash';
-import { CodeCrudDialog } from './code/CodeCrudDialog';
-import { Alert, AlertDescription, AlertTitle } from '../ui/alert';
+import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
+
 import { HelperDialog } from './HelperDialog';
 import { MarkerBadge } from '../custom/marker-badge';
+import { CodeCrudDialog } from './code/CodeCrudDialog';
 
 export function InfoMarkerDialog({
   open, close, selectedMarker, handleDeleteMarker, handleAssignMarker, handleCompleteMarker,
@@ -37,6 +43,8 @@ export function InfoMarkerDialog({
     fetch(`/api/markers/${id}`)
       .then((response) => response.json())
       .then((data) => {
+        console.log(data);
+
         setMarker(data);
         setLoading(false);
       })
@@ -57,13 +65,6 @@ export function InfoMarkerDialog({
   const handleDelete = () => setShowCodeDialog(true);
   const handleComplete = () => setShowCompleteDialog(true);
   const handleHelper = () => setShowHelperDialog(true);
-
-  const handleWhatsapp = () => {
-    // Redirige a WhatsApp con el número proporcionado
-
-    const whatsappUrl = `https://wa.me/${marker.telf.replace('+', '')}`;
-    window.open(whatsappUrl, '_blank');
-  };
 
   if (loading || marker === null || marker === undefined) {
     return (
@@ -94,7 +95,7 @@ export function InfoMarkerDialog({
       <Dialog open={open} onOpenChange={close}>
         <DialogContent className="max-w-[90%] w-fit min-w-[350px] rounded-xl p-0 overflow-y-auto max-h-[90%] gap-2">
           <DialogHeader className="pt-4">
-            <DialogTitle className="uppercase font-bold text-[13px] flex items-center gap-1 justify-center">
+            <DialogTitle className="uppercase font-bold text-[13px] flex items-center gap-1 justify-center flex-col gap-0">
               Información
               <MarkerBadge marker={marker} />
             </DialogTitle>
@@ -102,47 +103,66 @@ export function InfoMarkerDialog({
               -
             </DialogDescription>
           </DialogHeader>
-          <div className="px-4 py-0 m-0 text-xs flex flex-col gap-1">
-            <Alert className="text-xs">
-              <AlertDescription className="text-xs">
-                {marker?.policy_accepted && (
-                  <li>
-                    Tanto solicitante como voluntario han aceptado las
-                    {' '}
-                    <a href="/privacy-policy" className="text-blue-500 underline">políticas de privacidad</a>
-                  </li>
-                )}
-                {marker?.data_usage && (
-                  <li>
-                    Tanto solicitante como voluntario han aceptado  hacer visible la información introducida en el formulario.
-                    {' '}
-                  </li>
-                )}
-              </AlertDescription>
+          <div className="px-4 py-0 m-0 text-xs flex flex-col gap-1 ">
+            <Alert className="text-xs border-zinc-200 px-3 py-1.5">
+              <Accordion type="single" collapsible className="border-0">
+                <AccordionItem value="item-1" className="border-0">
+                  <AccordionTrigger className="p-0 border-0">
+                    <AlertTitle className="uppercase text-[11px] m-0 p-0 font-medium">
+                      POLÍTICAS DE PRIVACIDAD & AVISO LEGAL
+                    </AlertTitle>
+                  </AccordionTrigger>
+                  <AccordionContent className="p-0 border-0">
+                    <AlertDescription className="text-xs flex flex-col items-center gap-1 font-regular w-full">
+                      {marker?.policy_accepted && (
+                        <li>
+                          Tanto solicitante como voluntario han aceptado las
+                          {' '}
+                          <a href="/privacy-policy" className="text-blue-500 underline">políticas de privacidad</a>
+                        </li>
+                      )}
+                      {marker?.data_usage && (
+                        <li>
+                          Tanto solicitante como voluntario han aceptado  hacer visible la información introducida en el formulario.
+                          {' '}
+                        </li>
+                      )}
+                    </AlertDescription>
+                  </AccordionContent>
+                </AccordionItem>
+              </Accordion>
             </Alert>
             {marker?.status === MARKER_STATUS.ASIGNADO && (
-              <Alert className="text-xs border-orange-500 bg-orange-100 animate-pulse">
-                <AlertTitle className="uppercase text-[11px] m-0 p-0 font-medium">
-                  Voluntario Asignado
-                </AlertTitle>
-                <AlertDescription className="text-xs flex items-center gap-1 font-semibold">
-                  <Icon
-                    icon="akar-icons:person"
-                    width="16"
-                    height="16"
-                  />
-                  <p className="uppercase flex gap-1">
-                    <span>
-                      {marker?.helper_name}
-                    </span>
-                    <span>
-                      /
-                    </span>
-                    <span>
-                      {marker?.helper_telf}
-                    </span>
-                  </p>
-                </AlertDescription>
+              <Alert className="text-xs border-orange-500 bg-orange-100 animate-pulse px-3 py-1.5">
+                <Accordion type="multiple" className="border-0" defaultValue={['helper']}>
+                  <AccordionItem value="helper" className="border-0">
+                    <AccordionTrigger className="p-0 border-0">
+                      <AlertTitle className="uppercase text-[11px] m-0 p-0 font-medium">
+                        Voluntario Asignado
+                      </AlertTitle>
+                    </AccordionTrigger>
+                    <AccordionContent className="p-0 border-0">
+                      <AlertDescription className="text-xs flex items-center gap-1 font-semibold">
+                        <Icon
+                          icon="akar-icons:person"
+                          width="16"
+                          height="16"
+                        />
+                        <p className="uppercase flex gap-1">
+                          <span>
+                            {marker?.helper_name}
+                          </span>
+                          <span>
+                            /
+                          </span>
+                          <span>
+                            {marker?.helper_telf}
+                          </span>
+                        </p>
+                      </AlertDescription>
+                    </AccordionContent>
+                  </AccordionItem>
+                </Accordion>
               </Alert>
             )}
           </div>
@@ -200,11 +220,11 @@ export function InfoMarkerDialog({
               </div>
             )}
 
-            <div className="flex gap-1">
+            <div className="flex gap-1 mt-2">
               {marker?.status === MARKER_STATUS.ASIGNADO && (
                 <Button
                   onClick={handleComplete}
-                  className="w-full mt-2 bg-green-500 uppercase text-[12px] font-semibold"
+                  className="w-full bg-green-500 uppercase text-[12px] font-semibold"
                 >
                   <Icon
                     icon="line-md:circle-twotone-to-confirm-circle-twotone-transition"
@@ -217,7 +237,7 @@ export function InfoMarkerDialog({
               <Button
                 onClick={handleDelete}
                 variant="destructive"
-                className="w-full mt-2 uppercase text-[12px] font-semibold"
+                className="w-full uppercase text-[12px] font-semibold"
               >
                 <Icon
                   icon="ic:twotone-delete"
@@ -243,30 +263,57 @@ export function InfoMarkerDialog({
             )}
 
             {marker?.telf && (
-              <div className="flex gap-2">
-                <a href={`tel:${marker?.telf}`} className="w-full">
+              <div className="flex gap-1">
+                {marker?.status === MARKER_STATUS.ASIGNADO && (
+                  <a href={`tel:${marker?.telf}`} className="flex-1">
+                    <Button
+                      className="w-full bg-blue-500 uppercase text-[12px] font-semibold"
+                    >
+                      <Icon
+                        icon="solar:phone-calling-bold"
+                        width="20"
+                        height="20"
+                      />
+                      Llamar
+                    </Button>
+                  </a>
+                )}
+                <a
+                  href={`
+                    https://wa.me/${marker.telf.replace('+', '')}?text=${encodeURIComponent(`
+                      📅 Fecha de solicitud: ${formatDate(marker.created_at)}
+                      📝 Descripción: ${marker.description || 'No especificada'}
+                      📍 Ubicación: Latitud ${marker.latitude}, Longitud ${marker.longitude}
+                      🗺️ Ver en Google Maps: https://www.google.com/maps?q=${marker.latitude},${marker.longitude}
+                    `)}
+                    `}
+                  target="_blank"
+                  className="flex-1"
+                  rel="noreferrer"
+                >
+                  <Button className="w-full bg-green-700 uppercase text-[12px] font-semibold flex-1">
+                    <Icon icon="ic:outline-whatsapp" width="20" height="20" />
+                    Hablar
+                  </Button>
+                </a>
+
+                <a
+                  href={`https://wa.me/${marker.telf.replace('+', '')}`}
+                  target="_blank"
+                  className="flex-1"
+                  rel="noreferrer"
+                >
                   <Button
-                    className="w-full bg-blue-500 uppercase text-[12px] font-semibold grow-1"
+                    className="w-full bg-green-700 uppercase text-[12px] font-semibold flex-1"
                   >
                     <Icon
-                      icon="solar:phone-calling-bold"
+                      icon="ic:outline-whatsapp"
                       width="20"
                       height="20"
                     />
-                    Llamar
+                    Hablar
                   </Button>
                 </a>
-                <Button
-                  onClick={handleWhatsapp}
-                  className="w-full bg-green-700 uppercase text-[12px] font-semibold grow-1"
-                >
-                  <Icon
-                    icon="ic:outline-whatsapp"
-                    width="20"
-                    height="20"
-                  />
-                  Hablar
-                </Button>
               </div>
             )}
 

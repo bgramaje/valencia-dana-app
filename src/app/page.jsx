@@ -36,7 +36,7 @@ export default function Home() {
 
   const {
     markers, setMarkers, layers, fetchMarkers,
-  } = useMapLayers(userLocation, setSelectedMarker, setModalOpen);
+  } = useMapLayers(userLocation, setSelectedMarker, setModalOpen, viewState);
 
   const closeWarningModal = () => {
     setWarningModalOpen(false);
