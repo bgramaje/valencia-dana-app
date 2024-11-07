@@ -43,8 +43,6 @@ export function InfoMarkerDialog({
     fetch(`/api/markers/${id}`)
       .then((response) => response.json())
       .then((data) => {
-        console.log(data);
-
         setMarker(data);
         setLoading(false);
       })
