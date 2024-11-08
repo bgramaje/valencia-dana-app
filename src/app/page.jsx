@@ -9,7 +9,7 @@ import { toast } from 'sonner';
 
 import { WarningDialog } from '@/components/dialogs/WarningDialog';
 import { InfoDialog } from '@/components/dialogs/InfoDialog';
-import { INITIAL_VIEW_STATE } from '@/lib/enums';
+import { INITIAL_VIEW_STATE, MARKER_STATUS } from '@/lib/enums';
 import { CreateDialog } from '@/components/dialogs/CreateDialog';
 import { InfoMarkerDialog } from '@/components/dialogs/InfoMarkerDialog';
 import { useMapLayers } from '@/hooks/useMapLayers';
@@ -203,7 +203,12 @@ export default function Home() {
 
         <div className="bg-white p-2 py-2 m-0 rounded-xl shadow flex gap-1 flex-wrap justify-between">
           <span className="font-semibold text-[13px] uppercase leading-tight text-blue-500 text-center font-bold">
-            Total Marcadores:
+            Marcadores:
+            {' '}
+            {markers.filter((m) => m.status !== MARKER_STATUS.COMPLETADO).length}
+            {' '}
+            /
+            {' '}
             {markers.length}
           </span>
         </div>

@@ -1,5 +1,5 @@
 /* eslint-disable no-param-reassign */
-import { ASSISTANCE_TYPES } from '@/lib/enums';
+import { ASSISTANCE_TYPES, MARKER_STATUS } from '@/lib/enums';
 import { ScatterplotLayer, IconLayer, TextLayer } from '@deck.gl/layers';
 import { useState, useEffect, useMemo } from 'react';
 import * as turf from '@turf/turf';
@@ -44,7 +44,7 @@ export const useMapLayers = (
         type: cityMarkers[0].type,
         longitude: center.geometry.coordinates[0],
         latitude: center.geometry.coordinates[1],
-        count: cityMarkers.length,
+        count: cityMarkers.filter((m) => m.status !== MARKER_STATUS.COMPLETADO).length,
       };
     });
   }, [markers]);

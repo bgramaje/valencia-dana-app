@@ -9,7 +9,7 @@ import {
 export function WarningDialog({ isWarningModalOpen, closeWarningModal }) {
   return (
     <Dialog open={isWarningModalOpen} onOpenChange={closeWarningModal}>
-      <DialogContent>
+      <DialogContent className="max-w-[90%] w-fit min-w-[350px] rounded-xl overflow-y-auto max-h-[90%] gap-2">
         <DialogHeader className="flex-row gap-1 items-center m-0">
           <Icon
             icon="ph:seal-warning-duotone"

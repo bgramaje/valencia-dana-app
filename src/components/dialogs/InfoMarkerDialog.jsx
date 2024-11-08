@@ -114,15 +114,20 @@ export function InfoMarkerDialog({
                     <AlertDescription className="text-xs flex flex-col items-center gap-1 font-regular w-full">
                       {marker?.policy_accepted && (
                         <li>
-                          Tanto solicitante como voluntario han aceptado las
+                          {marker?.helper_name
+                            ? 'Tanto solicitante como voluntario han aceptado las'
+                            : 'El solicitante ha aceptado las'}
                           {' '}
                           <a href="/privacy-policy" className="text-blue-500 underline">políticas de privacidad</a>
                         </li>
                       )}
                       {marker?.data_usage && (
                         <li>
-                          Tanto solicitante como voluntario han aceptado  hacer visible la información introducida en el formulario.
+                          {marker?.helper_name
+                            ? 'Tanto solicitante como voluntario han aceptado'
+                            : 'El solicitante ha aceptado'}
                           {' '}
+                          hacer visible la información introducida en el formulario.
                         </li>
                       )}
                     </AlertDescription>
@@ -207,7 +212,7 @@ export function InfoMarkerDialog({
                 <p className="text-[12px] font-medium">Teléfono</p>
               </div>
               <Separator orientation="vertical" />
-              {isEmpty(marker?.telf) ? '-' : marker?.telf}
+              {isEmpty(marker?.telf) || marker?.status === MARKER_STATUS.COMPLETADO ? '-' : marker?.telf}
             </div>
             <div className="text-[14px] font-medium  flex gap-2 items-center">
               <div className="flex gap-1.5 bg-zinc-200 rounded-sm px-2 py-0.5 items-center w-[85px] ">
@@ -278,7 +283,7 @@ export function InfoMarkerDialog({
               </Button>
             )}
 
-            {marker?.telf && (
+            {(marker?.telf && marker?.status !== MARKER_STATUS.COMPLETADO) && (
               <div className="flex gap-1">
                 <a href={`tel:${marker?.telf}`} className="flex-1">
                   <Button

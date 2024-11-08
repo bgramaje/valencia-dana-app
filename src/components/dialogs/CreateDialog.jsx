@@ -30,10 +30,10 @@ import {
 } from '@/components/ui/select';
 import { Input } from '@/components/ui/input';
 import { Checkbox } from '@/components/ui/checkbox';
-import { Badge } from '@/components/ui/badge';
 import { isEmpty } from 'lodash';
 import { VoiceInput } from '../custom/voice-input';
 import { CodeCopyDialog } from './code/CodeCopyDialog';
+import { Separator } from '../ui/separator';
 
 const convertToBase64 = (file) => new Promise((resolve, reject) => {
   const reader = new FileReader();
@@ -316,13 +316,19 @@ export function CreateDialog({
 
           {direccion.calle ? (
             <div className="flex flex-col gap-1">
-              <div className="text-[14px] font-semibold flex gap-2 items-center">
-                <Badge className="w-[80px] bg-zinc-700">Calle</Badge>
-                {direccion.calle}
+              <div className="text-[14px] font-medium flex gap-2 items-center">
+                <div className="flex gap-1.5 bg-zinc-200 rounded-sm px-2 py-0.5 items-center w-[85px] ">
+                  <p className="text-[12px] font-medium">Calle</p>
+                </div>
+                <Separator orientation="vertical" />
+                {direccion?.calle}
               </div>
-              <div className="text-[14px] font-semibold flex gap-2 items-center">
-                <Badge className="w-[80px] bg-zinc-700">Población</Badge>
-                {direccion.poblacion}
+              <div className="text-[14px] font-medium flex gap-2 items-center">
+                <div className="flex gap-1.5 bg-zinc-200 rounded-sm px-2 py-0.5 items-center w-[85px] ">
+                  <p className="text-[12px] font-medium">Población</p>
+                </div>
+                <Separator orientation="vertical" />
+                {direccion?.poblacion}
               </div>
             </div>
           ) : (
