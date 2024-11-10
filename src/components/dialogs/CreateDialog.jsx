@@ -11,7 +11,7 @@ import Image from 'next/image';
 import { Icon } from '@iconify/react';
 
 import { getAddress } from '@/lib/getAdress';
-import { ASSISTANCE_TYPES, TOAST_ERROR_CLASSNAMES } from '@/lib/enums';
+import { TOAST_ERROR_CLASSNAMES } from '@/lib/enums';
 import { Button } from '@/components/ui/button';
 import {
   Dialog,
