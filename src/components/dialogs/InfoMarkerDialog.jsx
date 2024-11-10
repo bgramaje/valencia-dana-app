@@ -43,6 +43,7 @@ export function InfoMarkerDialog({
     fetch(`/api/markers/${id}`)
       .then((response) => response.json())
       .then((data) => {
+        console.log(data);
         setMarker(data);
         setLoading(false);
       })
@@ -231,12 +232,14 @@ export function InfoMarkerDialog({
                   <Separator orientation="vertical" />
                   {direccion?.calle}
                 </div>
-                <div className="text-[14px] font-medium flex gap-2 items-center">
+                <div className="font-medium flex gap-2 items-center text-[12px]">
                   <div className="flex gap-1.5 bg-zinc-200 rounded-sm px-2 py-0.5 items-center w-[85px] ">
-                    <p className="text-[12px] font-medium">Población</p>
+                    <p className="text-[11px] font-medium">Población</p>
                   </div>
                   <Separator orientation="vertical" />
-                  {direccion?.poblacion}
+                  <span className="uppercase">
+                    {marker?.location?.name ?? direccion?.poblacion ?? '-'}
+                  </span>
                 </div>
               </div>
             )}
@@ -302,7 +305,7 @@ export function InfoMarkerDialog({
                       https://wa.me/${marker.telf.replace('+', '')}?text=${
                     `📅 Fecha de solicitud: ${formatDate(marker.created_at)}%0A`
                         + `📝 Descripción: ${marker.description || 'No especificada'}%0A`
-                        + `📍 Ubicación: ${marker.city}%0A`
+                        + `📍 Ubicación: ${marker?.location?.name ?? '-'}%0A`
                         + `🗺️ Ver en Google Maps: ${encodeURIComponent(
                           `https://www.google.com/maps?q=${marker.latitude},${marker.longitude}`,
                         )}`}

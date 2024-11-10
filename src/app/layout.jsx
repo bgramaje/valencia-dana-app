@@ -9,8 +9,8 @@ import { SpeedInsights } from '@vercel/speed-insights/next';
 const inter = Inter({ subsets: ['latin'] });
 
 export const metadata = {
-  title: 'SomValencia',
-  description: 'Mapa para pedir ayuda',
+  title: 'SOM - Valencia',
+  description: 'Aplicación interactiva para solicitar ayuda',
 };
 
 export default function RootLayout({ children }) {

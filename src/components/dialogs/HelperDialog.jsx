@@ -132,7 +132,7 @@ export function HelperDialog({
                 Ingresa tus datos para ofrecer ayuda a:
                 <br />
               </DialogDescription>
-              <p className="text-justify w-full font-medium">
+              <p className="text-center w-full font-medium">
                 &quot;
                 {selectedMarker?.description ?? '-'}
                 &quot;

@@ -30,8 +30,8 @@ function LayersFilter({ activeLayers, setActiveLayers }) {
   return (
     <Dialog open={open} onOpenChange={setOpen}>
       <DialogTrigger asChild>
-        <Button variant="outline" size="icon" className="relative">
-          <Icon icon="solar:layers-bold-duotone" width={20} height={20} />
+        <Button variant="outline" size="icon" className="relative p-0">
+          <Icon icon="solar:layers-bold-duotone" width={20} height={24} />
           {/* Badge con el número de capas activas */}
           {activeLayerCount > 0 && (
             <span

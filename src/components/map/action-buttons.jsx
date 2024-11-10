@@ -13,7 +13,7 @@ export const ActionButtons = memo(({
       onClick={() => setIsSelectingLocation(true)}
     >
       <Icon
-        icon="lets-icons:add-ring"
+        icon="uil:map-marker-plus"
         width="40"
         height="40"
         className="text-red-300"
@@ -34,7 +34,7 @@ export const ActionButtons = memo(({
       className="min-w-[60px] h-[60px] rounded-xl"
     >
       <Icon
-        icon="ph:map-pin-duotone"
+        icon="ic:twotone-gps-fixed"
         width="40"
         height="40"
         className="text-red-300"

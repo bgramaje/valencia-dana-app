@@ -14,7 +14,9 @@ export async function GET(request, { params }) {
   const { data: marker, error } = await supabase
     .from(markersTable)
     .select(
-      'id, created_at, type, telf, description, longitude, latitude, status, img, policy_accepted, data_usage, helper_telf, helper_name',
+      `id, created_at, type, telf, description, 
+      longitude, latitude, status, img, policy_accepted, 
+      data_usage, helper_telf, helper_name, location(*)`,
     )
     .eq('id', id) // Reemplaza "id" con el valor del ID que buscas
     .single(); // .single() devuelve un solo objeto en lugar de un array

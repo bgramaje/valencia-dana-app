@@ -17,6 +17,8 @@ import { Legend } from '@/components/map/legend';
 import { ActionButtons } from '@/components/map/action-buttons';
 import { fetcher } from '@/lib/utils';
 import LayersFilter from '@/components/map/layers-filter';
+import { LeftButtons } from '@/components/map/left-buttons';
+import { ComboBoxResponsive } from '@/components/map/towns-selector';
 
 export default function Home() {
   const [viewState, setViewState] = useState(INITIAL_VIEW_STATE);
@@ -40,9 +42,13 @@ export default function Home() {
   const [isWarningModalOpen, setWarningModalOpen] = useState(true);
   const [isInfoOpen, setIsInfoOpen] = useState(false);
   const [userLocation, setUserLocation] = useState(null);
+  const [selectedTown, setSelectedTown] = useState(null);
 
   const {
     markers,
+    markersType,
+    towns,
+    loading,
     setMarkers,
     layers,
     fetchMarkers,
@@ -167,6 +173,14 @@ export default function Home() {
     }
   }, [isModalOpen]);
 
+  useEffect(() => {
+    setViewState((prev) => ({
+      ...prev,
+      latitude: selectedTown?.latitude ?? prev.latitude,
+      longitude: selectedTown?.longitude ?? prev.longitude,
+    }));
+  }, [selectedTown]);
+
   return (
     <div className="relative w-full h-dvh">
       <DeckGL
@@ -187,9 +201,9 @@ export default function Home() {
       </DeckGL>
 
       <div
-        className="w-full px-3 flex absolute top-10 left-1/2 transform -translate-x-1/2 -translate-y-1/2 items-center gap-4 justify-between"
+        className="w-full px-3 flex absolute top-20 left-1/2 transform -translate-x-1/2 -translate-y-1/2 items-start gap-4 justify-between"
       >
-        <div className="block xl:hidden md:hidden">
+        <div className="flex flex-col gap-1 items-center xl:hidden md:hidden">
           <Link href="https://github.com/bgramaje" passHref target="_blank">
             <Image
               alt="github"
@@ -199,23 +213,26 @@ export default function Home() {
               className="rounded-xl p-1 bg-white"
             />
           </Link>
+          <div className="font-semibold text-[13px] bg-white p-1 rounded-xl w-[32px] h-[32px] flex items-center justify-center">
+            {markers.filter((m) => m.status !== MARKER_STATUS.COMPLETADO).length}
+          </div>
         </div>
 
-        <div className="bg-white p-2 py-2 m-0 rounded-xl shadow flex gap-1 flex-wrap justify-between">
-          <span className="font-semibold text-[13px] uppercase leading-tight text-blue-500 text-center font-bold">
-            Marcadores:
-            {' '}
-            {markers.filter((m) => m.status !== MARKER_STATUS.COMPLETADO).length}
-            {' '}
-            /
-            {' '}
-            {markers.length}
-          </span>
+        <div className="p-0 m-0">
+          <ComboBoxResponsive
+            towns={towns}
+            selectedTown={selectedTown}
+            setSelectedTown={setSelectedTown}
+          />
         </div>
-        <LayersFilter
-          activeLayers={activeLayers}
-          setActiveLayers={setActiveLayers}
-        />
+        <div className="relative flex flex-col gap-1">
+          <LayersFilter
+            activeLayers={activeLayers}
+            setActiveLayers={setActiveLayers}
+          />
+          <LeftButtons setViewState={setViewState} />
+        </div>
+
       </div>
 
       {isSelectingLocation && (
@@ -261,7 +278,7 @@ export default function Home() {
         className="flex absolute bottom-0 left-1/2 transform -translate-x-1/2 items-center gap-1
         flex-col-reverse md:flex-row -translate-y-4 md:-translate-y-1/2 "
       >
-        <Legend />
+        <Legend types={markersType} loading={loading} />
         <ActionButtons
           isSelectingLocation={isSelectingLocation}
           setIsSelectingLocation={setIsSelectingLocation}
