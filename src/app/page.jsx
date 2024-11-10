@@ -269,6 +269,7 @@ export default function Home() {
             open={isModalOpen}
             close={setModalOpen}
             newMarker={newMarker}
+            markersType={markersType}
             handleAddMarker={handleAddMarker}
             setNewMarker={setNewMarker}
           />

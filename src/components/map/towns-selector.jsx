@@ -117,7 +117,7 @@ function TownsList({
 }) {
   return (
     <Command>
-      <CommandInput className="!text-[12px] p-0 focus:!text-[12px]" placeholder="Buscar poblaciones..." />
+      <CommandInput className="!text-[16px] p-0 focus:!text-[16px]" placeholder="Buscar poblaciones..." />
       <CommandList>
         <CommandEmpty>Población sin ayuda solicitada.</CommandEmpty>
         <CommandGroup>

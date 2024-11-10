@@ -76,7 +76,7 @@ export async function DELETE(request) {
   // Update the `status` field of the specified marker
   const { data: marker, error: errorSelect } = await supabase
     .from(markersTable)
-    .select('id, password')
+    .select('id, password, location(*)')
     .eq('id', id) // Reemplaza "id" con el valor del ID que buscas
     .single(); // .single() devuelve un solo objeto en lugar de un array
 
@@ -95,6 +95,18 @@ export async function DELETE(request) {
 
   if (error) {
     return new Response(JSON.stringify({ error: error.message }), { status: 500 });
+  }
+
+  const { error: updateError } = await supabase.rpc('increment_column', {
+    table_name: townsTable,
+    column_name: 'total_helpers_markers',
+    increment_value: -1,
+    id_column_name: 'name', // La columna usada como identificador
+    id_value: marker.location.name, // El valor del identificador (en este caso, el valor de location)
+  });
+
+  if (updateError) {
+    return new Response(JSON.stringify({ error: updateError.message }), { status: 500 });
   }
 
   return new Response(JSON.stringify({ message: 'Marker deleted' }), { status: 200 });

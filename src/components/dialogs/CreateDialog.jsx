@@ -46,6 +46,7 @@ export function CreateDialog({
   open,
   close,
   newMarker,
+  markersType,
   handleAddMarker,
   setNewMarker,
 }) {
@@ -240,16 +241,16 @@ export function CreateDialog({
                 <SelectValue placeholder="Tipo de asistencia" />
               </SelectTrigger>
               <SelectContent>
-                {Object.entries(ASSISTANCE_TYPES).map(([key, value]) => (
-                  <SelectItem key={key} value={key}>
+                {markersType?.map((t) => (
+                  <SelectItem key={t.key} value={t.key}>
                     <span className="flex items-center">
                       <Icon
-                        icon={value.icon}
+                        icon={t.icon}
                         width="20"
                         height="20"
                         className="mr-2"
                       />
-                      {value.label}
+                      {t.label}
                     </span>
                   </SelectItem>
                 ))}
