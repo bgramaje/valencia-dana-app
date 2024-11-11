@@ -45,6 +45,11 @@ export const MARKER_STATUS = {
   PENDIENTE: 'pendiente',
 };
 
+export const PICKER_STATUS = {
+  ACTIVE: 'active',
+  INACTIVE: 'inactive',
+};
+
 export const MARKER_LAYERS = {
   AFECTADO: {
     label: 'afectados',
