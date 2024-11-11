@@ -19,6 +19,7 @@ import { fetcher } from '@/lib/utils';
 import LayersFilter from '@/components/map/layers-filter';
 import { LeftButtons } from '@/components/map/left-buttons';
 import { ComboBoxResponsive } from '@/components/map/towns-selector';
+import { InfoPickerDialog } from '@/components/dialogs/InfoPickerDialog';
 
 export default function Home() {
   const [viewState, setViewState] = useState(INITIAL_VIEW_STATE);
@@ -38,6 +39,10 @@ export default function Home() {
 
   const [selectedMarker, setSelectedMarker] = useState(null);
   const [isModalOpen, setModalOpen] = useState(false);
+
+  const [selectedPickup, setSelectedPickup] = useState(null);
+  const [modalPickupOpen, setModalPickupOpen] = useState(false);
+
   const [isSelectingLocation, setIsSelectingLocation] = useState(false);
   const [isWarningModalOpen, setWarningModalOpen] = useState(true);
   const [isInfoOpen, setIsInfoOpen] = useState(false);
@@ -55,7 +60,9 @@ export default function Home() {
   } = useMapLayers(
     userLocation,
     setSelectedMarker,
+    setSelectedPickup,
     setModalOpen,
+    setModalPickupOpen,
     viewState,
     activeLayers,
   );
@@ -302,6 +309,14 @@ export default function Home() {
         open={isInfoOpen}
         close={() => setIsInfoOpen(false)}
       />
+
+      {selectedPickup && (
+        <InfoPickerDialog
+          selectedPickup={selectedPickup}
+          open={modalPickupOpen}
+          close={setModalPickupOpen}
+        />
+      )}
 
     </div>
   );

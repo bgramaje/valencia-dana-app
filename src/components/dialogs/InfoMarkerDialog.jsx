@@ -9,20 +9,20 @@ import { Button } from '@/components/ui/button';
 import { getAddress, getGoogleMapsUrl } from '@/lib/getAdress';
 import { formatDate } from '@/lib/date';
 
-import { ASSISTANCE_TYPES, MARKER_STATUS } from '@/lib/enums';
+import { MARKER_STATUS } from '@/lib/enums';
 import {
   Accordion, AccordionContent, AccordionItem, AccordionTrigger,
 } from '@/components/ui/accordion';
 import {
   Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle,
 } from '@/components/ui/dialog';
+import { AspectRatio } from '@/components/ui/aspect-ratio';
 
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
 
 import { HelperDialog } from './HelperDialog';
 import { MarkerBadge } from '../custom/marker-badge';
 import { CodeCrudDialog } from './code/CodeCrudDialog';
-import { Separator } from '../ui/separator';
 
 export function InfoMarkerDialog({
   open, close, selectedMarker, handleDeleteMarker, handleAssignMarker, handleCompleteMarker,
@@ -43,7 +43,6 @@ export function InfoMarkerDialog({
     fetch(`/api/markers/${id}`)
       .then((response) => response.json())
       .then((data) => {
-        console.log(data);
         setMarker(data);
         setLoading(false);
       })
@@ -172,80 +171,49 @@ export function InfoMarkerDialog({
           </div>
 
           {marker?.img && (
-            <div className="w-full p-1 px-4 rounded-xl max-h-52 overflow-auto">
-              <Image
-                src={marker.img}
-                alt="Preview"
-                className="max-h-33 mx-auto rounded-xl"
-                width={100}
-                height={100} // Ajusta el aspect ratio
-                style={{ width: 'fit-content', height: 'auto' }}
-                priority
-              />
+            <div className="w-full p-1 px-4 rounded-xl overflow-auto">
+              <AspectRatio ratio={4 / 3}>
+                <Image
+                  src={marker.img}
+                  alt="Preview"
+                  className="h-full w-full rounded-md object-cover"
+                  fill
+                />
+              </AspectRatio>
+            </div>
+          )}
+
+          <div className="!text-[13px] font-semibold flex gap-2 items-center px-4">
+            <Alert className="border-blue-200 bg-blue-100 px-3 py-1.5">
+              <AlertTitle className="text-center text-[13px] flex items-center justify-between">
+                <p className="uppercase text-[11px]">Descripción:</p>
+                {formatDate(marker?.created_at)}
+              </AlertTitle>
+              <AlertDescription className="!text-[14px] w-full max-h-[150px] overflow-y-auto text-justify">
+                {isEmpty(marker?.description) ? '-' : marker?.description}
+              </AlertDescription>
+            </Alert>
+          </div>
+
+          {direccion?.calle && (
+            <div className="!text-[13px] font-semibold flex gap-2 items-center px-4">
+              <Alert className="border-zinc-200 bg-zinc-100 px-3 py-1.5">
+                <AlertTitle className="text-center text-[13px] flex items-center justify-between">
+                  <p className="uppercase text-[11px]">Ubicación:</p>
+                  <span className="uppercase">
+                    {marker?.location?.name ?? direccion?.poblacion ?? '-'}
+                  </span>
+                </AlertTitle>
+                <AlertDescription className="!text-[14px] w-full max-h-[150px] overflow-y-auto text-justify">
+                  {direccion?.calle ?? '-'}
+                </AlertDescription>
+              </Alert>
             </div>
           )}
 
           <div className="p-4 pt-0 flex flex-col gap-1">
-            <div className="flex gap-2 items-center text-md font-medium">
-              <div className="flex gap-1.5 bg-zinc-200 rounded-sm px-2 py-0.5 items-center w-[85px]">
-                <p className="text-[12px] font-regular">Necesita</p>
-              </div>
-              <Separator orientation="vertical" />
-              <Icon
-                icon={ASSISTANCE_TYPES[marker?.type]?.icon}
-                width="20"
-                height="20"
-              />
-              <p className="text-[14px] font-semibold -ml-1">{ASSISTANCE_TYPES[marker?.type]?.label}</p>
-            </div>
-
-            <div className="text-[14px] font-semibold flex gap-2 items-center">
-              <div className="flex gap-1.5 bg-zinc-200 rounded-sm px-2 py-0.5 items-center w-[85px]">
-                <p className="text-[12px] font-regular">Descripción</p>
-              </div>
-              <Separator orientation="vertical" />
-              <p className="w-[73%] max-h-[150px] overflow-y-auto text-justify">
-                {isEmpty(marker?.description) ? '-' : marker?.description}
-              </p>
-            </div>
-            <div className="text-[14px] font-medium flex gap-2 items-center">
-              <div className="flex gap-1.5 bg-zinc-200 rounded-sm px-2 py-0.5 items-center w-[85px] ">
-                <p className="text-[12px] font-medium">Teléfono</p>
-              </div>
-              <Separator orientation="vertical" />
-              {isEmpty(marker?.telf) || marker?.status === MARKER_STATUS.COMPLETADO ? '-' : marker?.telf}
-            </div>
-            <div className="text-[14px] font-medium  flex gap-2 items-center">
-              <div className="flex gap-1.5 bg-zinc-200 rounded-sm px-2 py-0.5 items-center w-[85px] ">
-                <p className="text-[12px] font-medium">Creado</p>
-              </div>
-              <Separator orientation="vertical" />
-              {formatDate(marker?.created_at)}
-            </div>
-
-            {direccion?.calle && (
-              <div className="flex flex-col gap-1">
-                <div className="text-[14px] font-medium flex gap-2 items-center">
-                  <div className="flex gap-1.5 bg-zinc-200 rounded-sm px-2 py-0.5 items-center w-[85px] ">
-                    <p className="text-[12px] font-medium">Calle</p>
-                  </div>
-                  <Separator orientation="vertical" />
-                  {direccion?.calle}
-                </div>
-                <div className="font-medium flex gap-2 items-center text-[12px]">
-                  <div className="flex gap-1.5 bg-zinc-200 rounded-sm px-2 py-0.5 items-center w-[85px] ">
-                    <p className="text-[11px] font-medium">Población</p>
-                  </div>
-                  <Separator orientation="vertical" />
-                  <span className="uppercase">
-                    {marker?.location?.name ?? direccion?.poblacion ?? '-'}
-                  </span>
-                </div>
-              </div>
-            )}
-
-            <div className="flex gap-1 mt-2">
-              {marker?.status === MARKER_STATUS.ASIGNADO && (
+            <div className="flex gap-1 mt-0">
+              {marker?.status !== MARKER_STATUS.COMPLETADO && (
                 <Button
                   onClick={handleComplete}
                   className="w-full bg-green-500 uppercase text-[12px] font-semibold"

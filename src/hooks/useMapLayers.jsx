@@ -9,7 +9,9 @@ const ZOOM_LIMIT = 12;
 export const useMapLayers = (
   userLocation,
   setSelectedMarker,
+  setSelectedPickup,
   setModalOpen,
+  setModalPickupOpen,
   viewState,
   activeLayers = {
     AFECTADO: true,
@@ -21,6 +23,8 @@ export const useMapLayers = (
 
   const [markers, setMarkers] = useState([]);
   const [markersType, setMarkersType] = useState([]);
+  const [pickups, setPickups] = useState([]);
+
   const [towns, setTowns] = useState([]);
 
   const [loading, setLoading] = useState(true);
@@ -48,9 +52,17 @@ export const useMapLayers = (
       .catch((error) => toast.error(`Error loading markers type: ${error}`));
   };
 
+  const fetchPickups = () => {
+    fetch('/api/pickups')
+      .then((response) => response.json())
+      .then((data) => setPickups(data))
+      .catch((error) => toast.error(`Error loading markers type: ${error}`));
+  };
+
   useEffect(() => {
     fetchMarkers();
     fetchMarkersType();
+    fetchPickups();
     setLoading(false);
   }, []);
 
@@ -104,9 +116,9 @@ export const useMapLayers = (
         data: markers,
         pickable: true,
         getIcon: (d) => ({
-          url: d.type.iconMap,
-          width: 20,
-          height: 20,
+          url: `${d.type.iconMap}?width=100&height=100`,
+          width: 100,
+          height: 100,
         }),
         getPosition: (d) => [d.longitude, d.latitude],
         getColor: (d) => (d.status === 'completado'
@@ -190,6 +202,40 @@ export const useMapLayers = (
     [towns, zoom, activeLayers],
   );
 
+  const pickupsLayer = useMemo(
+    () => [
+      new IconLayer({
+        id: 'pickups-layer',
+        data: pickups,
+        pickable: true,
+        getIcon: () => ({
+          url: 'https://api.iconify.design/mynaui/location-home-solid.svg?width=100&height=100',
+          width: 100, // Use a larger base width
+          height: 100, // Use a larger base height
+        }),
+        getPosition: (d) => [d.longitude, d.latitude],
+        getColor: [23, 23, 23],
+        sizeScale: 2.25, // Reduce size scale for less scaling
+        parameters: { depthTest: false },
+        getAngle: 0,
+        getSize: 20, // Ensure this is in line with the actual icon size
+        getPixelOffset: [0, 0], // Offset to ensure it aligns correctly
+        visible: (activeLayers?.AFECTADO && zoom >= ZOOM_LIMIT),
+        onClick: ({ object }) => {
+          if (object) {
+            setSelectedPickup(object);
+            setModalPickupOpen(true);
+          }
+        },
+        updateTriggers: {
+          getColor: [pickups],
+          visible: [zoom],
+        },
+      }),
+    ],
+    [pickups, zoom, activeLayers, setSelectedPickup, setModalPickupOpen],
+  );
+
   // Capa con efecto de pulso para userLocation
   const pulsingLayer = useMemo(
     () => userLocation
@@ -208,9 +254,10 @@ export const useMapLayers = (
     markers,
     markersType,
     towns,
+    pickups,
     loading,
     setMarkers,
     fetchMarkers,
-    layers: [...staticLayers, pulsingLayer, centroidLayers].filter(Boolean),
+    layers: [...staticLayers, pulsingLayer, ...centroidLayers, ...pickupsLayer].filter(Boolean),
   };
 };
