@@ -217,7 +217,7 @@ export const useMapLayers = (
         getPosition: (d) => [d.longitude, d.latitude],
         getRadius: 3, // Slightly larger than the inner fill layer
         getFillColor: [255, 255, 255, 255], // Border color (e.g., black)
-        visible: (activeLayers?.AFECTADO && zoom >= ZOOM_LIMIT),
+        visible: (activeLayers?.PUNTO && zoom >= ZOOM_LIMIT),
         onClick: ({ object }) => {
           if (object) {
             setSelectedPickup(object);
@@ -246,7 +246,7 @@ export const useMapLayers = (
         getAngle: 0,
         getSize: 20, // Ensure this is in line with the actual icon size
         getPixelOffset: [0, 0], // Offset to ensure it aligns correctly
-        visible: (activeLayers?.AFECTADO && zoom >= ZOOM_LIMIT),
+        visible: (activeLayers?.PUNTO && zoom >= ZOOM_LIMIT),
         onClick: ({ object }) => {
           if (object) {
             setSelectedPickup(object);
