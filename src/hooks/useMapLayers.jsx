@@ -6,7 +6,7 @@ import { useState, useEffect, useMemo } from 'react';
 
 import { toast } from 'sonner';
 
-const ZOOM_LIMIT = 12;
+const ZOOM_LIMIT = 11;
 
 export const useMapLayers = (
   userLocation,
