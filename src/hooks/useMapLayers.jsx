@@ -1,6 +1,6 @@
 /* eslint-disable max-len */
 /* eslint-disable no-param-reassign */
-import { PICKER_STATUS, PICKUP_STATUS } from '@/lib/enums';
+import { PICKUP_STATUS } from '@/lib/enums';
 import { ScatterplotLayer, IconLayer, TextLayer } from '@deck.gl/layers';
 import { useState, useEffect, useMemo } from 'react';
 

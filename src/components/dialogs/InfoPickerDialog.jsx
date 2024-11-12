@@ -13,7 +13,7 @@ import {
 } from '@/components/ui/dialog';
 
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
-import { PICKER_STATUS, PICKUP_STATUS } from '@/lib/enums';
+import { PICKUP_STATUS } from '@/lib/enums';
 import { PickupStatus } from '../custom/pickup-status';
 
 export function InfoPickerDialog({

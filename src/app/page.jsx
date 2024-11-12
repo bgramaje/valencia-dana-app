@@ -13,7 +13,6 @@ import { INITIAL_VIEW_STATE, MARKER_STATUS } from '@/lib/enums';
 import { CreateDialog } from '@/components/dialogs/CreateDialog';
 import { InfoMarkerDialog } from '@/components/dialogs/InfoMarkerDialog';
 import { useMapLayers } from '@/hooks/useMapLayers';
-import { Legend } from '@/components/map/legend';
 import { ActionButtons } from '@/components/map/action-buttons';
 import { fetcher } from '@/lib/utils';
 import LayersFilter from '@/components/map/layers-filter';
