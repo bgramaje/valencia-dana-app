@@ -1,5 +1,6 @@
+/* eslint-disable max-len */
 /* eslint-disable no-param-reassign */
-import { PICKER_STATUS } from '@/lib/enums';
+import { PICKER_STATUS, PICKUP_STATUS } from '@/lib/enums';
 import { ScatterplotLayer, IconLayer, TextLayer } from '@deck.gl/layers';
 import { useState, useEffect, useMemo } from 'react';
 
@@ -122,9 +123,6 @@ export const useMapLayers = (
           height: 100,
         }),
         getPosition: (d) => [d.longitude, d.latitude],
-        getColor: (d) => (d.status === 'completado'
-          ? [140, 140, 140, 60]
-          : d.type.color),
         sizeScale: 1,
         parameters: { depthTest: false },
         getAngle: 0,
@@ -232,17 +230,16 @@ export const useMapLayers = (
         id: 'pickups-layer',
         data: pickups,
         pickable: true,
-        getIcon: (d) => ({
-          url: d.status === PICKER_STATUS.ACTIVE
-            ? 'https://api.iconify.design/mynaui/location-home-solid.svg?width=100&height=100'
-            : 'https://api.iconify.design/mdi/location-off.svg?width=90&height=90',
-          width: d.status === PICKER_STATUS.ACTIVE ? 100 : 90, // Use a larger base width
-          height: d.status === PICKER_STATUS.ACTIVE ? 100 : 90, // Use a larger base height
-        }),
+        getIcon: (d) => {
+          const color = PICKUP_STATUS[d.status].color ?? '#202020';
+          return {
+            url: `https://api.iconify.design/mynaui/location-home-solid.svg?width=100&height=100&color=${encodeURIComponent(color)}`,
+            width: 100, // Use a larger base width
+            height: 100, // Use a larger base height
+          };
+        },
         getPosition: (d) => [d.longitude, d.latitude],
-        getColor: (d) => (d.status === PICKER_STATUS.ACTIVE ? [23, 23, 23] : [23, 23, 23, 180]),
         sizeScale: 2.25, // Reduce size scale for less scaling
-        parameters: { depthTest: false },
         getAngle: 0,
         getSize: 20, // Ensure this is in line with the actual icon size
         getPixelOffset: [0, 0], // Offset to ensure it aligns correctly

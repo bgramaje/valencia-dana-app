@@ -50,14 +50,29 @@ export const PICKER_STATUS = {
   INACTIVE: 'inactive',
 };
 
+export const PICKUP_STATUS = {
+  ABIERTO: {
+    label: 'aceptando',
+    color: '#49e659',
+  },
+  PARCIALMENTE: {
+    label: 'parcialmente aceptando',
+    color: '#e6ce49',
+  },
+  CERRADO: {
+    label: 'cerrado',
+    color: '#eb4034',
+  },
+  DESCONOCIDO: {
+    label: 'desconocido',
+    color: '#ffffff',
+  },
+};
+
 export const MARKER_LAYERS = {
   AFECTADO: {
     label: 'afectados',
-    icon: 'icon-park-outline:love-and-help',
-  },
-  VOLUNTARIO: {
-    label: 'voluntarios',
-    icon: 'material-symbols:volunteer-activism-rounded',
+    icon: 'ep:help',
   },
   PUNTO: {
     label: 'puntos',

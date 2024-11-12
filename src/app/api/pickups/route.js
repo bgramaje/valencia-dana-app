@@ -7,6 +7,8 @@ export async function GET() {
     .from(pickupsTable)
     .select('*, location (*)');
 
+    console.log(markers);
+    
   if (error) {
     return new Response(JSON.stringify({ error: error.message }), { status: 500 });
   }

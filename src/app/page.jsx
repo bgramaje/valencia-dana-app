@@ -286,12 +286,17 @@ export default function Home() {
         className="flex absolute bottom-0 left-1/2 transform -translate-x-1/2 items-center gap-1
         flex-col-reverse md:flex-row -translate-y-4 md:-translate-y-1/2 "
       >
-        <Legend types={markersType} loading={loading} />
+        {/*
+                <Legend types={markersType} loading={loading} />
+
+        */}
         <ActionButtons
           isSelectingLocation={isSelectingLocation}
           setIsSelectingLocation={setIsSelectingLocation}
           getLocation={getLocation}
           setIsInfoOpen={setIsInfoOpen}
+          types={markersType}
+          loading={loading}
         />
         <Link target="_blank" href="https://github.com/bgramaje" passHref className="ml-1 hidden lg:block">
           <Image

@@ -13,7 +13,8 @@ import {
 } from '@/components/ui/dialog';
 
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
-import { PICKER_STATUS } from '@/lib/enums';
+import { PICKER_STATUS, PICKUP_STATUS } from '@/lib/enums';
+import { PickupStatus } from '../custom/pickup-status';
 
 export function InfoPickerDialog({
   open, close, selectedPickup,
@@ -75,25 +76,7 @@ export function InfoPickerDialog({
             -
           </DialogDescription>
         </DialogHeader>
-        {pickup.status === PICKER_STATUS.ACTIVE && (
-          <div className="!text-[13px] font-semibold flex gap-2 items-center px-4">
-            <Alert className="border-green-400 bg-green-300 px-3 py-1.5 animate-pulse">
-              <AlertTitle className="text-center text-[13px] flex items-center justify-between mb-0">
-                <p className="uppercase text-[11px]">ABIERTO</p>
-              </AlertTitle>
-            </Alert>
-          </div>
-        )}
-
-        {pickup.status === PICKER_STATUS.INACTIVE && (
-        <div className="!text-[13px] font-semibold flex gap-2 items-center px-4">
-          <Alert className="border-red-600 bg-red-500 px-3 py-1.5 animate-pulse">
-            <AlertTitle className="text-center text-[13px] flex items-center justify-between mb-0">
-              <p className="uppercase text-[11px] text-center">CERRADO</p>
-            </AlertTitle>
-          </Alert>
-        </div>
-        )}
+        <PickupStatus pickup={pickup} PICKUP_STATUS={PICKUP_STATUS} />
         <div className="!text-[13px] font-semibold flex gap-2 items-center px-4">
           <Alert className="border-blue-200 bg-blue-100 px-3 py-1.5">
             <AlertTitle className="text-center text-[13px] flex items-center justify-between mb-0">
@@ -114,7 +97,7 @@ export function InfoPickerDialog({
                 {pickup?.location?.name ?? '-'}
               </span>
             </AlertTitle>
-            <AlertDescription className="!text-[14px] w-full max-h-[150px] overflow-y-auto text-justify">
+            <AlertDescription className="!text-[14px] w-full max-h-[150px] overflow-y-auto">
               {pickup?.address ?? '-'}
             </AlertDescription>
           </Alert>
