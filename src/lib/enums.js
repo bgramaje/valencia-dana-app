@@ -65,7 +65,7 @@ export const PICKUP_STATUS = {
   },
   DESCONOCIDO: {
     label: 'desconocido',
-    color: '#ffffff',
+    color: '#202020',
   },
 };
 

@@ -5,7 +5,7 @@ import { Badge } from '../ui/badge';
 
 export function PickupBadge({ pickup }) {
   const statusClasses = {
-    [PICKER_STATUS.ACTIVE]: 'bg-green-500 text-green-900 hover:bg-green-500',
+    [PICKER_STATUS.V]: 'bg-green-500 text-green-900 hover:bg-green-500',
     [PICKER_STATUS.INACTIVE]: 'bg-red-500 text-red-900 hover:bg-red-500',
     [MARKER_STATUS.ASIGNADO]: 'bg-orange-500 text-orange-900 hover:bg-orange-500',
   };
