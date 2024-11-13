@@ -93,7 +93,6 @@ export default function Home() {
     layers,
     fetchMarkers,
     setPickups,
-    pickups,
   } = useMapLayers(
     userLocation,
     setSelectedMarker,
