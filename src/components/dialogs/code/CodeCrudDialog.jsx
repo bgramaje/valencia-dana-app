@@ -51,7 +51,7 @@ export function CodeCrudDialog({
           </Alert>
         </div>
         <DialogFooter>
-          {React.cloneElement(children, { onClick: handleClose })}
+          {children && React.cloneElement(children, { onClick: handleClose })}
         </DialogFooter>
       </DialogContent>
     </Dialog>

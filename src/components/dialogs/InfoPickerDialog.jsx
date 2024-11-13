@@ -120,7 +120,9 @@ export function InfoPickerDialog({
           className="flex flex-wrap w-full gap-1.5 p-4 py-1 pt-0"
         >
           {selectedNeeds.map((need) => {
-            const needDb = needs?.find(((rawNeed) => rawNeed.key === need)) ?? null;
+            const needDb = needs?.find(((rawNeed) => rawNeed?.key === need)) ?? null;
+
+            if (!needDb) return <div />;
             const { label, icon, key } = needDb;
 
             return (

@@ -9,7 +9,7 @@ import { toast } from 'sonner';
 
 import { WarningDialog } from '@/components/dialogs/WarningDialog';
 import { InfoDialog } from '@/components/dialogs/InfoDialog';
-import { INITIAL_VIEW_STATE, MARKER_STATUS } from '@/lib/enums';
+import { INITIAL_VIEW_STATE, MARKER_STATUS, TOAST_ERROR_CLASSNAMES } from '@/lib/enums';
 import { CreateDialog } from '@/components/dialogs/CreateDialog';
 import { InfoMarkerDialog } from '@/components/dialogs/InfoMarkerDialog';
 import { useMapLayers } from '@/hooks/useMapLayers';
@@ -21,6 +21,9 @@ import { ComboBoxResponsive } from '@/components/map/towns-selector';
 import { InfoPickerDialog } from '@/components/dialogs/InfoPickerDialog';
 import ChooseCreateDialog from '@/components/dialogs/ChooseCreateDialog';
 import { CreatePickupDialog } from '@/components/dialogs/CreatePickupDialog';
+import { CodeCrudDialog } from '@/components/dialogs/code/CodeCrudDialog';
+import { Button } from '@/components/ui/button';
+import { Icon } from '@iconify/react';
 
 const STYLE = {
   version: 8,
@@ -79,7 +82,8 @@ export default function Home() {
   const [isInfoOpen, setIsInfoOpen] = useState(false);
   const [dialogChooseCreate, setDialogChooseCreate] = useState(false);
   const [dialogPickupCreate, setDialogPickupCreate] = useState(false);
-
+  const [dialogCodePickup, setDialogCodePickup] = useState(false);
+  const [pickupEditCode, setPickupEditCode] = useState(null);
   const [userLocation, setUserLocation] = useState(null);
   const [selectedTown, setSelectedTown] = useState(null);
   const [selectedCoordinate, setSelectedCoordinate] = useState({ latitude: null, longitude: null });
@@ -92,6 +96,7 @@ export default function Home() {
     setMarkers,
     layers,
     fetchMarkers,
+    key,
     setPickups,
   } = useMapLayers(
     userLocation,
@@ -108,6 +113,23 @@ export default function Home() {
     localStorage.setItem('warningModalClosed', 'true');
   };
 
+  const codePickupCallback = (inputCode) => {
+    console.log(inputCode, key.key);
+
+    if (inputCode === key.key) {
+      setNewPickup({
+        ...newPickup,
+        ...selectedCoordinate,
+      });
+      setDialogPickupCreate(true);
+    } else {
+      toast.error('Código incorrecto', {
+        duration: 2000,
+        classNames: TOAST_ERROR_CLASSNAMES,
+      });
+    }
+  };
+
   const openCreateDialog = (markerType) => {
     setIsSelectingLocation(false);
 
@@ -118,11 +140,7 @@ export default function Home() {
       });
       setModalOpen(true);
     } else {
-      setNewPickup({
-        ...newPickup,
-        ...selectedCoordinate,
-      });
-      setDialogPickupCreate(true);
+      setDialogCodePickup(true);
     }
   };
 
@@ -421,6 +439,20 @@ export default function Home() {
         />
       )}
 
+      <CodeCrudDialog
+        open={dialogCodePickup}
+        lose={setDialogCodePickup}
+        callback={codePickupCallback}
+      >
+        <Button className="w-full mt-2 bg-green-500 uppercase text-[12px] font-semibold">
+          <Icon
+            icon="line-md:circle-twotone-to-confirm-circle-twotone-transition"
+            width="20"
+            height="20"
+          />
+          Enviar
+        </Button>
+      </CodeCrudDialog>
     </div>
   );
 }

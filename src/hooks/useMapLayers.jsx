@@ -30,8 +30,16 @@ export const useMapLayers = (
   const [towns, setTowns] = useState([]);
 
   const [loading, setLoading] = useState(true);
+  const [key, setKey] = useState(null);
 
   const [pulseRadius, setPulseRadius] = useState(100);
+
+  const fetchKey = () => {
+    fetch('/api/pickups/code')
+      .then((response) => response.json())
+      .then((data) => setKey(data)?.key)
+      .catch((error) => toast.error(`Error loading markers: ${error}`));
+  };
 
   const fetchTowns = () => {
     fetch('/api/towns')
@@ -65,6 +73,7 @@ export const useMapLayers = (
     fetchMarkers();
     fetchMarkersType();
     fetchPickups();
+    fetchKey();
     setLoading(false);
   }, []);
 
@@ -278,6 +287,7 @@ export const useMapLayers = (
     markersType,
     towns,
     pickups,
+    key,
     loading,
     setMarkers,
     setPickups,

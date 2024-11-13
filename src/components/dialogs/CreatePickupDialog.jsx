@@ -110,7 +110,6 @@ export function CreatePickupDialog({
       needs: needsPosts,
       location: direccion?.poblacion?.toUpperCase() ?? 'unknown',
     });
-    console.log('post', { ...pickupState, needs: needsPosts });
   };
 
   const selectNeed = (need) => {
