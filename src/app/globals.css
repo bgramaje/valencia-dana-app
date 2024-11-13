@@ -71,15 +71,6 @@ body {
   }
 }
 
-
-.maplibregl-ctrl-attrib-inner {
-  display: none;
-}
-
-.maplibregl-ctrl-attrib-button {
-  display: none;
-}
-
 body {
   overflow-y: auto;
   min-height: -webkit-fill-available;

@@ -20,6 +20,31 @@ import { LeftButtons } from '@/components/map/left-buttons';
 import { ComboBoxResponsive } from '@/components/map/towns-selector';
 import { InfoPickerDialog } from '@/components/dialogs/InfoPickerDialog';
 
+const STYLE = {
+  version: 8,
+  sources: {
+    'raster-tiles': {
+      type: 'raster',
+      tiles: [
+        'https://a.tile.openstreetmap.org/{z}/{x}/{y}.png',
+        'https://b.tile.openstreetmap.org/{z}/{x}/{y}.png',
+        'https://c.tile.openstreetmap.org/{z}/{x}/{y}.png',
+      ],
+      tileSize: 180,
+      attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors',
+    },
+  },
+  layers: [
+    {
+      id: 'osm-tiles',
+      type: 'raster',
+      source: 'raster-tiles',
+      minzoom: 0,
+      maxzoom: 24,
+    },
+  ],
+};
+
 export default function Home() {
   const [viewState, setViewState] = useState(INITIAL_VIEW_STATE);
 
@@ -201,11 +226,18 @@ export default function Home() {
         <ReactMap
           attributionControl={false}
           reuseMaps
-          mapStyle="https://api.maptiler.com/maps/streets-v2/style.json?key=3l2Dsb6tXQ0t2OzWLivd"
           onClick={handleMapClick}
+          mapStyle={STYLE}
         />
       </DeckGL>
-
+      <div className="absolute bottom-1 right-2 text-[10px] bg-white px-1 rounded xl">
+        <p>
+          &copy;
+          <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>
+          {' '}
+          contributors
+        </p>
+      </div>
       <div
         className="w-full px-3 flex absolute top-20 left-1/2 transform -translate-x-1/2 -translate-y-1/2 items-start gap-4 justify-between"
       >
@@ -282,7 +314,7 @@ export default function Home() {
         )}
 
       <div
-        className="flex absolute bottom-0 left-1/2 transform -translate-x-1/2 items-center gap-1
+        className="flex absolute bottom-3 left-1/2 transform -translate-x-1/2 items-center gap-1
         flex-col-reverse md:flex-row -translate-y-4 md:-translate-y-1/2 "
       >
         {/*
