@@ -71,11 +71,11 @@ export const PICKUP_STATUS = {
 
 export const MARKER_LAYERS = {
   AFECTADO: {
-    label: 'afectados',
+    label: 'afectado',
     icon: 'ep:help',
   },
   PUNTO: {
-    label: 'puntos',
+    label: 'punto de recogida',
     icon: 'ph:package',
   },
 };

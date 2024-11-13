@@ -280,6 +280,7 @@ export const useMapLayers = (
     pickups,
     loading,
     setMarkers,
+    setPickups,
     fetchMarkers,
     layers: [...staticLayers, pulsingLayer, ...centroidLayers, ...pickupsLayer].filter(Boolean),
   };

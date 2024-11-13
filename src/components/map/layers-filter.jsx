@@ -49,14 +49,14 @@ function LayersFilter({ activeLayers, setActiveLayers }) {
         <DialogDescription className="text-center font-medium text-[12px]">
           Activa los tipos de marcadores que ver.
         </DialogDescription>
-        <div className="flex space-x-2 mt-2">
+        <div className="flex justify-center gap-6 mt-2">
           {Object.keys(MARKER_LAYERS).map((key) => {
             const { label, icon } = MARKER_LAYERS[key];
             return (
               <div
                 key={key}
                 onClick={() => handleLayerToggle(key)}
-                className={`flex flex-col items-center justify-center cursor-pointer p-4 w-24 h-24 rounded-2xl 
+                className={`flex flex-col items-center text-center justify-center cursor-pointer p-4 w-24 h-24 rounded-2xl 
                     uppercase font-semibold ring-2 ring-blue-900 ${activeLayers[key] ? 'bg-blue-500 text-blue-900' : 'bg-gray-100'}
                 `}
               >

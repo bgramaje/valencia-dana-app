@@ -59,14 +59,13 @@ export function VoiceInput(props) {
   };
 
   return (
-    <div className="relative flex items-center gap-2">
+    <div className="relative flex items-center gap-2 items-stretch">
       <Textarea {...rest} />
       {recognition && (
         <Button
           onClick={handleStartListening}
-          className="`ml-2`"
+          className="grow-1 max-w-[40px] h-full rounded-md"
           disabled={listening}
-          size="icon"
         >
           <Icon
             icon={listening ? 'svg-spinners:3-dots-bounce' : 'ic:baseline-mic'}

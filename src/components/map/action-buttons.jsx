@@ -4,8 +4,12 @@ import { Icon } from '@iconify/react';
 import { Legend } from './legend';
 
 export const ActionButtons = memo(({
-  isSelectingLocation, setIsSelectingLocation,
-  getLocation, setIsInfoOpen, types, loading,
+  isSelectingLocation,
+  setIsSelectingLocation,
+  getLocation,
+  setIsInfoOpen,
+  types,
+  loading,
 }) => (
   <div className="flex gap-2 flex-col">
     <div className="flex gap-2">

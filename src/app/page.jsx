@@ -19,6 +19,8 @@ import LayersFilter from '@/components/map/layers-filter';
 import { LeftButtons } from '@/components/map/left-buttons';
 import { ComboBoxResponsive } from '@/components/map/towns-selector';
 import { InfoPickerDialog } from '@/components/dialogs/InfoPickerDialog';
+import ChooseCreateDialog from '@/components/dialogs/ChooseCreateDialog';
+import { CreatePickupDialog } from '@/components/dialogs/CreatePickupDialog';
 
 const STYLE = {
   version: 8,
@@ -61,6 +63,11 @@ export default function Home() {
     latitude: 0,
   });
 
+  const [newPickup, setNewPickup] = useState({
+    longitude: 0,
+    latitude: 0,
+  });
+
   const [selectedMarker, setSelectedMarker] = useState(null);
   const [isModalOpen, setModalOpen] = useState(false);
 
@@ -70,8 +77,12 @@ export default function Home() {
   const [isSelectingLocation, setIsSelectingLocation] = useState(false);
   const [isWarningModalOpen, setWarningModalOpen] = useState(true);
   const [isInfoOpen, setIsInfoOpen] = useState(false);
+  const [dialogChooseCreate, setDialogChooseCreate] = useState(false);
+  const [dialogPickupCreate, setDialogPickupCreate] = useState(false);
+
   const [userLocation, setUserLocation] = useState(null);
   const [selectedTown, setSelectedTown] = useState(null);
+  const [selectedCoordinate, setSelectedCoordinate] = useState({ latitude: null, longitude: null });
 
   const {
     markers,
@@ -81,6 +92,8 @@ export default function Home() {
     setMarkers,
     layers,
     fetchMarkers,
+    setPickups,
+    pickups,
   } = useMapLayers(
     userLocation,
     setSelectedMarker,
@@ -96,8 +109,31 @@ export default function Home() {
     localStorage.setItem('warningModalClosed', 'true');
   };
 
+  const openCreateDialog = (markerType) => {
+    setIsSelectingLocation(false);
+
+    if (markerType === 'AFECTADO') {
+      setNewMarker({
+        ...newMarker,
+        ...selectedCoordinate,
+      });
+      setModalOpen(true);
+    } else {
+      setNewPickup({
+        ...newPickup,
+        ...selectedCoordinate,
+      });
+      setDialogPickupCreate(true);
+    }
+  };
+
   const handleMapClick = (event) => {
     if (isSelectingLocation && event.coordinate) {
+      setSelectedCoordinate({
+        longitude: event.coordinate[0],
+        latitude: event.coordinate[1],
+      });
+      /*
       setNewMarker({
         ...newMarker,
         longitude: event.coordinate[0],
@@ -105,6 +141,9 @@ export default function Home() {
       });
       setIsSelectingLocation(false);
       setModalOpen(true);
+      */
+      setIsSelectingLocation(false);
+      setDialogChooseCreate(true);
     }
   };
 
@@ -120,6 +159,21 @@ export default function Home() {
           type: 'WATER', description: '', longitude: 0, latitude: 0,
         });
         setModalOpen(false);
+      });
+  };
+
+  const handleAddPickup = (body) => {
+    fetcher('/api/pickups', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ ...newPickup, ...body }),
+    }, 'Punto de recogida creado correctamente')
+      .then((data) => {
+        setPickups((prevMarkers) => [...prevMarkers, data]);
+        setNewPickup({
+          status: 'DESCONOCIDO', description: '', longitude: 0, latitude: 0,
+        });
+        setDialogPickupCreate(false);
       });
   };
 
@@ -313,6 +367,14 @@ export default function Home() {
           />
         )}
 
+      <CreatePickupDialog
+        newPickup={newPickup}
+        open={dialogPickupCreate}
+        close={setDialogPickupCreate}
+        setNewPickup={setNewPickup}
+        handleAddPickup={handleAddPickup}
+      />
+
       <div
         className="flex absolute bottom-3 left-1/2 transform -translate-x-1/2 items-center gap-1
         flex-col-reverse md:flex-row -translate-y-4 md:-translate-y-1/2 "
@@ -344,6 +406,12 @@ export default function Home() {
       <InfoDialog
         open={isInfoOpen}
         close={() => setIsInfoOpen(false)}
+      />
+
+      <ChooseCreateDialog
+        open={dialogChooseCreate}
+        setOpen={setDialogChooseCreate}
+        cb={openCreateDialog}
       />
 
       {selectedPickup && (

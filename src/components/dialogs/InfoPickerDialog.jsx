@@ -21,6 +21,8 @@ export function InfoPickerDialog({
 }) {
   const [pickup, setPickup] = useState(null);
   const [loading, setLoading] = useState(true);
+  const [selectedNeeds, setSelectedNeeds] = React.useState([]);
+  const [needs, setNeeds] = React.useState([]);
 
   const fetchMarker = (id) => {
     fetch(`/api/pickups/${id}`)
@@ -28,14 +30,23 @@ export function InfoPickerDialog({
       .then((data) => {
         setPickup(data);
         setLoading(false);
+        setSelectedNeeds(data?.needs?.split(',') ?? []);
       })
       .catch((error) => toast.error(`Error loading marker ${error}`));
+  };
+
+  const fetchNeeds = () => {
+    fetch('/api/pickups/needs')
+      .then((response) => response.json())
+      .then((data) => setNeeds(data))
+      .catch((error) => toast.error(`Error loading markers: ${error}`));
   };
 
   useEffect(() => {
     setLoading(true);
     const fetch = async () => {
       fetchMarker(selectedPickup.id);
+      fetchNeeds();
     };
 
     fetch();
@@ -102,9 +113,43 @@ export function InfoPickerDialog({
             </AlertDescription>
           </Alert>
         </div>
+        <AlertTitle className="text-center text-[13px] flex items-center justify-between mb-0 px-4">
+          <p className="uppercase text-[11px]">Recogen:</p>
+        </AlertTitle>
+        <div
+          className="flex flex-wrap w-full gap-1.5 p-4 py-1 pt-0"
+        >
+          {selectedNeeds.map((need) => {
+            const needDb = needs?.find(((rawNeed) => rawNeed.key === need)) ?? null;
+            const { label, icon, key } = needDb;
 
+            return (
+              <div
+                key={label}
+                className={`flex items-center mb-0 basis-[100px] gap-1.5 flex-1 ${
+                  selectedNeeds.includes(key) ? 'bg-blue-400 border-blue-600 border-1' : 'bg-zinc-100'
+                } rounded-xl border border-zinc-200 p-1.5`}
+              >
+                <div
+                  className="w-7 h-7 rounded-full flex items-center justify-center"
+                >
+                  <Icon
+                    icon={icon}
+                    width="20"
+                    height="20"
+                    style={{ color: '#202020' }}
+                  />
+                </div>
+                <span
+                  className="font-semibold text-[13px] uppercase leading-tight"
+                >
+                  {label}
+                </span>
+              </div>
+            );
+          })}
+        </div>
         <div className="p-4 pt-0 flex flex-col gap-1">
-
           <Button
             onClick={() => window.open(getGoogleMapsUrl(pickup), '_blank')}
             className="w-full mt-0.5"
