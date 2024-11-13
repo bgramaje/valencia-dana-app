@@ -83,7 +83,6 @@ export default function Home() {
   const [dialogChooseCreate, setDialogChooseCreate] = useState(false);
   const [dialogPickupCreate, setDialogPickupCreate] = useState(false);
   const [dialogCodePickup, setDialogCodePickup] = useState(false);
-  const [pickupEditCode, setPickupEditCode] = useState(null);
   const [userLocation, setUserLocation] = useState(null);
   const [selectedTown, setSelectedTown] = useState(null);
   const [selectedCoordinate, setSelectedCoordinate] = useState({ latitude: null, longitude: null });
