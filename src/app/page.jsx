@@ -113,13 +113,12 @@ export default function Home() {
   };
 
   const codePickupCallback = (inputCode) => {
-    console.log(inputCode, key.key);
-
     if (inputCode === key.key) {
       setNewPickup({
         ...newPickup,
         ...selectedCoordinate,
       });
+      setDialogCodePickup(false);
       setDialogPickupCreate(true);
     } else {
       toast.error('Código incorrecto', {
