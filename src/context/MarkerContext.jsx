@@ -77,7 +77,12 @@ export function MarkerProvider({
     });
   }, [fetchTowns]);
 
-  const assignMarker = (body, cb = undefined) => {
+  /**
+   * @name assignMarker
+   * @param body
+   * @description function to assign marker to a given volunteer
+   */
+  const assignMarker = useCallback((body, cb = undefined) => {
     fetcher(`/api/markers/assign/${selectedMarker.id}`, {
       method: 'PUT',
       headers: { 'Content-Type': 'application/json' },
@@ -88,8 +93,13 @@ export function MarkerProvider({
         fetchMarkers();
         if (cb) cb();
       });
-  };
+  }, [selectedMarker, fetchMarkers, setSelectedMarker]);
 
+  /**
+   * @name completeMarker
+   * @param body
+   * @description function to change a marker as completed
+   */
   const completeMarker = useCallback((body) => {
     fetcher(`/api/markers/complete/${selectedMarker.id}`, {
       method: 'PUT',
@@ -101,6 +111,11 @@ export function MarkerProvider({
       });
   }, [fetchMarkers, selectedMarker]);
 
+  /**
+   * @name deleteMarker
+   * @param body
+   * @description function to delete a marker
+   */
   const deleteMarker = useCallback((code) => {
     fetcher('/api/markers', {
       method: 'DELETE',
@@ -176,5 +191,4 @@ export function MarkerProvider({
   );
 }
 
-// Create a custom hook for easy access to the context
 export const useMarkers = () => useContext(MarkerContext);
