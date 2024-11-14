@@ -14,11 +14,15 @@ import { InfoPickerDialog } from '@/components/dialogs/InfoPickerDialog';
 
 const PickupContext = createContext();
 
-export function PickupProvider({ location, selectedPickup, children }) {
-  const [newPickup, setNewPickup] = useState({
-    latitude: null,
-    longitude: null,
-  });
+const INITIAL_VALUE = {
+  longitude: 0,
+  latitude: 0,
+};
+
+export function PickupProvider({
+  location, selectedPickup, setSelectedPickup, children,
+}) {
+  const [newPickup, setNewPickup] = useState(INITIAL_VALUE);
   // state for data coming from DDBB
   const [pickupMasterKey, setPickupMasterKey] = useState(null);
   const [pickups, setPickups] = useState([]);
@@ -102,10 +106,8 @@ export function PickupProvider({ location, selectedPickup, children }) {
 
   useEffect(() => {
     if (showCreateDialog) return;
-    setNewPickup({
-      latitude: null,
-      longitude: null,
-    });
+    setSelectedPickup(null);
+    setNewPickup(INITIAL_VALUE);
   }, [showCreateDialog]);
 
   const value = useMemo(() => ({

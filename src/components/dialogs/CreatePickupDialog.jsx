@@ -3,34 +3,26 @@
 /* eslint-disable jsx-a11y/label-has-associated-control */
 /* eslint-disable consistent-return */
 
-import React, {
-  useCallback, useEffect, useState,
-} from 'react';
-import { toast } from 'sonner';
-import { Icon } from '@iconify/react';
+import React, { useCallback, useEffect, useState } from 'react';
 
-import { getAddress } from '@/lib/getAdress';
-import { Button } from '@/components/ui/button';
-import {
-  Dialog,
-  DialogContent,
-  DialogFooter,
-  DialogHeader,
-  DialogTitle,
-  DialogDescription,
-} from '@/components/ui/dialog';
-import { Input } from '@/components/ui/input';
-import { Checkbox } from '@/components/ui/checkbox';
+import { toast } from 'sonner';
 import { isEmpty } from 'lodash';
+
+import { Icon } from '@iconify/react';
+import { getAddress } from '@/lib/getAdress';
+import { Input } from '@/components/ui/input';
+import { Button } from '@/components/ui/button';
+import { Checkbox } from '@/components/ui/checkbox';
 import { TOAST_ERROR_CLASSNAMES } from '@/lib/enums';
-import { VoiceInput } from '../custom/voice-input';
-import { CodeCopyDialog } from './code/CodeCopyDialog';
-import { Alert, AlertTitle } from '../ui/alert';
 import {
-  Select, SelectContent, SelectItem, SelectValue, SelectTrigger,
-} from '../ui/select';
+  Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle,
+} from '@/components/ui/dialog';
+
 import { Label } from '../ui/label';
 import { Switch } from '../ui/switch';
+import { Alert, AlertTitle } from '../ui/alert';
+import { VoiceInput } from '../custom/voice-input';
+import { CodeCopyDialog } from './code/CodeCopyDialog';
 
 export function CreatePickupDialog({
   open,
@@ -46,7 +38,7 @@ export function CreatePickupDialog({
     status: 'DESCONOCIDO',
     description: '',
     policy_accepted: false,
-    address: null,
+    address: '',
     ...newPickup, // Spread the incoming props to override defaults if they exist
   });
 
@@ -155,7 +147,10 @@ export function CreatePickupDialog({
   }, [newPickup.latitude, newPickup.longitude, updatePickup, addressFetched]);
 
   useEffect(() => {
+    if (open) return;
     setSelectedNeeds([]);
+    setAddressFetched(false);
+
     setErrors({
       type: false,
       telf: false,

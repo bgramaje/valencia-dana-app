@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
 import { InputOTP, InputOTPGroup, InputOTPSlot } from '@/components/ui/input-otp';
@@ -12,6 +12,10 @@ export function CodeCrudDialog({
   const [value, setValue] = React.useState('');
 
   const handleClose = () => callback(value);
+
+  useEffect(() => {
+    if (!open)setValue('');
+  }, [open]);
 
   return (
     <Dialog open={open} onOpenChange={close}>

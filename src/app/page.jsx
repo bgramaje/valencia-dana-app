@@ -20,8 +20,16 @@ function CombinedProvider({
 }) {
   return (
     <TownProvider>
-      <MarkerProvider location={selectedCoordinate} selectedMarker={selectedMarker} setSelectedMarker={setSelectedMarker}>
-        <PickupProvider location={selectedCoordinate} selectedPickup={selectedPickup} setSelectedPickup={setSelectedPickup}>
+      <MarkerProvider
+        location={selectedCoordinate}
+        selectedMarker={selectedMarker}
+        setSelectedMarker={setSelectedMarker}
+      >
+        <PickupProvider
+          location={selectedCoordinate}
+          selectedPickup={selectedPickup}
+          setSelectedPickup={setSelectedPickup}
+        >
           {children}
         </PickupProvider>
       </MarkerProvider>
