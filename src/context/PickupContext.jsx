@@ -15,6 +15,7 @@ import { InfoPickerDialog } from '@/components/dialogs/InfoPickerDialog';
 const PickupContext = createContext();
 
 const INITIAL_VALUE = {
+  name: '',
   longitude: 0,
   latitude: 0,
 };
@@ -108,7 +109,7 @@ export function PickupProvider({
     if (showCreateDialog) return;
     setSelectedPickup(null);
     setNewPickup(INITIAL_VALUE);
-  }, [showCreateDialog]);
+  }, [showCreateDialog, setSelectedPickup]);
 
   const value = useMemo(() => ({
     pickups,
