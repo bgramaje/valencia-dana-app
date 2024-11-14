@@ -218,7 +218,7 @@ export function CreatePickupDialog({
                   onClick={() => (selectNeed(key))}
                   key={label}
                   className={`flex items-center mb-0 basis-[100px] gap-1.5 flex-1 ${
-                    selectedNeeds.includes(key) ? 'bg-blue-400 border-blue-600 border-1' : 'bg-zinc-100'
+                    selectedNeeds.includes(key) ? 'bg-blue-500 border-blue-800 border-1' : 'bg-zinc-100'
                   } rounded-xl border border-zinc-200 p-1.5`}
                 >
                   <div

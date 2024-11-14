@@ -4,36 +4,29 @@
 /* eslint-disable consistent-return */
 
 import React, { useCallback, useEffect, useRef } from 'react';
+
 import { toast } from 'sonner';
+import { isEmpty } from 'lodash';
 import { Upload } from 'lucide-react';
 import parsePhoneNumber from 'libphonenumber-js';
+
 import Image from 'next/image';
 import { Icon } from '@iconify/react';
-
 import { getAddress } from '@/lib/getAdress';
-import { TOAST_ERROR_CLASSNAMES } from '@/lib/enums';
-import { Button } from '@/components/ui/button';
-import {
-  Dialog,
-  DialogContent,
-  DialogFooter,
-  DialogHeader,
-  DialogTitle,
-  DialogDescription,
-} from '@/components/ui/dialog';
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from '@/components/ui/select';
 import { Input } from '@/components/ui/input';
+import { Button } from '@/components/ui/button';
 import { Checkbox } from '@/components/ui/checkbox';
-import { isEmpty } from 'lodash';
+import { TOAST_ERROR_CLASSNAMES } from '@/lib/enums';
+import {
+  Select, SelectContent, SelectItem, SelectTrigger, SelectValue,
+} from '@/components/ui/select';
+import {
+  Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle,
+} from '@/components/ui/dialog';
+
+import { Alert, AlertTitle } from '../ui/alert';
 import { VoiceInput } from '../custom/voice-input';
 import { CodeCopyDialog } from './code/CodeCopyDialog';
-import { Separator } from '../ui/separator';
 
 const convertToBase64 = (file) => new Promise((resolve, reject) => {
   const reader = new FileReader();
@@ -231,6 +224,31 @@ export function CreateDialog({
             </DialogDescription>
           </DialogHeader>
 
+          {direccion?.calle && (
+            <div className="flex flex-col gap-1">
+              <div className="!text-[13px] font-semibold flex gap-2 items-center px-0">
+                <Alert className="border-zinc-200 bg-zinc-100 px-3 py-1">
+                  <AlertTitle className="text-center text-[13px] flex items-center justify-between mb-0">
+                    <p className="uppercase text-[11px]">Ubicación:</p>
+                    <span className="uppercase">
+                      {direccion?.poblacion ?? '-'}
+                    </span>
+                  </AlertTitle>
+                </Alert>
+              </div>
+              <div className="!text-[13px] font-semibold flex gap-2 items-center px-0">
+                <Alert className="border-zinc-200 bg-zinc-100 px-3 py-1">
+                  <AlertTitle className="text-center text-[13px] flex items-center justify-between mb-0">
+                    <p className="uppercase text-[11px]">Calle:</p>
+                    <span className="uppercase">
+                      {direccion?.calle ?? '-'}
+                    </span>
+                  </AlertTitle>
+                </Alert>
+              </div>
+            </div>
+          )}
+
           <div className="flex flex-col gap-2">
             <Select
               value={markerState.type}
@@ -316,27 +334,6 @@ export function CreateDialog({
               />
             </div>
           </div>
-
-          {direccion.calle ? (
-            <div className="flex flex-col gap-1">
-              <div className="text-[14px] font-medium flex gap-2 items-center">
-                <div className="flex gap-1.5 bg-zinc-200 rounded-sm px-2 py-0.5 items-center w-[85px] ">
-                  <p className="text-[12px] font-medium">Calle</p>
-                </div>
-                <Separator orientation="vertical" />
-                {direccion?.calle}
-              </div>
-              <div className="text-[14px] font-medium flex gap-2 items-center">
-                <div className="flex gap-1.5 bg-zinc-200 rounded-sm px-2 py-0.5 items-center w-[85px] ">
-                  <p className="text-[12px] font-medium">Población</p>
-                </div>
-                <Separator orientation="vertical" />
-                {direccion?.poblacion}
-              </div>
-            </div>
-          ) : (
-            <p>Cargando dirección...</p>
-          )}
 
           <DialogFooter className="mt-2">
             <div className="flex flex-col w-full gap-2">
