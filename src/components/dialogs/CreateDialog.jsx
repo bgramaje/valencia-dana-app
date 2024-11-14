@@ -67,6 +67,7 @@ export function CreateDialog({
     poblacion: null,
     direccionCompleta: null,
   });
+
   const [image, setImage] = React.useState(null);
   const [imagePreview, setImagePreview] = React.useState(null);
   const [errors, setErrors] = React.useState({
@@ -76,6 +77,7 @@ export function CreateDialog({
     data_usage: false,
     policy_accepted: false,
   });
+
   const fileInputRef = useRef(null);
 
   // Update local state when props change
