@@ -13,15 +13,16 @@ export function hasAnyAttribute(obj, attributes) {
 }
 
 export const fetcher = (url, options, successMessage) => fetch(url, options)
-  .then((response) => {
+  .then(async (response) => {
     if (!response.ok) {
-      return response.json().then((errorData) => {
-        throw new Error(errorData.message || 'Error');
-      });
+      const errorData = await response.json();
+      throw new Error(errorData.message || 'Error');
     }
     return response.json();
   })
   .then((data) => {
+    if (isEmpty(successMessage)) return data;
+
     toast.success(successMessage, {
       description: new Intl.DateTimeFormat('es-ES', DATE_OPTIONS).format(new Date()),
       duration: 2000,

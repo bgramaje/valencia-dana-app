@@ -5,27 +5,30 @@ import { isEmpty } from 'lodash';
 
 import Image from 'next/image';
 import { Icon } from '@iconify/react';
-import { Button } from '@/components/ui/button';
-import { getAddress, getGoogleMapsUrl } from '@/lib/getAdress';
 import { formatDate } from '@/lib/date';
-
 import { MARKER_STATUS } from '@/lib/enums';
+import { Button } from '@/components/ui/button';
+import { AspectRatio } from '@/components/ui/aspect-ratio';
+import { getAddress, getGoogleMapsUrl } from '@/lib/getAdress';
+import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
 import {
   Accordion, AccordionContent, AccordionItem, AccordionTrigger,
 } from '@/components/ui/accordion';
 import {
   Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle,
 } from '@/components/ui/dialog';
-import { AspectRatio } from '@/components/ui/aspect-ratio';
-
-import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
 
 import { HelperDialog } from './HelperDialog';
 import { MarkerBadge } from '../custom/marker-badge';
 import { CodeCrudDialog } from './code/CodeCrudDialog';
 
 export function InfoMarkerDialog({
-  open, close, selectedMarker, handleDeleteMarker, handleAssignMarker, handleCompleteMarker,
+  open,
+  close,
+  selectedMarker,
+  deleteMarker,
+  assignMarker,
+  completeMarker,
 }) {
   const [showHelperDialog, setShowHelperDialog] = useState(false);
   const [showCodeDialog, setShowCodeDialog] = useState(false);
@@ -311,7 +314,7 @@ export function InfoMarkerDialog({
         selectedMarker={marker}
         callback={(body) => {
           setShowHelperDialog(false);
-          handleAssignMarker(body, () => fetchMarker(selectedMarker.id));
+          assignMarker(body, () => fetchMarker(selectedMarker.id));
         }}
       />
 
@@ -320,7 +323,7 @@ export function InfoMarkerDialog({
         close={setShowCodeDialog}
         selectedMarker={marker}
         callback={(code) => {
-          handleDeleteMarker(code);
+          deleteMarker(code);
           close(false);
         }}
       >
@@ -340,10 +343,10 @@ export function InfoMarkerDialog({
       <CodeCrudDialog
         open={showCompleteDialog}
         close={setShowCompleteDialog}
-        handleDeleteMarker={handleDeleteMarker}
+        handleDeleteMarker={deleteMarker}
         selectedMarker={marker}
         callback={(code) => {
-          handleCompleteMarker({ status: 'completado', code });
+          completeMarker({ status: 'completado', code });
           close(false);
         }}
       >

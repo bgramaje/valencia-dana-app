@@ -1,87 +1,31 @@
 /* eslint-disable max-len */
 /* eslint-disable no-param-reassign */
+import { useMarkers } from '@/context/MarkerContext';
+import { usePickups } from '@/context/PickupContext';
 import { PICKUP_STATUS } from '@/lib/enums';
 import { ScatterplotLayer, IconLayer, TextLayer } from '@deck.gl/layers';
 import { useState, useEffect, useMemo } from 'react';
 
-import { toast } from 'sonner';
-
 const ZOOM_LIMIT = 11;
 
-export const useMapLayers = (
+export const useMapLayers = ({
+  markers,
+  pickups,
+  towns,
   userLocation,
   setSelectedMarker,
   setSelectedPickup,
-  setModalOpen,
-  setModalPickupOpen,
   viewState,
   activeLayers = {
     AFECTADO: true,
-    VOLUNTARIO: true,
     PUNTO: true,
   },
-) => {
+}) => {
+  const { setShowInfoPickupDialog } = usePickups();
+  const { setShowMarkerDialog } = useMarkers();
   const { zoom } = viewState;
 
-  const [markers, setMarkers] = useState([]);
-  const [markersType, setMarkersType] = useState([]);
-  const [pickups, setPickups] = useState([]);
-
-  const [towns, setTowns] = useState([]);
-
-  const [loading, setLoading] = useState(true);
-  const [key, setKey] = useState(null);
-
   const [pulseRadius, setPulseRadius] = useState(100);
-
-  const fetchKey = () => {
-    fetch('/api/pickups/code')
-      .then((response) => response.json())
-      .then((data) => setKey(data)?.key)
-      .catch((error) => toast.error(`Error loading markers: ${error}`));
-  };
-
-  const fetchTowns = () => {
-    fetch('/api/towns')
-      .then((response) => response.json())
-      .then((data) => setTowns(data))
-      .catch((error) => toast.error(`Error loading markers: ${error}`));
-  };
-
-  const fetchMarkers = () => {
-    fetch('/api/markers')
-      .then((response) => response.json())
-      .then((data) => setMarkers(data))
-      .catch((error) => toast.error(`Error loading markers: ${error}`));
-  };
-
-  const fetchMarkersType = () => {
-    fetch('/api/markers/type')
-      .then((response) => response.json())
-      .then((data) => setMarkersType(data))
-      .catch((error) => toast.error(`Error loading markers type: ${error}`));
-  };
-
-  const fetchPickups = () => {
-    fetch('/api/pickups')
-      .then((response) => response.json())
-      .then((data) => setPickups(data))
-      .catch((error) => toast.error(`Error loading markers type: ${error}`));
-  };
-
-  useEffect(() => {
-    fetchMarkers();
-    fetchMarkersType();
-    fetchPickups();
-    fetchKey();
-    setLoading(false);
-  }, []);
-
-  useEffect(() => {
-    setLoading(true);
-    fetchTowns();
-    setLoading(false);
-  }, [markers]);
 
   useEffect(() => {
     const interval = setInterval(() => {
@@ -113,7 +57,7 @@ export const useMapLayers = (
         onClick: ({ object }) => {
           if (object) {
             setSelectedMarker(object);
-            setModalOpen(true);
+            setShowMarkerDialog(true);
           }
         },
         visible: (activeLayers?.AFECTADO && zoom >= ZOOM_LIMIT), // Mostrar los marcadores individuales cuando el zoom es mayor o igual a 10
@@ -140,7 +84,7 @@ export const useMapLayers = (
         onClick: ({ object }) => {
           if (object) {
             setSelectedMarker(object);
-            setModalOpen(true);
+            setShowMarkerDialog(true);
           }
         },
         updateTriggers: {
@@ -149,7 +93,7 @@ export const useMapLayers = (
         },
       }),
     ],
-    [markers, setSelectedMarker, setModalOpen, zoom, activeLayers],
+    [markers, setSelectedMarker, setShowMarkerDialog, zoom, activeLayers],
   );
 
   const centroidLayers = useMemo(
@@ -228,7 +172,7 @@ export const useMapLayers = (
         onClick: ({ object }) => {
           if (object) {
             setSelectedPickup(object);
-            setModalPickupOpen(true);
+            setShowInfoPickupDialog(true);
           }
         },
         updateTriggers: {
@@ -256,7 +200,7 @@ export const useMapLayers = (
         onClick: ({ object }) => {
           if (object) {
             setSelectedPickup(object);
-            setModalPickupOpen(true);
+            setShowInfoPickupDialog(true);
           }
         },
         updateTriggers: {
@@ -265,7 +209,7 @@ export const useMapLayers = (
         },
       }),
     ],
-    [pickups, zoom, activeLayers, setSelectedPickup, setModalPickupOpen],
+    [pickups, zoom, activeLayers, setSelectedPickup, setShowInfoPickupDialog],
   );
 
   // Capa con efecto de pulso para userLocation
@@ -283,15 +227,6 @@ export const useMapLayers = (
   );
 
   return {
-    markers,
-    markersType,
-    towns,
-    pickups,
-    key,
-    loading,
-    setMarkers,
-    setPickups,
-    fetchMarkers,
     layers: [...staticLayers, pulsingLayer, ...centroidLayers, ...pickupsLayer].filter(Boolean),
   };
 };

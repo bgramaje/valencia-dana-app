@@ -7,7 +7,7 @@ import {
 } from '@/components/ui/dialog';
 
 export function CodeCrudDialog({
-  open, close, callback, children,
+  open, close, callback, title = null, description = null, children,
 }) {
   const [value, setValue] = React.useState('');
 
@@ -17,7 +17,7 @@ export function CodeCrudDialog({
     <Dialog open={open} onOpenChange={close}>
       <DialogContent className="max-w-[90%] w-fit min-w-[350px] rounded-xl">
         <DialogHeader>
-          <DialogTitle className="uppercase font-bold text-[14px]">Código</DialogTitle>
+          <DialogTitle className="uppercase font-bold text-[14px]">{title ?? 'Código'}</DialogTitle>
         </DialogHeader>
         <DialogDescription className="text-center font-medium text-[12px] p-0 m-0 hidden">
           -
@@ -27,7 +27,7 @@ export function CodeCrudDialog({
             <AlertTitle />
             <AlertDescription>
               <p className="text-[13px] max-w-[260px] text-center m-4 mt-0">
-                Escriba el código facilitado durante la creación para aplicar la operación.
+                {description ?? 'Escriba el código facilitado durante la creación para aplicar la operación.'}
               </p>
               <div className="w-full flex items-center justify-center">
                 <InputOTP

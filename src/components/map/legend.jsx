@@ -1,62 +1,18 @@
 'use client';
 
 import React, { memo } from 'react';
-import { Icon } from '@iconify/react';
 
-import {
-  Drawer,
-  DrawerClose,
-  DrawerContent,
-  DrawerDescription,
-  DrawerFooter,
-  DrawerHeader,
-  DrawerTitle,
-  DrawerTrigger,
-} from '@/components/ui/drawer';
+import { Icon } from '@iconify/react';
 import useMediaQuery from '@/hooks/useMediaQuery';
+import { MARKER_LAYERS, PICKUP_STATUS } from '@/lib/enums';
 import {
   Tabs, TabsContent, TabsList, TabsTrigger,
 } from '@/components/ui/tabs';
-import { MARKER_LAYERS, PICKUP_STATUS } from '@/lib/enums';
+import {
+  Drawer, DrawerClose, DrawerContent, DrawerDescription, DrawerFooter, DrawerHeader, DrawerTitle, DrawerTrigger,
+} from '@/components/ui/drawer';
+
 import { Button } from '../ui/button';
-
-/*
-export const Legend = memo(({ types, loading }) => (
-  <div className="bg-white p-2 m-0 rounded-xl shadow flex gap-1 flex-wrap justify-between min-w-[230px]">
-    {loading && (
-      <div className="flex items-center justify-center w-full">
-        <Icon
-          icon="line-md:loading-loop"
-          width="20"
-          height="20"
-          style={{ color: '#202020' }}
-        />
-      </div>
-    )}
-    {!loading && types.map((type) => (
-      <div key={type.id} className="flex items-center mb-0 basis-[100px] flex gap-1.5">
-        <div
-          className="w-7 h-7 rounded-full flex items-center justify-center"
-          style={{ backgroundColor: `rgb(${type.color.join(',')})` }}
-        >
-          <Icon
-            icon={type.icon}
-            width="16"
-            height="16"
-            style={{ color: '#202020' }}
-          />
-        </div>
-        <span
-          className="font-semibold max-w-[60px] text-[13px] uppercase leading-tight"
-        >
-          {type.label}
-        </span>
-      </div>
-    ))}
-  </div>
-));
-
-*/
 
 export const Legend = memo(({ types, loading = true, children }) => {
   const [open, setOpen] = React.useState(false);
@@ -82,7 +38,7 @@ export const Legend = memo(({ types, loading = true, children }) => {
               {Object.keys(MARKER_LAYERS).map((key) => {
                 const { label, icon } = MARKER_LAYERS[key];
                 return (
-                  <TabsTrigger value={label} className="flex-1 flex gap-2 items-center">
+                  <TabsTrigger key={label} value={label} className="flex-1 flex gap-2 items-center">
                     <Icon icon={icon} width={20} height={20} />
                     <span className="mt-0 text-[11px] uppercase">{label}</span>
                   </TabsTrigger>
@@ -103,7 +59,7 @@ export const Legend = memo(({ types, loading = true, children }) => {
                   />
                 </div>
               )}
-              {!loading && types.map((type) => (
+              {!loading && (types ?? []).map((type) => (
                 <div
                   key={type.id}
                   className="flex items-center mb-0 basis-[100px] flex gap-1.5 flex-1 bg-zinc-100 rounded-xl border border-zinc-200 p-1.5"
