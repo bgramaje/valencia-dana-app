@@ -18,12 +18,12 @@ function ChooseCreateDialog({ open, setOpen, cb }) {
     <Dialog open={open} onOpenChange={setOpen}>
       <DialogContent className="max-w-[90%] w-fit min-w-[350px] rounded-xl overflow-y-auto max-h-[90%] gap-1">
         <DialogTitle className="uppercase font-bold text-[14px] text-center">
-          Seleccionar Tipo
+          Selecciona Tipo
         </DialogTitle>
         <DialogDescription className="text-center font-medium text-[12px]">
           Selecciona el tipo de marcador que quieres añadir
         </DialogDescription>
-        <div className="flex justify-center gap-6 px-3 pt-2">
+        <div className="flex justify-center gap-6 px-3 pt-4">
           {Object.keys(MARKER_LAYERS).map((key) => {
             const { label, icon } = MARKER_LAYERS[key];
             return (

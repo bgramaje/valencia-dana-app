@@ -46,6 +46,7 @@ export function CreatePickupDialog({
     status: 'DESCONOCIDO',
     description: '',
     policy_accepted: false,
+    address: null,
     ...newPickup, // Spread the incoming props to override defaults if they exist
   });
 
@@ -105,10 +106,18 @@ export function CreatePickupDialog({
 
     const needsPosts = selectedNeeds.join(',');
 
+    let statusDB;
+
+    if (selectedNeeds.length === needs.length) statusDB = 'ABIERTO';
+    else if (selectedNeeds.length === 0) statusDB = 'CERRADO';
+    else if (selectedNeeds.length !== needs.length) statusDB = 'PARCIALMENTE';
+    else statusDB = 'DESCONOCIDO';
+
     handleAddPickup({
       ...pickupState,
       needs: needsPosts,
       location: direccion?.poblacion?.toUpperCase() ?? 'unknown',
+      status: statusDB,
     });
   };
 
@@ -235,31 +244,7 @@ export function CreatePickupDialog({
                 </div>
               );
             })}
-            <div className="py-2 w-full flex flex-col gap-2">
-              <Label htmlFor="airplane-mode">Estado del punto</Label>
-              <Select
-                value={pickupState.status}
-                onValueChange={(value) => {
-                  updatePickup({ status: value });
-                  setErrors({ ...errors, status: false });
-                }}
-              >
-                <SelectTrigger className={`w-full ${errors.status ? 'border-red-500 ring-red-500' : ''}`}>
-                  <SelectValue placeholder="Estado" />
-                </SelectTrigger>
-                <SelectContent>
-                  {['DESCONOCIDO', 'CERRADO', 'PARCIALMENTE', 'ABIERTO']?.map((t) => (
-                    <SelectItem key={t} value={t}>
-                      <span className="flex items-center">
-                        {t}
-                      </span>
-                    </SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
-            </div>
-
-            <div className="flex items-center justify-between w-full py-1">
+            <div className="flex items-center justify-between w-full py-2 pt-4">
               <Label htmlFor="airplane-mode">Punto de recogida verificado?</Label>
               <Switch
                 value={pickupState?.verified ?? false}

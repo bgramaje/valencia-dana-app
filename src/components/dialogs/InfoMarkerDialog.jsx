@@ -5,7 +5,7 @@ import { isEmpty } from 'lodash';
 
 import Image from 'next/image';
 import { Icon } from '@iconify/react';
-import { formatDate } from '@/lib/date';
+import { formatDate, isOlderThanThreeDays } from '@/lib/date';
 import { MARKER_STATUS } from '@/lib/enums';
 import { Button } from '@/components/ui/button';
 import { AspectRatio } from '@/components/ui/aspect-ratio';
@@ -105,6 +105,24 @@ export function InfoMarkerDialog({
             </DialogDescription>
           </DialogHeader>
           <div className="px-4 py-0 m-0 text-xs flex flex-col gap-1 ">
+            {isOlderThanThreeDays(marker?.created_at) && (
+              <div className="!text-[13px] font-semibold flex gap-2 items-center px-0">
+                <Alert className="border-red-600 bg-red-400 px-3 py-1.5">
+                  <AlertTitle className="text-center text-[13px] flex items-center justify-between">
+                    <p className="uppercase text-[11px] leading-snug text-justify">
+                      Atencion, la alerta se creó el
+                      {' '}
+                      {' '}
+                      {formatDate(marker?.created_at)}
+                      {' '}
+                      ,
+                      porfavor antes de realizar la petición consulta con el afectado
+                    </p>
+                  </AlertTitle>
+                </Alert>
+              </div>
+            )}
+
             <Alert className="text-xs border-zinc-200 px-3 py-1.5">
               <Accordion type="single" collapsible className="border-0">
                 <AccordionItem value="item-1" className="border-0">

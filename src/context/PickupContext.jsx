@@ -149,7 +149,7 @@ export function PickupProvider({ location, selectedPickup, children }) {
         open={showCodeDialog}
         close={setShowCodeDialog}
         callback={codePickupCallback}
-        title="Código creacion"
+        title="Código creación"
         description="Porfavor inserte la clave que da accesso a gestionar los puntos de recogida"
       >
         <Button className="w-full mt-2 bg-green-500 uppercase text-[12px] font-semibold">

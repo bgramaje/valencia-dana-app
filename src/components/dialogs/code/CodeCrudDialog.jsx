@@ -19,14 +19,16 @@ export function CodeCrudDialog({
         <DialogHeader>
           <DialogTitle className="uppercase font-bold text-[14px]">{title ?? 'Código'}</DialogTitle>
         </DialogHeader>
-        <DialogDescription className="text-center font-medium text-[12px] p-0 m-0 hidden">
+        <DialogDescription
+          className="text-center font-medium text-[12px] p-0 m-0 hidden"
+        >
           -
         </DialogDescription>
         <div className="flex flex-col gap-0 justify-center items-center">
           <Alert>
             <AlertTitle />
             <AlertDescription>
-              <p className="text-[13px] max-w-[260px] text-center m-4 mt-0">
+              <p className="text-[13px] max-w-[260px] text-center m-4 mt-0 font-medium !leading-tight">
                 {description ?? 'Escriba el código facilitado durante la creación para aplicar la operación.'}
               </p>
               <div className="w-full flex items-center justify-center">

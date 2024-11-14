@@ -9,6 +9,26 @@ import { MarkerProvider } from '@/context/MarkerContext';
 import MapView from '@/components/map/map-view';
 import { TownProvider } from '@/context/TownContext';
 
+/**
+ * @name CombinedProvider
+ * @description component for nesting different providers
+ * @param {*} param0
+ * @returns
+ */
+function CombinedProvider({
+  children, selectedCoordinate, selectedMarker, setSelectedMarker, selectedPickup, setSelectedPickup,
+}) {
+  return (
+    <TownProvider>
+      <MarkerProvider location={selectedCoordinate} selectedMarker={selectedMarker} setSelectedMarker={setSelectedMarker}>
+        <PickupProvider location={selectedCoordinate} selectedPickup={selectedPickup} setSelectedPickup={setSelectedPickup}>
+          {children}
+        </PickupProvider>
+      </MarkerProvider>
+    </TownProvider>
+  );
+}
+
 export default function Home() {
   const [selectedMarker, setSelectedMarker] = useState(null);
   const [selectedPickup, setSelectedPickup] = useState(null);
@@ -32,38 +52,32 @@ export default function Home() {
   }, []);
 
   return (
-    <TownProvider>
-      <MarkerProvider
-        location={selectedCoordinate}
+    <CombinedProvider
+      selectedCoordinate={selectedCoordinate}
+      selectedMarker={selectedMarker}
+      setSelectedMarker={setSelectedMarker}
+      selectedPickup={selectedPickup}
+      setSelectedPickup={setSelectedPickup}
+    >
+      <MapView
+        setSelectedCoordinate={setSelectedCoordinate}
+        dialogChooseCreate={dialogChooseCreate}
+        setDialogChooseCreate={setDialogChooseCreate}
+        selectedPickup={selectedPickup}
+        setSelectedPickup={setSelectedPickup}
         selectedMarker={selectedMarker}
         setSelectedMarker={setSelectedMarker}
-      >
-        <PickupProvider
-          location={selectedCoordinate}
-          selectedPickup={selectedPickup}
-          setSelectedPickup={setSelectedPickup}
-        >
-          <MapView
-            setSelectedCoordinate={setSelectedCoordinate}
-            dialogChooseCreate={dialogChooseCreate}
-            setDialogChooseCreate={setDialogChooseCreate}
-            selectedPickup={selectedPickup}
-            setSelectedPickup={setSelectedPickup}
-            selectedMarker={selectedMarker}
-            setSelectedMarker={setSelectedMarker}
-          />
+      />
 
-          <InfoDialog
-            open={isInfoOpen}
-            close={() => setIsInfoOpen(false)}
-          />
+      <InfoDialog
+        open={isInfoOpen}
+        close={setIsInfoOpen}
+      />
 
-          <WarningDialog
-            isWarningModalOpen={isWarningModalOpen}
-            closeWarningModal={closeWarningModal}
-          />
-        </PickupProvider>
-      </MarkerProvider>
-    </TownProvider>
+      <WarningDialog
+        isWarningModalOpen={isWarningModalOpen}
+        closeWarningModal={closeWarningModal}
+      />
+    </CombinedProvider>
   );
 }
