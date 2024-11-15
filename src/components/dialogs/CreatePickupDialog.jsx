@@ -97,6 +97,8 @@ export function CreatePickupDialog({
     }
 
     const needsPosts = selectedNeeds.join(',');
+    // generate array filled of 0 for capacity base value
+    const needsSatisfied = Array.from({ length: selectedNeeds.length }, () => 0);
 
     let statusDB;
 
@@ -108,6 +110,7 @@ export function CreatePickupDialog({
     handleAddPickup({
       ...pickupState,
       needs: needsPosts,
+      needsSatisfied: needsSatisfied.join(','),
       location: direccion?.poblacion?.toUpperCase() ?? 'unknown',
       status: statusDB,
     });
@@ -197,7 +200,7 @@ export function CreatePickupDialog({
             )}
             <Input
               placeholder="Dirección Postal"
-              type="tel"
+              type="text"
               className={errors.address ? 'border-red-500 ring-red-500' : ''}
               value={pickupState.address}
               onChange={(e) => {
@@ -208,49 +211,64 @@ export function CreatePickupDialog({
               }}
             />
           </div>
-          <div
-            className="flex flex-wrap w-full gap-1.5"
-          >
-            {needs.map((need) => {
-              const { label, icon, key } = need;
-              return (
-                <div
-                  onClick={() => (selectNeed(key))}
-                  key={label}
-                  className={`flex items-center mb-0 basis-[100px] gap-1.5 flex-1 ${
-                    selectedNeeds.includes(key) ? 'bg-blue-500 border-blue-800 border-1' : 'bg-zinc-100'
-                  } rounded-xl border border-zinc-200 p-1.5`}
-                >
+          <div className="flex flex-col gap-2 max-h-[300px] overflow-y-auto pr-2">
+            <div className="flex flex-col gap-1">
+              <Label htmlFor="airplane-mode" className="text-[13px] uppercase">Necesidades</Label>
+              <p className="text-[11px] font-light text-justify">
+                Porfavor, selecciona lo que este recogiendose ahora mismo en el punto de recogida.
+              </p>
+            </div>
+            <div
+              className="flex flex-wrap w-full gap-1.5"
+            >
+              {needs.map((need) => {
+                const { label, icon, key } = need;
+                return (
                   <div
-                    className="w-7 h-7 rounded-full flex items-center justify-center"
+                    onClick={() => (selectNeed(key))}
+                    key={label}
+                    className={`flex items-center mb-0 basis-[100px] gap-1.5 flex-1 
+                      ${selectedNeeds.includes(key) ? 'bg-blue-500 border-blue-800 border-1' : 'bg-zinc-100'
+                    } rounded-xl border border-zinc-200 p-1.5`}
                   >
-                    <Icon
-                      icon={icon}
-                      width="20"
-                      height="20"
-                      style={{ color: '#202020' }}
-                    />
+                    <div
+                      className="w-7 h-7 rounded-full flex items-center justify-center"
+                    >
+                      <Icon
+                        icon={icon}
+                        width="20"
+                        height="20"
+                        style={{ color: '#202020' }}
+                      />
+                    </div>
+                    <span
+                      className="font-semibold text-[13px] uppercase leading-tight"
+                    >
+                      {label}
+                    </span>
                   </div>
-                  <span
-                    className="font-semibold text-[13px] uppercase leading-tight"
-                  >
-                    {label}
-                  </span>
+                );
+              })}
+
+              <div className="flex items-center justify-between w-full py-2 pt-4 gap-8">
+                <div className="flex flex-col gap-1">
+                  <Label htmlFor="airplane-mode" className="text-[13.5px]">Punto de recogida verificado?</Label>
+                  <p className="text-[11px] font-light text-justify">
+                    Eres personal responsable o
+                    has verificado personalmente los datos introducidos?
+                  </p>
                 </div>
-              );
-            })}
-            <div className="flex items-center justify-between w-full py-2 pt-4">
-              <Label htmlFor="airplane-mode">Punto de recogida verificado?</Label>
-              <Switch
-                value={pickupState?.verified ?? false}
-                onCheckedChange={(checked) => {
-                  updatePickup({ verified: checked });
-                  setErrors({ ...errors, verified: false });
-                }}
-              />
+                <Switch
+                  value={pickupState?.verified ?? false}
+                  onCheckedChange={(checked) => {
+                    updatePickup({ verified: checked });
+                    setErrors({ ...errors, verified: false });
+                  }}
+                />
+              </div>
             </div>
           </div>
-          <DialogFooter className="mt-2">
+          <DialogFooter className="mt-0">
             <div className="flex flex-col w-full gap-2">
               <div className="flex items-center pb-2">
                 <Checkbox
@@ -288,7 +306,6 @@ export function CreatePickupDialog({
           </DialogFooter>
         </DialogContent>
       </Dialog>
-
       <CodeCopyDialog open={showCodeDialog} close={setShowCodeDialog} />
     </>
   );

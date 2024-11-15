@@ -33,6 +33,7 @@ export function PickupProvider({
   const [showCreateDialog, setShowCreateDialog] = useState(false);
   const [showCodeDialog, setShowCodeDialog] = useState(false);
   const [showInfoPickupDialog, setShowInfoPickupDialog] = useState(false);
+
   /**
    * @name fetchPickups
    * @description function to set all pickups stored in the database
@@ -46,6 +47,15 @@ export function PickupProvider({
       setPickups(data);
     });
   }, []);
+
+  const fetchPickup = useCallback(() => {
+    fetcher(`/api/pickups/${selectedPickup?.id}`, {
+      method: 'GET',
+      headers: { 'Content-Type': 'application/json' },
+    }, null).then((data) => {
+      setSelectedPickup(data);
+    });
+  }, [setSelectedPickup, selectedPickup]);
 
   /**
    * @name fetchKey
@@ -76,6 +86,24 @@ export function PickupProvider({
       setShowCreateDialog(false);
     });
   }, []);
+
+  /**
+   * @name postPickup
+   * @param body
+   * @description function to post to the api a new pickup point.
+   * After successfully doing it, it closes pickup dialog modal.
+   */
+  const updatePickup = useCallback((body, cb) => {
+    fetcher(`/api/pickups/${selectedPickup.id}`, {
+      method: 'PUT',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ id: selectedPickup.id, ...body }),
+    }, 'Punto de recogida actualizado correctamente').then((data) => {
+      setSelectedPickup(data);
+      setShowCreateDialog(false);
+      if (cb) cb();
+    });
+  }, [selectedPickup, setSelectedPickup]);
 
   /**
    * @name codeCallback
@@ -119,6 +147,8 @@ export function PickupProvider({
     setShowCodeDialog,
     setShowInfoPickupDialog,
     postPickup,
+    updatePickup,
+    fetchPickup,
   }), [
     pickups,
     pickupMasterKey,
@@ -127,6 +157,8 @@ export function PickupProvider({
     setShowCodeDialog,
     setShowInfoPickupDialog,
     postPickup,
+    updatePickup,
+    fetchPickup,
   ]);
 
   return (

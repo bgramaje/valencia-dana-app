@@ -15,20 +15,24 @@ import {
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
 import { PICKUP_STATUS } from '@/lib/enums';
 import { PickupStatus } from '../custom/pickup-status';
+import NeedsSliderDialog from './pickup/NeedsSliderDialog';
+import { Slider } from '../ui/slider';
 
 export function InfoPickerDialog({
   open, close, selectedPickup,
 }) {
-  const [pickup, setPickup] = useState(null);
   const [loading, setLoading] = useState(true);
   const [selectedNeeds, setSelectedNeeds] = React.useState([]);
   const [needs, setNeeds] = React.useState([]);
+
+  const [needsSatisfied, setNeedsSatisfied] = useState(
+    Array.from({ length: selectedNeeds.length }, () => 0),
+  );
 
   const fetchMarker = (id) => {
     fetch(`/api/pickups/${id}`)
       .then((response) => response.json())
       .then((data) => {
-        setPickup(data);
         setLoading(false);
         setSelectedNeeds(data?.needs?.split(',') ?? []);
       })
@@ -52,7 +56,12 @@ export function InfoPickerDialog({
     fetch();
   }, [selectedPickup.id, selectedPickup.latitude, selectedPickup.longitude]);
 
-  if (loading || pickup === null || pickup === undefined) {
+  useEffect(() => {
+    if (isEmpty(selectedPickup)) return;
+    setNeedsSatisfied(selectedPickup?.needsSatisfied?.split(','));
+  }, [selectedPickup]);
+
+  if (loading || selectedPickup === null || selectedPickup === undefined) {
     return (
       <Dialog open={open} onOpenChange={close}>
         <DialogContent className="max-w-[90%] w-fit min-w-[350px] rounded-xl p-0">
@@ -87,15 +96,15 @@ export function InfoPickerDialog({
             -
           </DialogDescription>
         </DialogHeader>
-        <PickupStatus pickup={pickup} PICKUP_STATUS={PICKUP_STATUS} />
+        <PickupStatus pickup={selectedPickup} PICKUP_STATUS={PICKUP_STATUS} />
         <div className="!text-[13px] font-semibold flex gap-2 items-center px-4">
           <Alert className="border-blue-200 bg-blue-100 px-3 py-1.5">
             <AlertTitle className="text-center text-[13px] flex items-center justify-between mb-0">
               <p className="uppercase text-[11px]">Nombre:</p>
-              {formatDate(pickup?.created_at)}
+              {formatDate(selectedPickup?.created_at)}
             </AlertTitle>
             <AlertDescription className="!text-[14px] w-full max-h-[150px] overflow-y-auto text-justify">
-              {isEmpty(pickup?.name) ? '-' : pickup?.name}
+              {isEmpty(selectedPickup?.name) ? '-' : selectedPickup?.name}
             </AlertDescription>
           </Alert>
         </div>
@@ -105,55 +114,69 @@ export function InfoPickerDialog({
             <AlertTitle className="text-center text-[13px] flex items-center justify-between mb-0">
               <p className="uppercase text-[11px]">Ubicación:</p>
               <span className="uppercase">
-                {pickup?.location?.name ?? '-'}
+                {selectedPickup?.location?.name ?? '-'}
               </span>
             </AlertTitle>
             <AlertDescription className="!text-[14px] w-full max-h-[150px] overflow-y-auto">
-              {pickup?.address ?? '-'}
+              {selectedPickup?.address ?? '-'}
             </AlertDescription>
           </Alert>
         </div>
         <AlertTitle className="text-center text-[13px] flex items-center justify-between mb-0 px-4">
-          <p className="uppercase text-[11px]">Recogen:</p>
+          <p className="uppercase text-[11px]">Capacidades:</p>
         </AlertTitle>
-        <div
-          className="flex flex-wrap w-full gap-1.5 p-4 py-1 pt-0"
-        >
-          {selectedNeeds.map((need) => {
-            const needDb = needs?.find(((rawNeed) => rawNeed?.key === need)) ?? null;
+        <div className="flex flex-col w-full gap-1.5 p-4 py-1 pt-0">
+          {!isEmpty(needs)
+            && selectedNeeds.map((need, index) => {
+              const needDB = needs.find((n) => n.key === need);
+              if (!needDB) return null;
 
-            if (!needDb) return <div />;
-            const { label, icon, key } = needDb;
-
-            return (
-              <div
-                key={label}
-                className={`flex items-center mb-0 basis-[100px] gap-1.5 flex-1 ${
-                  selectedNeeds.includes(key) ? 'bg-blue-400 border-blue-600 border-1' : 'bg-zinc-100'
-                } rounded-xl border border-zinc-200 p-1.5`}
-              >
+              const { label, icon } = needDB;
+              return (
                 <div
-                  className="w-7 h-7 rounded-full flex items-center justify-center"
+                  key={label}
+                  className={`flex items-center mb-0 gap-1.5 flex-1 
+                      'bg-zinc-100'
+                    } rounded-xl border border-zinc-200 p-2 pb-3`}
                 >
-                  <Icon
-                    icon={icon}
-                    width="20"
-                    height="20"
-                    style={{ color: '#202020' }}
-                  />
+                  <div className="w-7 h-7 rounded-full flex items-center justify-center">
+                    <Icon
+                      icon={icon}
+                      width="20"
+                      height="20"
+                      style={{ color: '#202020' }}
+                    />
+                  </div>
+                  <div className="flex flex-col gap-2 w-full">
+                    <div className="w-full flex justify-between">
+                      <span className="font-semibold text-[12px] uppercase leading-tight">
+                        {label}
+                      </span>
+                      <span className="text-xs font-medium text-gray-600">
+                        {needsSatisfied[index]}
+                        %
+                      </span>
+                    </div>
+
+                    <Slider
+                      value={[needsSatisfied[index]]}
+                      max={100}
+                      step={1}
+                      disabled
+                    />
+                  </div>
+
                 </div>
-                <span
-                  className="font-semibold text-[13px] uppercase leading-tight"
-                >
-                  {label}
-                </span>
-              </div>
-            );
-          })}
+              );
+            })}
         </div>
         <div className="p-4 pt-0 flex flex-col gap-1">
+          <NeedsSliderDialog
+            selectedNeeds={selectedPickup?.needs?.split(',') ?? []}
+            pickup={selectedPickup}
+          />
           <Button
-            onClick={() => window.open(getGoogleMapsUrl(pickup), '_blank')}
+            onClick={() => window.open(getGoogleMapsUrl(selectedPickup), '_blank')}
             className="w-full mt-0.5"
           >
             <Icon
