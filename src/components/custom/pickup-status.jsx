@@ -26,10 +26,10 @@ export function PickupStatus({ pickup, PICKUP_STATUS }) {
     case 'CERRADO':
       return getStatusComponent('CERRADO', 'red-600', 'red-500');
     case 'PARCIALMENTE':
-      return getStatusComponent('PARCIALMENTE', 'yellow-600', 'yellow-300');
+      return getStatusComponent('PARCIALMENTE', 'orange-600', 'orange-300');
     case 'DESCONOCIDO':
       return getStatusComponent('DESCONOCIDO', 'zinc-600', 'zinc-300');
     default:
-      return null;
+      return getStatusComponent('DESCONOCIDO', 'zinc-600', 'zinc-300');
   }
 }

@@ -1,4 +1,3 @@
-/* eslint-disable prefer-destructuring */
 import React, { useState, useEffect } from 'react';
 import {
   Dialog, DialogTrigger, DialogContent, DialogTitle, DialogDescription,
@@ -11,14 +10,11 @@ import { Slider } from '@/components/ui/slider';
 import { isEmpty } from 'lodash';
 import { usePickups } from '@/context/PickupContext';
 
-function NeedsSliderDialog({ selectedNeeds, pickup }) {
+export function NeedsSliderDialog({ selectedNeeds, pickup }) {
   const { updatePickup, fetchPickup } = usePickups();
   const [open, setOpen] = useState(false); // Estado para controlar si el Dialog está abierto o cerrado
   const [needs, setNeeds] = React.useState([]);
-
-  const [needsSatisfied, setNeedsSatisfied] = useState(
-    Array.from({ length: selectedNeeds.length }, () => 0),
-  );
+  const [needsSatisfied, setNeedsSatisfied] = useState([]);
 
   const fetchNeeds = () => {
     fetch('/api/pickups/needs')
@@ -40,10 +36,22 @@ function NeedsSliderDialog({ selectedNeeds, pickup }) {
     updatePickup({ needsSatisfied: needsSatisfied.join(',') }, () => fetchPickup());
   };
 
+  const syncNeedsWithPickup = () => {
+    const satisfiedMap = pickup?.needs.split(',').reduce((acc, need, i) => {
+      acc[need] = pickup.needsSatisfied.split(',')[i];
+      return acc;
+    }, {});
+
+    const reorderedNeedsSatisfied = selectedNeeds.map((need) => satisfiedMap[need] || 0, // Si no hay valor, usar 0 como predeterminado
+    );
+
+    setNeedsSatisfied(reorderedNeedsSatisfied);
+  };
+
   useEffect(() => {
     if (isEmpty(pickup)) return;
-    setNeedsSatisfied(pickup?.needsSatisfied?.split(','));
-  }, [pickup]);
+    syncNeedsWithPickup();
+  }, [pickup, selectedNeeds]);
 
   useEffect(() => {
     fetchNeeds();
@@ -52,7 +60,7 @@ function NeedsSliderDialog({ selectedNeeds, pickup }) {
   return (
     <Dialog open={open} onOpenChange={setOpen}>
       <DialogTrigger asChild>
-        <Button variant="outline" className="bg-violet-400 border-violet-500 font-medium">
+        <Button variant="outline" className="bg-violet-400 border-violet-500 font-medium uppercase text-[12px]">
           <Icon icon="tabler:square-rounded-percentage" style={{ width: 20, height: 20 }} />
           Actualizar Capacidad
         </Button>
@@ -74,9 +82,7 @@ function NeedsSliderDialog({ selectedNeeds, pickup }) {
               return (
                 <div
                   key={label}
-                  className={`flex items-center mb-0 gap-1.5 flex-1 
-                      'bg-zinc-100'
-                    } rounded-xl border border-zinc-200 p-2 pb-3`}
+                  className="flex items-center mb-0 gap-1.5 flex-1 bg-zinc-100 rounded-xl border border-zinc-200 p-2 pb-3"
                 >
                   <div className="w-7 h-7 rounded-full flex items-center justify-center">
                     <Icon
@@ -104,7 +110,6 @@ function NeedsSliderDialog({ selectedNeeds, pickup }) {
                       onValueChange={(value) => handleSliderChange(index, value)}
                     />
                   </div>
-
                 </div>
               );
             })}

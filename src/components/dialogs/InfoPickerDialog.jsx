@@ -17,6 +17,7 @@ import { PICKUP_STATUS } from '@/lib/enums';
 import { PickupStatus } from '../custom/pickup-status';
 import NeedsSliderDialog from './pickup/NeedsSliderDialog';
 import { Slider } from '../ui/slider';
+import { NeedsAddDialog } from './pickup/NeedsAddDialog';
 
 export function InfoPickerDialog({
   open, close, selectedPickup,
@@ -165,12 +166,15 @@ export function InfoPickerDialog({
                       disabled
                     />
                   </div>
-
                 </div>
               );
             })}
         </div>
         <div className="p-4 pt-0 flex flex-col gap-1">
+          <NeedsAddDialog
+            rawNeeds={selectedPickup?.needs?.split(',') ?? []}
+            pickup={selectedPickup}
+          />
           <NeedsSliderDialog
             selectedNeeds={selectedPickup?.needs?.split(',') ?? []}
             pickup={selectedPickup}
