@@ -24,28 +24,28 @@ function MarkerCard({ entity }) {
     <Card className="max-w-[350px] bg-gray-50">
       <CardHeader className="px-4 py-3">
         <CardTitle className="flex items-center text-[13px] uppercase pb-0 justify-between w-full">
-          <div className="flex items-center gap-2">
-            <p className="m-0 p-0 pt-0.25 ">
-              Marcador
-            </p>
-            <code className="mt-0.5">
-              {entity.id}
-            </code>
+          <div className="flex flex-col gap-0">
+            <div className="flex items-center gap-2">
+              <p className="m-0 p-0 pt-0.25 ">
+                Marcador
+              </p>
+              <code className="mt-0.5">
+                {entity.id}
+              </code>
+            </div>
+            <div className="flex gap-1 items-center font-medium text-xs">
+              <Icon
+                icon="fluent:hourglass-three-quarter-16-regular"
+                style={{ width: 14, height: 14 }}
+              />
+              {entity?.created_at && formatDate(entity?.created_at)}
+            </div>
           </div>
-          <div className="flex gap-2 items-center">
+          <div className="flex gap-1 items-center flex-wrap justify-end">
             <MarkerBadge marker={entity} />
             <Badge className="text-[10px] !font-bold tracking-wide">{entity.location.name}</Badge>
           </div>
         </CardTitle>
-        <CardDescription className="pb-0">
-          <div className="flex gap-1 items-center font-medium text-xs -mt-2">
-            <Icon
-              icon="fluent:hourglass-three-quarter-16-regular"
-              style={{ width: 14, height: 14 }}
-            />
-            {entity?.created_at && formatDate(entity?.created_at)}
-          </div>
-        </CardDescription>
       </CardHeader>
       <CardContent className="p-0 px-4 flex flex-col gap-1">
         {isOlderThanThreeDays(entity?.created_at) && (
