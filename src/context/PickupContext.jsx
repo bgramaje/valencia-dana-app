@@ -25,8 +25,9 @@ export function PickupProvider({
 }) {
   const [newPickup, setNewPickup] = useState(INITIAL_VALUE);
   // state for data coming from DDBB
-  const [pickupMasterKey, setPickupMasterKey] = useState(null);
   const [pickups, setPickups] = useState([]);
+  const [needs, setNeeds] = useState([]);
+
   // loading state variable
   const [loading, setLoading] = useState(false);
   // booleans for controlling dialogs
@@ -48,25 +49,21 @@ export function PickupProvider({
     });
   }, []);
 
-  const fetchPickup = useCallback(() => {
-    fetcher(`/api/pickups/${selectedPickup?.id}`, {
+  const fetchPickup = useCallback((id, cb) => {
+    fetcher(`/api/pickups/${id}`, {
       method: 'GET',
       headers: { 'Content-Type': 'application/json' },
     }, null).then((data) => {
-      setSelectedPickup(data);
+      if (cb) cb(data);
     });
-  }, [setSelectedPickup, selectedPickup]);
+  }, []);
 
-  /**
-   * @name fetchKey
-   * @description function to retrive code for creating pickups
-   */
-  const fetchKey = useCallback(() => {
-    fetcher('/api/pickups/code', {
+  const fetchNeeds = useCallback(() => {
+    fetcher('/api/pickups/needs', {
       method: 'GET',
       headers: { 'Content-Type': 'application/json' },
     }, null).then((data) => {
-      setPickupMasterKey((data)?.key);
+      setNeeds(data);
     });
   }, []);
 
@@ -93,25 +90,23 @@ export function PickupProvider({
    * @description function to post to the api a new pickup point.
    * After successfully doing it, it closes pickup dialog modal.
    */
-  const updatePickup = useCallback((body, cb) => {
-    fetcher(`/api/pickups/${selectedPickup.id}`, {
+  const updatePickup = useCallback((id, body, cb) => {
+    fetcher(`/api/pickups/${id}`, {
       method: 'PUT',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ id: selectedPickup.id, ...body }),
+      body: JSON.stringify({ id, ...body }),
     }, 'Punto de recogida actualizado correctamente').then((data) => {
-      setSelectedPickup(data);
-      setShowCreateDialog(false);
-      if (cb) cb();
+      if (cb) cb(data);
     });
-  }, [selectedPickup, setSelectedPickup]);
+  }, []);
 
   /**
    * @name codeCallback
    * @description check if given input matches with the master code.
    * If so, then it closes the modal and shows the pick creation modal
    */
-  const codePickupCallback = useCallback((inputCode) => {
-    if (inputCode === pickupMasterKey) {
+  const codePickupCallback = (inputCode) => {
+    if (inputCode === process.env.NEXT_PUBLIC_MASTER_KEY_PICKUPS) {
       setShowCodeDialog(false);
       setShowCreateDialog(true);
     } else {
@@ -120,14 +115,20 @@ export function PickupProvider({
         classNames: TOAST_ERROR_CLASSNAMES,
       });
     }
-  }, [pickupMasterKey]);
+  };
 
   useEffect(() => {
-    setLoading(true);
-    fetchPickups();
-    fetchKey();
-    setLoading(false);
-  }, [fetchPickups, fetchKey]);
+    const fetch = async () => {
+      setLoading(true);
+      await Promise.all([
+        fetchPickups(),
+        fetchNeeds(),
+      ]);
+      setLoading(false);
+    };
+
+    fetch();
+  }, [fetchPickups, fetchNeeds]);
 
   useEffect(() => {
     setNewPickup((prev) => ({ ...prev, ...location }));
@@ -141,7 +142,7 @@ export function PickupProvider({
 
   const value = useMemo(() => ({
     pickups,
-    pickupMasterKey,
+    needs,
     loading,
     fetchPickups,
     setShowCodeDialog,
@@ -151,7 +152,7 @@ export function PickupProvider({
     fetchPickup,
   }), [
     pickups,
-    pickupMasterKey,
+    needs,
     loading,
     fetchPickups,
     setShowCodeDialog,
@@ -170,6 +171,7 @@ export function PickupProvider({
         close={setShowCreateDialog}
         handleAddPickup={postPickup}
         setNewPickup={setNewPickup}
+        needs={needs}
       />
 
       {selectedPickup && (
@@ -177,6 +179,9 @@ export function PickupProvider({
           selectedPickup={selectedPickup}
           open={showInfoPickupDialog}
           close={setShowInfoPickupDialog}
+          needsDB={needs}
+          fetchPickup={fetchPickup}
+          updatePickup={updatePickup}
         />
       )}
 

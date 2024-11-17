@@ -9,11 +9,11 @@ import { toast } from 'sonner';
 import { isEmpty } from 'lodash';
 import { Upload } from 'lucide-react';
 import parsePhoneNumber from 'libphonenumber-js';
+import { isPossiblePhoneNumber, isValidPhoneNumber } from 'react-phone-number-input';
 
 import Image from 'next/image';
 import { Icon } from '@iconify/react';
 import { getAddress } from '@/lib/getAdress';
-import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 import { Checkbox } from '@/components/ui/checkbox';
 import { TOAST_ERROR_CLASSNAMES } from '@/lib/enums';
@@ -26,6 +26,7 @@ import {
 
 import { Alert, AlertTitle } from '../ui/alert';
 import { VoiceInput } from '../custom/voice-input';
+import { PhoneInput } from '../custom/phone-input';
 import { CodeCopyDialog } from './code/CodeCopyDialog';
 
 const convertToBase64 = (file) => new Promise((resolve, reject) => {
@@ -136,10 +137,8 @@ export function CreateDialog({
 
     if (isEmpty(markerState.telf)) newErrors.telf = true;
     else {
-      const phoneNumber = parsePhoneNumber(markerState.telf, 'ES');
-      if (!phoneNumber || !phoneNumber.isValid()) {
-        newErrors.telf = true;
-      }
+      const phoneNumber = isValidPhoneNumber(markerState.telf) && isPossiblePhoneNumber(markerState.telf);
+      if (!phoneNumber) newErrors.telf = true;
     }
 
     setErrors(newErrors);
@@ -238,9 +237,9 @@ export function CreateDialog({
               </div>
               <div className="!text-[13px] font-semibold flex gap-2 items-center px-0">
                 <Alert className="border-zinc-200 bg-zinc-100 px-3 py-1">
-                  <AlertTitle className="text-center text-[13px] flex items-center justify-between mb-0">
+                  <AlertTitle className="text-center text-[13px] flex items-center justify-between mb-0 gap-2">
                     <p className="uppercase text-[11px]">Calle:</p>
-                    <span className="uppercase">
+                    <span className="uppercase text-left leading-tight">
                       {direccion?.calle ?? '-'}
                     </span>
                   </AlertTitle>
@@ -277,14 +276,12 @@ export function CreateDialog({
               </SelectContent>
             </Select>
 
-            <Input
-              placeholder="612 345 678"
-              type="tel"
-              pattern="[6|7|8|9]{1}[0-9]{2} [0-9]{3} [0-9]{3}"
+            <PhoneInput
               className={errors.telf ? 'border-red-500 ring-red-500' : ''}
               value={markerState.telf}
+              defaultCountry="ES"
               onChange={(e) => {
-                updateMarker({ telf: e.target.value });
+                updateMarker({ telf: e });
                 setErrors({ ...errors, telf: false });
               }}
             />

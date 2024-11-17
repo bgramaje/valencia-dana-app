@@ -95,3 +95,38 @@ textarea:focus {
 textarea {
   font-size: 16px !important;
 }
+
+
+/* Apply to all scrollbars */
+::-webkit-scrollbar {
+  width: 10px;
+  height: 10px;
+}
+
+/* Background of the scrollbar track */
+::-webkit-scrollbar-track {
+  background: #f0f0f0; /* Light gray */
+  border-radius: 10px; /* Fully rounded */
+}
+
+/* Scrollbar handle */
+::-webkit-scrollbar-thumb {
+  background: #888; /* Medium gray */
+  border-radius: 10px; /* Fully rounded */
+}
+
+/* Hover effect on scrollbar handle */
+::-webkit-scrollbar-thumb:hover {
+  background: #555; /* Darker gray */
+}
+
+/* Hide up and down arrow buttons */
+::-webkit-scrollbar-button {
+  display: none;
+}
+
+/* For Firefox */
+* {
+  scrollbar-width: thin;
+  scrollbar-color: #888 #f0f0f0; /* Handle color / Track color */
+}

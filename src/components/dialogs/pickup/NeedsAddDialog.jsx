@@ -1,50 +1,92 @@
-import React, { useState, useEffect } from 'react';
+/* eslint-disable jsx-a11y/no-static-element-interactions */
+/* eslint-disable jsx-a11y/click-events-have-key-events */
+import React, { useEffect, useState } from 'react';
 import {
   Dialog, DialogTrigger, DialogContent, DialogTitle, DialogDescription,
   DialogFooter,
 } from '@/components/ui/dialog';
 import { Icon } from '@iconify/react';
 import { Button } from '@/components/ui/button';
-import { toast } from 'sonner';
-import { isEmpty } from 'lodash';
-import { usePickups } from '@/context/PickupContext';
+import { omit } from 'lodash';
 
-export function NeedsAddDialog({ pickup, rawNeeds }) {
-  const { updatePickup, fetchPickup } = usePickups();
+const isNeedSelected = (array, need) => {
+  const index = (array ?? []).findIndex((item) => item.key === need);
+  return index !== -1;
+};
+
+function NeedsButtonDisplay(props) {
+  const {
+    needKey, label, icon, onClick, selectedNeeds,
+  } = props;
+
+  return (
+    <div
+      onClick={() => (onClick(needKey))}
+      key={label}
+      className={`flex items-center mb-0 basis-[100px] gap-1.5 flex-1 
+        ${isNeedSelected(selectedNeeds, needKey) ? 'bg-blue-500 border-blue-800 border-1' : 'bg-zinc-100'
+      } rounded-xl border border-zinc-200 p-1.5`}
+    >
+      <div
+        className="w-7 h-7 rounded-full flex items-center justify-center"
+      >
+        <Icon
+          icon={icon}
+          width="20"
+          height="20"
+          style={{ color: '#202020' }}
+        />
+      </div>
+      <span
+        className="font-semibold text-[13px] uppercase leading-tight"
+      >
+        {label}
+      </span>
+    </div>
+  );
+}
+
+export function NeedsAddDialog({
+  pickup, selectedNeeds, updatePickup, needs, setPickup, setSelectedNeeds,
+}) {
   const [open, setOpen] = useState(false); // Estado para controlar si el Dialog está abierto o cerrado
-  const [needs, setNeeds] = useState([]);
-  const [selectedNeeds, setSelectedNeeds] = useState(rawNeeds ?? []);
-  const [needsSatisfied, setNeedsSatisfied] = useState([]);
-
-  const fetchNeeds = () => {
-    fetch('/api/pickups/needs')
-      .then((response) => response.json())
-      .then((data) => setNeeds(data))
-      .catch((error) => toast.error(`Error loading markers: ${error}`));
-  };
+  const [actualNeeds, setAcutalNeeds] = useState(selectedNeeds);
 
   const handleConfirm = () => {
-    setOpen(false); // Close the modal
-    updatePickup({ needsSatisfied: needsSatisfied.join(',') }, () => fetchPickup());
+    let statusDB;
+
+    if (actualNeeds.length === needs.length) statusDB = 'ABIERTO';
+    else if (actualNeeds.length === 0) statusDB = 'CERRADO';
+    else if (actualNeeds.length !== needs.length) statusDB = 'PARCIALMENTE';
+    else statusDB = 'DESCONOCIDO';
+
+    updatePickup(
+      pickup.id,
+      { needs2: actualNeeds, status: statusDB },
+      (data) => {
+        setPickup(data);
+        setSelectedNeeds(data.needs2);
+        setOpen(false); // Close the modal
+      },
+    );
   };
 
-  const selectNeed = (need) => {
-    setSelectedNeeds((prev) => {
-      if (prev.includes(need)) {
-        return prev.filter((item) => item !== need); // Remove if it exists
+  const toggleItem = (key) => {
+    setAcutalNeeds((prev) => {
+      const index = prev.findIndex((item) => item.key === key);
+      if (index !== -1) {
+        // Key exists, remove it
+        return prev.filter((_, idx) => idx !== index);
       }
-      return [...prev, need]; // Add if it doesn't exist
+      // Key does not exist, add new item
+      return [...prev, { key, value: '0' }];
     });
   };
 
   useEffect(() => {
-    fetchNeeds();
-  }, []);
-
-  useEffect(() => {
-    if (isEmpty(pickup)) return;
-    setNeedsSatisfied(pickup?.needsSatisfied?.split(',') ?? []);
-  }, [pickup]);
+    if (open) return;
+    setAcutalNeeds(selectedNeeds);
+  }, [open, setAcutalNeeds, selectedNeeds]);
 
   return (
     <Dialog open={open} onOpenChange={setOpen}>
@@ -54,7 +96,10 @@ export function NeedsAddDialog({ pickup, rawNeeds }) {
           Añadir Necesidades
         </Button>
       </DialogTrigger>
-      <DialogContent className="max-w-[90%] w-fit min-w-[350px] rounded-xl overflow-y-auto max-h-[90%] gap-1">
+      <DialogContent
+        inert={!open}
+        className="max-w-[90%] w-fit min-w-[350px] rounded-xl overflow-y-auto max-h-[90%] gap-1"
+      >
         <DialogTitle className="uppercase font-bold text-[14px] text-center">
           Añadir Necesidades
         </DialogTitle>
@@ -65,34 +110,15 @@ export function NeedsAddDialog({ pickup, rawNeeds }) {
           <div
             className="flex flex-wrap w-full gap-1.5"
           >
-            {needs.map((need) => {
-              const { label, icon, key } = need;
-              return (
-                <div
-                  onClick={() => (selectNeed(key))}
-                  key={label}
-                  className={`flex items-center mb-0 basis-[100px] gap-1.5 flex-1 
-                      ${selectedNeeds.includes(key) ? 'bg-blue-500 border-blue-800 border-1' : 'bg-zinc-100'
-                    } rounded-xl border border-zinc-200 p-1.5`}
-                >
-                  <div
-                    className="w-7 h-7 rounded-full flex items-center justify-center"
-                  >
-                    <Icon
-                      icon={icon}
-                      width="20"
-                      height="20"
-                      style={{ color: '#202020' }}
-                    />
-                  </div>
-                  <span
-                    className="font-semibold text-[13px] uppercase leading-tight"
-                  >
-                    {label}
-                  </span>
-                </div>
-              );
-            })}
+            {needs.map((need) => (
+              <NeedsButtonDisplay
+                key={need.key}
+                {...omit(need, ['key'])}
+                needKey={need.key}
+                selectedNeeds={actualNeeds}
+                onClick={(key) => toggleItem(key)}
+              />
+            ))}
           </div>
         </div>
         <DialogFooter className="mt-2">

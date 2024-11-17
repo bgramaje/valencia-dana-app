@@ -120,7 +120,7 @@ function MapView({
   }, [selectedTown]);
 
   return (
-    <div className="relative w-full h-dvh">
+    <div className="relative h-dvh grow-[5] min-w-[60%]">
       <DeckGL
         height="100dvh"
         viewState={viewState}

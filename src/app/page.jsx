@@ -8,6 +8,9 @@ import { PickupProvider } from '@/context/PickupContext';
 import { MarkerProvider } from '@/context/MarkerContext';
 import MapView from '@/components/map/map-view';
 import { TownProvider } from '@/context/TownContext';
+import { MarkersList } from '@/components/lists/MarkersList';
+import { PickupsList } from '@/components/lists/PickupsList';
+import { Separator } from '@/components/ui/separator';
 
 /**
  * @name CombinedProvider
@@ -67,15 +70,23 @@ export default function Home() {
       selectedPickup={selectedPickup}
       setSelectedPickup={setSelectedPickup}
     >
-      <MapView
-        setSelectedCoordinate={setSelectedCoordinate}
-        dialogChooseCreate={dialogChooseCreate}
-        setDialogChooseCreate={setDialogChooseCreate}
-        selectedPickup={selectedPickup}
-        setSelectedPickup={setSelectedPickup}
-        selectedMarker={selectedMarker}
-        setSelectedMarker={setSelectedMarker}
-      />
+      <div className="w-dvh h-dvh flex">
+        <MapView
+          setSelectedCoordinate={setSelectedCoordinate}
+          dialogChooseCreate={dialogChooseCreate}
+          setDialogChooseCreate={setDialogChooseCreate}
+          selectedPickup={selectedPickup}
+          setSelectedPickup={setSelectedPickup}
+          selectedMarker={selectedMarker}
+          setSelectedMarker={setSelectedMarker}
+        />
+        <div className="hidden xl:flex grow-2">
+          <MarkersList />
+          <Separator orientation="vertical" />
+          <PickupsList />
+        </div>
+
+      </div>
 
       <InfoDialog
         open={isInfoOpen}

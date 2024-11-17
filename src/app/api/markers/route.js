@@ -17,7 +17,7 @@ export const supabase = createClient(supabaseUrl, supabaseKey);
 export async function GET(request) {
   const { data: markers, error } = await supabase
     .from(markersTable)
-    .select('id, longitude, latitude, status, location, type (*)')
+    .select('id, longitude, latitude, status, location (*), type (*), description, helper_name, created_at')
     .eq('layer', 'ayuda');
 
   if (error) {

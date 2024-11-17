@@ -1,67 +1,74 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import {
   Dialog, DialogTrigger, DialogContent, DialogTitle, DialogDescription,
   DialogFooter,
 } from '@/components/ui/dialog';
 import { Icon } from '@iconify/react';
 import { Button } from '@/components/ui/button';
-import { toast } from 'sonner';
 import { Slider } from '@/components/ui/slider';
-import { isEmpty } from 'lodash';
-import { usePickups } from '@/context/PickupContext';
+import { isEmpty, omit } from 'lodash';
 
-export function NeedsSliderDialog({ selectedNeeds, pickup }) {
-  const { updatePickup, fetchPickup } = usePickups();
+function NeedSliderDisplay(props) {
+  const {
+    label, icon, value, onSliderChange,
+  } = props;
+
+  return (
+    <div
+      key={label}
+      className={`
+        flex items-center mb-0 gap-1.5 flex-1 bg-zinc-50
+        rounded-xl border border-zinc-200 p-2 pb-3
+      `}
+    >
+      <div className="w-7 h-7 rounded-full flex items-center justify-center">
+        <Icon icon={icon} style={{ color: '#202020', width: 20, height: 20 }} />
+      </div>
+      <div className="flex flex-col gap-2 w-full">
+        <div className="w-full flex justify-between">
+          <span className="font-semibold text-[12px] uppercase leading-tight">{label}</span>
+          <span className="text-xs font-medium text-gray-600">{`${value}%`}</span>
+        </div>
+
+        <Slider
+          value={[value]}
+          max={100}
+          step={1}
+          onValueChange={onSliderChange}
+        />
+      </div>
+    </div>
+  );
+}
+
+export function NeedsSliderDialog({
+  selectedNeeds, pickup, updatePickup, needs, setPickup, setSelectedNeeds,
+}) {
+  const [actualNeeds, setAcutalNeeds] = useState(selectedNeeds);
   const [open, setOpen] = useState(false); // Estado para controlar si el Dialog está abierto o cerrado
-  const [needs, setNeeds] = React.useState([]);
-  const [needsSatisfied, setNeedsSatisfied] = useState([]);
 
-  const fetchNeeds = () => {
-    fetch('/api/pickups/needs')
-      .then((response) => response.json())
-      .then((data) => setNeeds(data))
-      .catch((error) => toast.error(`Error loading markers: ${error}`));
-  };
-
-  const handleSliderChange = (index, value) => {
-    setNeedsSatisfied((prev) => {
-      const updated = [...prev];
-      updated[index] = value[0]; // Assume slider returns an array [value]
-      return updated;
-    });
-  };
-
-  const handleConfirm = () => {
-    setOpen(false); // Close the modal
-    updatePickup({ needsSatisfied: needsSatisfied.join(',') }, () => fetchPickup());
-  };
-
-  const syncNeedsWithPickup = () => {
-    const satisfiedMap = pickup?.needs.split(',').reduce((acc, need, i) => {
-      acc[need] = pickup.needsSatisfied.split(',')[i];
-      return acc;
-    }, {});
-
-    const reorderedNeedsSatisfied = selectedNeeds.map((need) => satisfiedMap[need] || 0, // Si no hay valor, usar 0 como predeterminado
+  const handleConfirm = useCallback(() => {
+    setOpen(false);
+    updatePickup(
+      pickup.id,
+      { needs2: actualNeeds },
+      (data) => {
+        setPickup(data);
+        setSelectedNeeds(data.needs2);
+      },
     );
-
-    setNeedsSatisfied(reorderedNeedsSatisfied);
-  };
+  }, [pickup, actualNeeds, updatePickup, setPickup, setSelectedNeeds]);
 
   useEffect(() => {
-    if (isEmpty(pickup)) return;
-    syncNeedsWithPickup();
-  }, [pickup, selectedNeeds]);
-
-  useEffect(() => {
-    fetchNeeds();
-  }, []);
+    if (open) return;
+    setAcutalNeeds(selectedNeeds);
+  }, [open, setAcutalNeeds, selectedNeeds]);
 
   return (
     <Dialog open={open} onOpenChange={setOpen}>
       <DialogTrigger asChild>
         <Button variant="outline" className="bg-violet-400 border-violet-500 font-medium uppercase text-[12px]">
-          <Icon icon="tabler:square-rounded-percentage" style={{ width: 20, height: 20 }} />
+          <Icon icon="hugeicons:money-bag-01" style={{ width: 20, height: 20 }} />
           Actualizar Capacidad
         </Button>
       </DialogTrigger>
@@ -72,47 +79,21 @@ export function NeedsSliderDialog({ selectedNeeds, pickup }) {
         <DialogDescription className="text-center font-medium text-[12px]">
           Actualiza las capacidades de cada uno de los tipos de productos que se recogen
         </DialogDescription>
-        <div className="flex flex-col w-full gap-1.5 pt-2">
-          {!isEmpty(needs)
-            && selectedNeeds.map((need, index) => {
-              const needDB = needs.find((n) => n.key === need);
-              if (!needDB) return null;
-
-              const { label, icon } = needDB;
-              return (
-                <div
-                  key={label}
-                  className="flex items-center mb-0 gap-1.5 flex-1 bg-zinc-100 rounded-xl border border-zinc-200 p-2 pb-3"
-                >
-                  <div className="w-7 h-7 rounded-full flex items-center justify-center">
-                    <Icon
-                      icon={icon}
-                      width="20"
-                      height="20"
-                      style={{ color: '#202020' }}
-                    />
-                  </div>
-                  <div className="flex flex-col gap-2 w-full">
-                    <div className="w-full flex justify-between">
-                      <span className="font-semibold text-[12px] uppercase leading-tight">
-                        {label}
-                      </span>
-                      <span className="text-xs font-medium text-gray-600">
-                        {needsSatisfied[index]}
-                        %
-                      </span>
-                    </div>
-
-                    <Slider
-                      defaultValue={[needsSatisfied[index]]}
-                      max={100}
-                      step={1}
-                      onValueChange={(value) => handleSliderChange(index, value)}
-                    />
-                  </div>
-                </div>
-              );
-            })}
+        <div className="flex flex-col w-full gap-1.5 pt-2 max-h-[300px] overflow-y-auto pr-2">
+          {!isEmpty(needs) && (actualNeeds ?? []).map((need, index) => {
+            const needDB = needs.find((n) => n.key === need.key);
+            if (!needDB) return null;
+            return (
+              <NeedSliderDisplay
+                key={needDB.key}
+                {...omit(needDB, ['key'])}
+                value={need?.value ?? 0}
+                onSliderChange={(value) => setAcutalNeeds(
+                  (prev) => prev.map((item, idx) => (idx === index ? { ...item, value: value[0] } : item)),
+                )}
+              />
+            );
+          })}
         </div>
         <DialogFooter className="mt-2">
           <Button
@@ -126,5 +107,3 @@ export function NeedsSliderDialog({ selectedNeeds, pickup }) {
     </Dialog>
   );
 }
-
-export default NeedsSliderDialog;

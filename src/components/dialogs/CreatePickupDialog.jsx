@@ -23,6 +23,7 @@ import { Switch } from '../ui/switch';
 import { Alert, AlertTitle } from '../ui/alert';
 import { VoiceInput } from '../custom/voice-input';
 import { CodeCopyDialog } from './code/CodeCopyDialog';
+import { PhoneInput } from '../custom/phone-input';
 
 export function CreatePickupDialog({
   open,
@@ -30,6 +31,7 @@ export function CreatePickupDialog({
   newPickup,
   setNewPickup,
   handleAddPickup,
+  needs,
 }) {
   const [addressFetched, setAddressFetched] = useState(false);
   // Initialize marker state with default values
@@ -39,11 +41,12 @@ export function CreatePickupDialog({
     description: '',
     policy_accepted: false,
     address: '',
+    responsable_nombre: '',
+    responsable_telf: '',
     ...newPickup, // Spread the incoming props to override defaults if they exist
   });
 
   const [showCodeDialog, setShowCodeDialog] = React.useState(false);
-  const [needs, setNeeds] = React.useState([]);
   const [selectedNeeds, setSelectedNeeds] = React.useState([]);
 
   const [direccion, setDireccion] = React.useState({
@@ -63,6 +66,9 @@ export function CreatePickupDialog({
     setPickupState((prev) => ({
       ...prev,
       ...newPickup,
+      address: isEmpty(newPickup.address) || newPickup.address === ' '
+        ? null
+        : newPickup.address,
     }));
   }, [newPickup]);
 
@@ -96,9 +102,8 @@ export function CreatePickupDialog({
       });
     }
 
-    const needsPosts = selectedNeeds.join(',');
+    const needsPosts = selectedNeeds.map((need) => ({ key: need, value: 0 }));
     // generate array filled of 0 for capacity base value
-    const needsSatisfied = Array.from({ length: selectedNeeds.length }, () => 0);
 
     let statusDB;
 
@@ -109,8 +114,7 @@ export function CreatePickupDialog({
 
     handleAddPickup({
       ...pickupState,
-      needs: needsPosts,
-      needsSatisfied: needsSatisfied.join(','),
+      needs2: needsPosts,
       location: direccion?.poblacion?.toUpperCase() ?? 'unknown',
       status: statusDB,
     });
@@ -124,17 +128,6 @@ export function CreatePickupDialog({
       return [...prev, need]; // Add if it doesn't exist
     });
   };
-
-  const fetchNeeds = () => {
-    fetch('/api/pickups/needs')
-      .then((response) => response.json())
-      .then((data) => setNeeds(data))
-      .catch((error) => toast.error(`Error loading markers: ${error}`));
-  };
-
-  useEffect(() => {
-    fetchNeeds();
-  }, []);
 
   useEffect(() => {
     const fetchAddress = async () => {
@@ -186,6 +179,29 @@ export function CreatePickupDialog({
                 setErrors({ ...errors, name: false });
               }}
             />
+            <Input
+              placeholder="Nombre del responsable"
+              type="text"
+              className={errors.responsable_nombre ? 'border-red-500 ring-red-500' : ''}
+              value={pickupState.responsable_nombre}
+              onChange={(e) => {
+                if (e.target.value !== pickupState.address) {
+                  updatePickup({ responsable_nombre: e.target.value });
+                  setErrors({ ...errors, responsable_nombre: false });
+                }
+              }}
+            />
+            <PhoneInput
+              className={errors.responsable_telf ? 'border-red-500 ring-red-500' : ''}
+              value={pickupState.responsable_telf}
+              placeholder="Teléfono del responsable"
+              defaultCountry="ES"
+              onChange={(e) => {
+                updatePickup({ responsable_telf: e });
+                setErrors({ ...errors, responsable_telf: false });
+              }}
+            />
+
             {direccion?.calle && (
               <div className="!text-[13px] font-semibold flex gap-2 items-center px-0">
                 <Alert className="border-zinc-200 bg-zinc-100 px-3 py-1">
@@ -211,7 +227,7 @@ export function CreatePickupDialog({
               }}
             />
           </div>
-          <div className="flex flex-col gap-2 max-h-[300px] overflow-y-auto pr-2">
+          <div className="flex flex-col gap-2 max-h-[200px] overflow-y-auto pr-2">
             <div className="flex flex-col gap-1">
               <Label htmlFor="airplane-mode" className="text-[13px] uppercase">Necesidades</Label>
               <p className="text-[11px] font-light text-justify">
@@ -249,24 +265,22 @@ export function CreatePickupDialog({
                   </div>
                 );
               })}
-
-              <div className="flex items-center justify-between w-full py-2 pt-4 gap-8">
-                <div className="flex flex-col gap-1">
-                  <Label htmlFor="airplane-mode" className="text-[13.5px]">Punto de recogida verificado?</Label>
-                  <p className="text-[11px] font-light text-justify">
-                    Eres personal responsable o
-                    has verificado personalmente los datos introducidos?
-                  </p>
-                </div>
-                <Switch
-                  value={pickupState?.verified ?? false}
-                  onCheckedChange={(checked) => {
-                    updatePickup({ verified: checked });
-                    setErrors({ ...errors, verified: false });
-                  }}
-                />
-              </div>
             </div>
+          </div>
+          <div className="flex items-center justify-between w-full py-2 pt-1 gap-8">
+            <div className="flex flex-col gap-1">
+              <Label htmlFor="airplane-mode" className="text-[13.5px]">Punto de recogida verificado?</Label>
+              <p className="text-[11px] font-light text-justify">
+                Has verificado personalmente los datos introducidos?
+              </p>
+            </div>
+            <Switch
+              value={pickupState?.verified ?? false}
+              onCheckedChange={(checked) => {
+                updatePickup({ verified: checked });
+                setErrors({ ...errors, verified: false });
+              }}
+            />
           </div>
           <DialogFooter className="mt-0">
             <div className="flex flex-col w-full gap-2">
