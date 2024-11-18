@@ -10,6 +10,8 @@ import Image from 'next/image';
 import { useMapLayers } from '@/hooks/useMapLayers';
 import { toast } from 'sonner';
 import { useTowns } from '@/context/TownContext';
+import { useMapStore } from '@/app/store';
+import { isEmpty } from 'lodash';
 import { ComboBoxResponsive } from './towns-selector';
 import LayersFilter from './layers-filter';
 import { LeftButtons } from './left-buttons';
@@ -47,6 +49,8 @@ function MapView({
   setSelectedPickup,
   setSelectedMarker,
 }) {
+  const globalViewState = useMapStore((state) => state.globalViewState);
+
   const [viewState, setViewState] = useState(INITIAL_VIEW_STATE);
   const [activeLayers, setActiveLayers] = useState({
     AFECTADO: true,
@@ -118,6 +122,11 @@ function MapView({
       longitude: selectedTown?.longitude ?? prev.longitude,
     }));
   }, [selectedTown]);
+
+  useEffect(() => {
+    if (isEmpty(globalViewState)) return;
+    setViewState(globalViewState);
+  }, [globalViewState]);
 
   return (
     <div className="relative h-dvh grow-[5] min-w-[60%]">

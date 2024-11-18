@@ -62,10 +62,10 @@ export function NeedsAddDialog({
 
     updatePickup(
       pickup.id,
-      { needs2: actualNeeds, status: statusDB },
+      { needs: actualNeeds, status: statusDB },
       (data) => {
         setPickup(data);
-        setSelectedNeeds(data.needs2);
+        setSelectedNeeds(data.needs);
         setOpen(false); // Close the modal
       },
     );

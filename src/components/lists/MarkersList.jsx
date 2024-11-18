@@ -1,25 +1,29 @@
 import { useMarkers } from '@/context/MarkerContext';
-import React from 'react';
+import React, { memo, useState } from 'react';
 
 import {
   Card,
   CardContent,
-  CardDescription,
   CardFooter,
   CardHeader,
   CardTitle,
 } from '@/components/ui/card';
+
 import { Icon } from '@iconify/react';
 import { formatDate, isOlderThanThreeDays } from '@/lib/date';
 import { isEmpty } from 'lodash';
 import { getGoogleMapsUrl } from '@/lib/getAdress';
+import { useMapStore } from '@/app/store';
 import { Alert, AlertDescription, AlertTitle } from '../ui/alert';
 import { MarkerBadge } from '../custom/marker-badge';
 import { Button } from '../ui/button';
 import { Badge } from '../ui/badge';
 import { Separator } from '../ui/separator';
+import { Input } from '../ui/input';
 
-function MarkerCard({ entity }) {
+function MarkerCardComp({ entity }) {
+  const setGlobalViewState = useMapStore((state) => state.setGlobalViewState);
+
   return (
     <Card className="max-w-[350px] bg-gray-50">
       <CardHeader className="px-4 py-3">
@@ -76,7 +80,7 @@ function MarkerCard({ entity }) {
       </div>
       <CardFooter className="px-4 -my-0.5 pb-2 flex flex-col gap-0.5">
         <Button
-          onClick={() => window.open(getGoogleMapsUrl(entity), '_blank')}
+          onClick={() => setGlobalViewState({ latitude: entity?.latitude, longitude: entity?.longitude, zoom: 16 })}
           className="w-full mt-0.5 rounded-xl bg-blue-400 border-1 border-blue-900 hover:bg-blue-500"
         >
           <Icon
@@ -102,18 +106,37 @@ function MarkerCard({ entity }) {
   );
 }
 
+const MarkerCard = memo(MarkerCardComp);
+
 export function MarkersList() {
   const { markers } = useMarkers();
+  const [searchTerm, setSearchTerm] = useState('');
+
+  // Filtrar marcadores por el atributo name
+  const filteredMarkers = markers.filter((marker) => marker.description.toLowerCase().includes(searchTerm.toLowerCase()));
+
   return (
     <div className="grow-[1] basis-[200px] p-3 hidden max-h-dvh overflow-y-hidden xl:flex flex-col gap-2">
       <div className="flex items-center justify-between">
         <code className="font-semibold uppercase">Marcadores</code>
-        <Badge>{markers.length}</Badge>
+        <Badge>{filteredMarkers.length}</Badge>
+      </div>
+      {/* Input para buscar */}
+      <div className="mb-0">
+        <Input
+          type="text"
+          placeholder="Buscar por necesidad..."
+          value={searchTerm}
+          onChange={(e) => setSearchTerm(e.target.value)}
+        />
       </div>
       <div className="h-full overflow-y-auto pr-2 flex flex-col gap-2">
-        {markers.map((marker) => <MarkerCard entity={marker} />)}
+        {filteredMarkers.length > 0 ? (
+          filteredMarkers.map((marker) => <MarkerCard key={marker.id} entity={marker} />)
+        ) : (
+          <p className="text-gray-500 text-center">No se encontraron marcadores.</p>
+        )}
       </div>
-
     </div>
   );
 }

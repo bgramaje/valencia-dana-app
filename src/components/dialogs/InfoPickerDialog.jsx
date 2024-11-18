@@ -55,7 +55,7 @@ function TelephoneButtons({ telf, pickup }) {
   );
 }
 
-function NeedSliderDisplay(props) {
+export function NeedSliderDisplay(props) {
   const { label, icon, value } = props;
 
   return (
@@ -121,7 +121,7 @@ export function InfoPickerDialog({
       fetchPickup(selectedPickup.id, (data) => {
         setLoading(false);
         setPickup(data);
-        setSelectedNeeds(data.needs2);
+        setSelectedNeeds(data.needs);
       });
     };
 

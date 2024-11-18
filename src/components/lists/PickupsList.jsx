@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { memo, useState } from 'react';
 
 import {
   Card,
@@ -11,18 +11,26 @@ import {
 import { usePickups } from '@/context/PickupContext';
 import { Icon } from '@iconify/react';
 import { formatDate } from '@/lib/date';
-import { isEmpty } from 'lodash';
+import { isEmpty, omit } from 'lodash';
 import { Separator } from '@radix-ui/react-dropdown-menu';
 import { getGoogleMapsUrl } from '@/lib/getAdress';
+import { useMapStore } from '@/app/store';
 import { Button } from '../ui/button';
 import { Alert, AlertDescription, AlertTitle } from '../ui/alert';
 import { Badge } from '../ui/badge';
+import {
+  Accordion, AccordionContent, AccordionItem, AccordionTrigger,
+} from '../ui/accordion';
+import { NeedSliderDisplay } from '../dialogs/InfoPickerDialog';
+import { Input } from '../ui/input';
 
-function PickupCard({ entity }) {
+function PickupCardComp({ entity }) {
+  const setGlobalViewState = useMapStore((state) => state.setGlobalViewState);
+  const { needs: needsDB } = usePickups();
   return (
     <Card className="max-w-[350px] bg-gray-50">
       <CardHeader className="px-4 py-3">
-        <CardTitle className="flex items-center text-[13px] uppercase pb-0 justify-between w-full">
+        <CardTitle className="flex items-center text-[13px] uppercase pb-0 justify-between w-full gap-2">
           <div className="flex items-center gap-1">
             <p className="m-0 p-0 pt-0.25 leading-tight">
               {entity.name}
@@ -53,10 +61,10 @@ function PickupCard({ entity }) {
         <div className="!text-[13px] font-semibold flex gap-2 items-center px-0">
           <Alert className="border-blue-200 bg-blue-100 px-3 py-1.5">
             <AlertTitle className="text-center text-[13px] flex items-center justify-between">
-              <p className="uppercase text-[11px]">Punto:</p>
+              <p className="uppercase text-[11px]">Ubicacion:</p>
             </AlertTitle>
-            <AlertDescription className="!text-[14px] w-full max-h-[150px] overflow-y-auto text-justify -mt-1.5">
-              {isEmpty(entity?.name) ? '-' : entity?.name}
+            <AlertDescription className="!text-[14px] w-full max-h-[150px] overflow-y-auto text-left -mt-1.5">
+              {isEmpty(entity?.address) ? '-' : entity?.address}
             </AlertDescription>
           </Alert>
         </div>
@@ -72,13 +80,45 @@ function PickupCard({ entity }) {
             </Alert>
           </div>
         )}
+        {entity?.needs?.length > 0 && (
+          <Alert className="text-xs border-zinc-200 px-3 py-1.5">
+            <Accordion type="single" collapsible className="border-0">
+              <AccordionItem value="item-1" className="border-0">
+                <AccordionTrigger className="p-0 border-0">
+                  <AlertTitle className="uppercase text-[11px] m-0 p-0 font-medium">
+                    CAPACIDADES DEL PUNTO :
+                  </AlertTitle>
+                </AccordionTrigger>
+                <AccordionContent className="p-0 pt-2 border-0">
+                  <AlertDescription className="text-xs flex flex-col items-center gap-1 font-regular w-full">
+                    <div className="flex flex-col w-full gap-1.5 p-0 py-1 pt-0 max-h-[280px] overflow-y-auto">
+                      {!isEmpty(needsDB) && (entity?.needs ?? []).map((need) => {
+                        const needDB = needsDB.find((n) => n.key === need.key);
+                        if (!needDB) return null;
+                        return (
+                          <NeedSliderDisplay
+                            key={needDB.key}
+                            {...omit(needDB, ['key'])}
+                            value={need?.value ?? 0}
+                          />
+                        );
+                      })}
+                    </div>
+
+                  </AlertDescription>
+                </AccordionContent>
+              </AccordionItem>
+            </Accordion>
+          </Alert>
+        )}
+
       </CardContent>
       <div className="px-4 py-2">
         <Separator />
       </div>
       <CardFooter className="px-4 -my-0.5 pb-2 flex flex-col gap-0.5">
         <Button
-          onClick={() => window.open(getGoogleMapsUrl(entity), '_blank')}
+          onClick={() => setGlobalViewState({ latitude: entity?.latitude, longitude: entity?.longitude, zoom: 16 })}
           className="w-full mt-0.5 rounded-xl bg-blue-400 border-1 border-blue-900 hover:bg-blue-500"
         >
           <Icon
@@ -104,16 +144,37 @@ function PickupCard({ entity }) {
   );
 }
 
+const PickupCard = memo(PickupCardComp);
 export function PickupsList() {
   const { pickups } = usePickups();
+  const [searchTerm, setSearchTerm] = useState('');
+
+  // Filtrar puntos de recogida por el atributo name
+  const filteredPickups = pickups.filter((pickup) => pickup.name.toLowerCase().includes(searchTerm.toLowerCase()));
+
   return (
     <div className="grow-[1] basis-[200px] p-3 hidden max-h-dvh overflow-y-hidden xl:flex flex-col gap-2">
       <div className="flex items-center justify-between">
         <code className="font-semibold uppercase">Puntos de recogida</code>
-        <Badge>{pickups.length}</Badge>
+        <Badge>{filteredPickups.length}</Badge>
       </div>
+
+      {/* Input para buscar */}
+      <div className="mb-2">
+        <Input
+          type="text"
+          placeholder="Buscar por nombre..."
+          value={searchTerm}
+          onChange={(e) => setSearchTerm(e.target.value)}
+        />
+      </div>
+
       <div className="h-full overflow-y-auto pr-2 flex flex-col gap-2">
-        {pickups.map((marker) => <PickupCard entity={marker} />)}
+        {filteredPickups.length > 0 ? (
+          filteredPickups.map((pickup) => <PickupCard key={pickup.id} entity={pickup} />)
+        ) : (
+          <p className="text-gray-500 text-center">No se encontraron puntos de recogida.</p>
+        )}
       </div>
     </div>
   );

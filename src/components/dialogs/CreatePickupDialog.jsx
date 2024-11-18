@@ -114,7 +114,7 @@ export function CreatePickupDialog({
 
     handleAddPickup({
       ...pickupState,
-      needs2: needsPosts,
+      needs: needsPosts,
       location: direccion?.poblacion?.toUpperCase() ?? 'unknown',
       status: statusDB,
     });

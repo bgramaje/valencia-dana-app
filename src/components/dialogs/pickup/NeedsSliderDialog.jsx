@@ -51,10 +51,10 @@ export function NeedsSliderDialog({
     setOpen(false);
     updatePickup(
       pickup.id,
-      { needs2: actualNeeds },
+      { needs: actualNeeds },
       (data) => {
         setPickup(data);
-        setSelectedNeeds(data.needs2);
+        setSelectedNeeds(data.needs);
       },
     );
   }, [pickup, actualNeeds, updatePickup, setPickup, setSelectedNeeds]);
