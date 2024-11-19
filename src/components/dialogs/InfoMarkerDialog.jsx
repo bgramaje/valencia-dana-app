@@ -70,7 +70,7 @@ export function InfoMarkerDialog({
   if (loading || marker === null || marker === undefined) {
     return (
       <Dialog open={open} onOpenChange={close}>
-        <DialogContent className="max-w-[90%] w-fit min-w-[350px] rounded-xl p-0">
+        <DialogContent className="max-w-[90%] md:max-w-[450px] w-fit min-w-[350px] rounded-xl p-0">
           <DialogHeader className="pt-4">
             <DialogTitle className="uppercase font-bold text-[13px] flex flex-col items-center gap-1">
               Información
@@ -94,7 +94,7 @@ export function InfoMarkerDialog({
   return (
     <>
       <Dialog open={open} onOpenChange={close}>
-        <DialogContent className="max-w-[90%] w-fit min-w-[350px] rounded-xl p-0 overflow-y-auto max-h-[90%] gap-2">
+        <DialogContent className="max-w-[90%] md:max-w-[450px] w-fit min-w-[350px] rounded-xl p-0 overflow-y-auto max-h-[90%] gap-2">
           <DialogHeader className="pt-4">
             <DialogTitle className="uppercase font-bold text-[13px] flex items-center gap-1 justify-center flex-col gap-0">
               Información

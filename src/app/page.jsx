@@ -11,6 +11,8 @@ import { TownProvider } from '@/context/TownContext';
 import { MarkersList } from '@/components/lists/MarkersList';
 import { PickupsList } from '@/components/lists/PickupsList';
 import { Separator } from '@/components/ui/separator';
+import Image from 'next/image';
+import { Icon } from '@iconify/react';
 
 /**
  * @name CombinedProvider
@@ -80,12 +82,22 @@ export default function Home() {
           selectedMarker={selectedMarker}
           setSelectedMarker={setSelectedMarker}
         />
-        <div className="hidden xl:flex grow-2">
-          <MarkersList />
-          <Separator orientation="vertical" />
-          <PickupsList />
-        </div>
+        <div className="hidden xl:flex flex-col grow-2 max-h-dvh">
+          <div className="p-2 flex gap-2 items-center justify-between">
+            <Image src="som.svg" alt="logo-som" width={60} height={60} />
+            <div className="flex gap-1 items-center">
+              <Icon icon="ri:instagram-line" />
+              <code className="text-[11px] font-medium">somvalencia.app</code>
+            </div>
+          </div>
+          <Separator />
 
+          <div className="hidden xl:flex justify-between flex-1 overflow-auto">
+            <MarkersList />
+            <Separator orientation="vertical" />
+            <PickupsList />
+          </div>
+        </div>
       </div>
 
       <InfoDialog

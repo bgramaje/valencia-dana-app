@@ -131,7 +131,9 @@ export function InfoPickerDialog({
   if (loading || isEmpty(pickup)) {
     return (
       <Dialog open={open} onOpenChange={close}>
-        <DialogContent className="max-w-[90%] w-fit min-w-[350px] rounded-xl p-0">
+        <DialogContent
+          className="max-w-[90%] md:max-w-[450px] w-fit min-w-[350px] md:min-w-[400px] rounded-xl p-0 overflow-y-auto max-h-[90%] gap-2"
+        >
           <BaseDialogHeader pickup={null} />
           <div className="w-full flex items-center justify-center h-[170px]">
             <Icon
@@ -147,7 +149,10 @@ export function InfoPickerDialog({
 
   return (
     <Dialog open={open} onOpenChange={close}>
-      <DialogContent className="max-w-[90%] w-fit min-w-[350px] rounded-xl p-0 overflow-y-auto max-h-[90%] gap-2">
+      <DialogContent
+        className="max-w-[90%] md:max-w-[450px] w-fit min-w-[350px] md:min-w-[400px] rounded-xl p-0 overflow-y-auto max-h-[90%] gap-2"
+      >
+        {' '}
         <BaseDialogHeader pickup={pickup} />
         <div className="px-4">
           <Alert className="text-xs border-zinc-200 px-3 py-1.5">
@@ -236,7 +241,7 @@ export function InfoPickerDialog({
         </div>
         <div className="p-4 pt-0 flex flex-col gap-1">
           {!isEmpty(pickup.responsable_telf) && (
-            <TelephoneButtons telf={pickup.responsable_telf} pickup={pickup} />
+          <TelephoneButtons telf={pickup.responsable_telf} pickup={pickup} />
           )}
 
           <NeedsAddDialog
