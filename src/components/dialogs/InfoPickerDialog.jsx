@@ -152,7 +152,6 @@ export function InfoPickerDialog({
       <DialogContent
         className="max-w-[90%] md:max-w-[450px] w-fit min-w-[350px] md:min-w-[400px] rounded-xl p-0 overflow-y-auto max-h-[90%] gap-2"
       >
-        {' '}
         <BaseDialogHeader pickup={pickup} />
         <div className="px-4">
           <Alert className="text-xs border-zinc-200 px-3 py-1.5">

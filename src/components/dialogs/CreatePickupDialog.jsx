@@ -158,7 +158,9 @@ export function CreatePickupDialog({
   return (
     <>
       <Dialog open={open} onOpenChange={close}>
-        <DialogContent className="max-w-[90%] w-fit min-w-[350px] rounded-xl overflow-y-auto max-h-[90%] gap-2">
+        <DialogContent
+          className="max-w-[90%] md:max-w-[450px] w-fit min-w-[350px] md:min-w-[400px] rounded-xl overflow-y-auto max-h-[90%] gap-2"
+        >
           <DialogHeader>
             <DialogTitle className="uppercase font-bold text-[14px] text-center flex gap-2 items-center justify-center">
               <Icon icon="ph:package" width={20} />
@@ -203,16 +205,16 @@ export function CreatePickupDialog({
             />
 
             {direccion?.calle && (
-              <div className="!text-[13px] font-semibold flex gap-2 items-center px-0">
-                <Alert className="border-zinc-200 bg-zinc-100 px-3 py-1">
-                  <AlertTitle className="text-center text-[13px] flex items-center justify-between mb-0">
-                    <p className="uppercase text-[11px]">Ubicación:</p>
-                    <span className="uppercase">
-                      {direccion?.poblacion ?? '-'}
-                    </span>
-                  </AlertTitle>
-                </Alert>
-              </div>
+            <div className="!text-[13px] font-semibold flex gap-2 items-center px-0">
+              <Alert className="border-zinc-200 bg-zinc-100 px-3 py-1">
+                <AlertTitle className="text-center text-[13px] flex items-center justify-between mb-0">
+                  <p className="uppercase text-[11px]">Ubicación:</p>
+                  <span className="uppercase">
+                    {direccion?.poblacion ?? '-'}
+                  </span>
+                </AlertTitle>
+              </Alert>
+            </div>
             )}
             <Input
               placeholder="Dirección Postal"

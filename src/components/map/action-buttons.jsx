@@ -11,7 +11,7 @@ export const ActionButtons = memo(({
   types,
   loading,
 }) => (
-  <div className="flex gap-2 flex-col">
+  <div className="flex gap-2 flex flex-col xl:flex-row">
     <div className="flex gap-2">
       <Button
         variant="outline"
