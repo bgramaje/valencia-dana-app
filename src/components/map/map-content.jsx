@@ -2,8 +2,6 @@
 
 import { usePickups } from '@/context/PickupContext';
 import React, { useState } from 'react';
-import Image from 'next/image';
-import Link from 'next/link';
 import { useMarkers } from '@/context/MarkerContext';
 import { ActionButtons } from './action-buttons';
 import ChooseCreateDialog from '../dialogs/ChooseCreateDialog';
