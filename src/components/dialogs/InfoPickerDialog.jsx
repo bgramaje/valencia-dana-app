@@ -14,6 +14,7 @@ import { Icon } from '@iconify/react';
 import {
   Accordion, AccordionContent, AccordionItem, AccordionTrigger,
 } from '@/components/ui/accordion';
+import useIsAdmin from '@/hooks/useIsAdmin';
 import { Slider } from '../ui/slider';
 import { NeedsAddDialog } from './pickup/NeedsAddDialog';
 import { NeedsSliderDialog } from './pickup/NeedsSliderDialog';
@@ -114,6 +115,7 @@ export function InfoPickerDialog({
   const [pickup, setPickup] = useState(null);
   const [loading, setLoading] = useState(true);
   const [selectedNeeds, setSelectedNeeds] = React.useState([]);
+  const isAdmin = useIsAdmin();
 
   useEffect(() => {
     const fetch = async () => {
@@ -222,9 +224,13 @@ export function InfoPickerDialog({
             </AlertDescription>
           </Alert>
         </div>
+
+        {(selectedNeeds ?? []).length !== 0 && (
         <AlertTitle className="text-center text-[13px] flex items-center justify-between mb-0 px-4">
           <p className="uppercase text-[11px]">Recogen :</p>
         </AlertTitle>
+        )}
+
         <div className="flex flex-col w-full gap-1.5 p-4 py-1 pt-0 max-h-[280px] overflow-y-auto">
           {!isEmpty(needsDB) && (selectedNeeds ?? []).map((need) => {
             const needDB = needsDB.find((n) => n.key === need.key);
@@ -240,26 +246,30 @@ export function InfoPickerDialog({
         </div>
         <div className="p-4 pt-0 flex flex-col gap-1">
           {!isEmpty(pickup.responsable_telf) && (
-          <TelephoneButtons telf={pickup.responsable_telf} pickup={pickup} />
+            <TelephoneButtons telf={pickup.responsable_telf} pickup={pickup} />
           )}
 
-          <NeedsAddDialog
-            pickup={pickup}
-            setPickup={setPickup}
-            updatePickup={updatePickup}
-            needs={needsDB}
-            selectedNeeds={selectedNeeds ?? []}
-            setSelectedNeeds={setSelectedNeeds}
-          />
+          {isAdmin && (
+          <>
+            <NeedsAddDialog
+              pickup={pickup}
+              setPickup={setPickup}
+              updatePickup={updatePickup}
+              needs={needsDB}
+              selectedNeeds={selectedNeeds ?? []}
+              setSelectedNeeds={setSelectedNeeds}
+            />
 
-          <NeedsSliderDialog
-            pickup={pickup}
-            setPickup={setPickup}
-            updatePickup={updatePickup}
-            needs={needsDB}
-            selectedNeeds={selectedNeeds ?? []}
-            setSelectedNeeds={setSelectedNeeds}
-          />
+            <NeedsSliderDialog
+              pickup={pickup}
+              setPickup={setPickup}
+              updatePickup={updatePickup}
+              needs={needsDB}
+              selectedNeeds={selectedNeeds ?? []}
+              setSelectedNeeds={setSelectedNeeds}
+            />
+          </>
+          )}
 
           <Button
             onClick={() => window.open(getGoogleMapsUrl(pickup), '_blank')}

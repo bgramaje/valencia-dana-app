@@ -150,7 +150,7 @@ function PickupCardComp({ entity }) {
 const PickupCard = memo(PickupCardComp);
 
 export function PickupsList() {
-  const { pickups, needs } = usePickups(); // needs contiene todos los posibles "key"
+  const { pickups, needs, loading } = usePickups(); // needs contiene todos los posibles "key"
   const [searchTerm, setSearchTerm] = useState('');
   const [selectedNeed, setSelectedNeed] = useState('all'); // Usar 'all' en lugar de ''
 
@@ -211,13 +211,25 @@ export function PickupsList() {
         </Select>
       </div>
 
-      <div className="h-full overflow-y-auto pr-2 flex flex-col gap-2">
-        {filteredPickups.length > 0 ? (
-          filteredPickups.map((pickup) => <PickupCard key={pickup.id} entity={pickup} />)
-        ) : (
-          <p className="text-gray-500 text-center">No se encontraron puntos de recogida.</p>
-        )}
-      </div>
+      {!loading && (
+        <div className="h-full overflow-y-auto pr-2 flex flex-col gap-2">
+          {filteredPickups.length > 0 ? (
+            filteredPickups.map((pickup) => <PickupCard key={pickup.id} entity={pickup} />)
+          ) : (
+            <p className="text-gray-500 text-center">No se encontraron puntos de recogida.</p>
+          )}
+        </div>
+      )}
+      {loading && (
+        <div className="h-full overflow-y-auto pr-2 flex flex-col gap-2 flex-1">
+          <Icon
+            icon="line-md:loading-loop"
+            width="20"
+            height="20"
+            style={{ color: '#202020' }}
+          />
+        </div>
+      )}
     </div>
   );
 }

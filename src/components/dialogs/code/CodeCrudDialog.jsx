@@ -7,21 +7,26 @@ import {
 } from '@/components/ui/dialog';
 
 export function CodeCrudDialog({
-  open, close, callback, title = null, description = null, children,
+  open,
+  close,
+  callback,
+  title = null,
+  description = null,
+  children,
 }) {
   const [value, setValue] = React.useState('');
 
   const handleClose = () => callback(value);
 
   useEffect(() => {
-    if (!open)setValue('');
+    if (!open) setValue('');
   }, [open]);
 
   return (
     <Dialog open={open} onOpenChange={close}>
       <DialogContent className="max-w-[90%] w-fit min-w-[350px] rounded-xl">
         <DialogHeader>
-          <DialogTitle className="uppercase font-bold text-[14px]">{title ?? 'Código'}</DialogTitle>
+          <DialogTitle className="uppercase font-bold text-[14px] text-center">{title ?? 'Código'}</DialogTitle>
         </DialogHeader>
         <DialogDescription
           className="text-center font-medium text-[12px] p-0 m-0 hidden"

@@ -116,7 +116,7 @@ function MarkerCardComp({ entity }) {
 const MarkerCard = memo(MarkerCardComp);
 
 export function MarkersList() {
-  const { markers } = useMarkers();
+  const { markers, loading } = useMarkers();
   const [searchTerm, setSearchTerm] = useState('');
   const [selectedStatus, setSelectedStatus] = useState(null);
 
@@ -160,14 +160,26 @@ export function MarkersList() {
         ))}
       </div>
 
-      {/* Lista de marcadores */}
-      <div className="h-full overflow-y-auto pr-2 flex flex-col gap-2">
-        {filteredMarkers.length > 0 ? (
-          filteredMarkers.map((marker) => <MarkerCard key={marker.id} entity={marker} />)
-        ) : (
-          <p className="text-gray-500 text-center">No se encontraron marcadores.</p>
-        )}
-      </div>
+      {!loading && (
+        <div className="h-full overflow-y-auto pr-2 flex flex-col gap-2">
+          {filteredMarkers.length > 0 ? (
+            filteredMarkers.map((marker) => <MarkerCard key={marker.id} entity={marker} />)
+          ) : (
+            <p className="text-gray-500 text-center">No se encontraron marcadores.</p>
+          )}
+        </div>
+      )}
+
+      {loading && (
+        <div className="h-full overflow-y-auto pr-2 flex flex-col gap-2 flex-1">
+          <Icon
+            icon="line-md:loading-loop"
+            width="20"
+            height="20"
+            style={{ color: '#202020' }}
+          />
+        </div>
+      )}
     </div>
   );
 }

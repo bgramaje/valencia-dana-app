@@ -1,4 +1,3 @@
-/* eslint-disable jsx-a11y/no-static-element-interactions */
 import React, { useState } from 'react';
 
 import { toast } from 'sonner';
@@ -8,11 +7,12 @@ import { Button } from '@/components/ui/button';
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
 import { InputOTP, InputOTPGroup, InputOTPSlot } from '@/components/ui/input-otp';
 import {
-  Dialog, DialogContent, DialogFooter, DialogHeader, DialogTitle, DialogDescription,
+  Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle,
 } from '@/components/ui/dialog';
 
 export function CodeCopyDialog({
-  open, close,
+  open,
+  close,
   code,
   title = 'Se ha añadido tu marcador!',
   subtitle = 'Guarda el siguiente código generado para poder borrar el marcador generado',
