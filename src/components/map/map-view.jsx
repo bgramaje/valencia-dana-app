@@ -12,10 +12,14 @@ import { toast } from 'sonner';
 import { useTowns } from '@/context/TownContext';
 import { useMapStore } from '@/app/store';
 import { isEmpty } from 'lodash';
+import { Icon } from '@iconify/react';
+import useIsAdmin from '@/hooks/useIsAdmin';
 import { ComboBoxResponsive } from './towns-selector';
 import LayersFilter from './layers-filter';
 import { LeftButtons } from './left-buttons';
 import MapContent from './map-content';
+import { Button } from '../ui/button';
+import { CodeCrudDialog } from '../dialogs/code/CodeCrudDialog';
 
 const mapStyle = {
   version: 8,
@@ -49,6 +53,8 @@ function MapView({
   setSelectedPickup,
   setSelectedMarker,
 }) {
+  const [showAdminDialog, setShowAdminDialog] = useState(false);
+
   const globalViewState = useMapStore((state) => state.globalViewState);
 
   const [viewState, setViewState] = useState(INITIAL_VIEW_STATE);
@@ -62,9 +68,13 @@ function MapView({
 
   const [isSelectingLocation, setIsSelectingLocation] = useState(false);
 
-  const { markers, markersType, loading: loadingMarkers } = useMarkers();
+  const {
+    markers, markersType, loading: loadingMarkers, setShowMarkerDialog,
+  } = useMarkers();
   const { pickups, loading: loadingPickups } = usePickups();
   const { towns, loading: loadingTowns } = useTowns();
+
+  const isAdmin = useIsAdmin();
 
   const {
     layers,
@@ -107,7 +117,11 @@ function MapView({
       });
 
       setIsSelectingLocation(false);
-      setDialogChooseCreate(true);
+      if (isAdmin) {
+        setDialogChooseCreate(true);
+      } else {
+        setShowMarkerDialog(true);
+      }
     }
   };
 
@@ -172,6 +186,21 @@ function MapView({
           <div className="font-semibold text-[13px] bg-white p-1 rounded-xl w-[32px] h-[32px] flex items-center justify-center">
             {markers.filter((m) => m.status !== MARKER_STATUS.COMPLETADO).length}
           </div>
+          {!isAdmin && (
+          <Button
+            onClick={() => {
+              setShowAdminDialog(true);
+            }}
+            className="block xl:hidden w-fit mt-0 text-[12px] w-[32px] !h-[32px] rounded-xl font-mediumn m-0 p-0 min-h-[20px] h-[26px] px-2"
+          >
+            <Icon
+              icon="charm:key"
+              width="20"
+              height="20"
+            />
+          </Button>
+          )}
+
         </div>
 
         <div className="p-0 m-0">
@@ -199,6 +228,29 @@ function MapView({
         dialogChooseCreate={dialogChooseCreate}
         setDialogChooseCreate={setDialogChooseCreate}
       />
+      <CodeCrudDialog
+        open={showAdminDialog}
+        close={setShowAdminDialog}
+        title="MODO ADMINISTRADOR"
+        description="Facilita el código para entrar al modo administrador. Entrando en este modo podrñas
+        editar informacion relativa a puntos de recogida"
+        callback={(code) => {
+          if (code === process.env.NEXT_PUBLIC_MASTER_KEY_PICKUPS) {
+            sessionStorage.setItem('admin', JSON.stringify(true));
+            window.dispatchEvent(new Event('storage'));
+          }
+          setShowAdminDialog(false);
+        }}
+      >
+        <Button className="w-full mt-2 bg-green-500 uppercase text-[12px] font-semibold">
+          <Icon
+            icon="line-md:circle-twotone-to-confirm-circle-twotone-transition"
+            width="20"
+            height="20"
+          />
+          Aceptar
+        </Button>
+      </CodeCrudDialog>
     </div>
   );
 }

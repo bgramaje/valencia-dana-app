@@ -18,7 +18,7 @@ function MapContent({
 }) {
   const [infoOpenDialog, setInfoOpenDialog] = useState(false);
 
-  const { setShowCodeDialog: showKeyDialog } = usePickups();
+  const { setShowCreateDialog } = usePickups();
   const { setShowMarkerDialog } = useMarkers();
 
   const openCreateDialog = (markerType) => {
@@ -26,7 +26,7 @@ function MapContent({
     if (markerType === 'AFECTADO') {
       setShowMarkerDialog(true);
     } else {
-      showKeyDialog(true);
+      setShowCreateDialog(true);
     }
   };
 
