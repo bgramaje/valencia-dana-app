@@ -173,7 +173,7 @@ function MapView({
       <div
         className="w-full px-3 flex absolute top-20 left-1/2 transform -translate-x-1/2 -translate-y-1/2 items-start gap-4 justify-between"
       >
-        <div className="flex flex-col gap-1 items-center xl:hidden md:hidden">
+        <div className="flex flex-col gap-1 items-center xl:hidden">
           <Link href="https://github.com/bgramaje" passHref target="_blank">
             <Image
               alt="github"
@@ -187,18 +187,18 @@ function MapView({
             {markers.filter((m) => m.status !== MARKER_STATUS.COMPLETADO).length}
           </div>
           {!isAdmin && (
-          <Button
-            onClick={() => {
-              setShowAdminDialog(true);
-            }}
-            className="block xl:hidden w-fit mt-0 text-[12px] w-[32px] !h-[32px] rounded-xl font-mediumn m-0 p-0 min-h-[20px] h-[26px] px-2"
-          >
-            <Icon
-              icon="charm:key"
-              width="20"
-              height="20"
-            />
-          </Button>
+            <Button
+              onClick={() => {
+                setShowAdminDialog(true);
+              }}
+              className="w-fit mt-0 text-[12px] w-[32px] !h-[32px] rounded-xl font-mediumn m-0 p-0 min-h-[20px] h-[26px] px-2"
+            >
+              <Icon
+                icon="charm:key"
+                width="20"
+                height="20"
+              />
+            </Button>
           )}
 
         </div>
