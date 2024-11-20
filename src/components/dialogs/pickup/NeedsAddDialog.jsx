@@ -108,7 +108,7 @@ export function NeedsAddDialog({
         </DialogDescription>
         <div className="flex flex-col gap-2 max-h-[300px] overflow-y-auto pt-2">
           <div
-            className="flex flex-wrap w-full gap-1.5"
+            className="flex flex-wrap w-full gap-1.5 hover:cursor-pointer"
           >
             {needs.map((need) => (
               <NeedsButtonDisplay

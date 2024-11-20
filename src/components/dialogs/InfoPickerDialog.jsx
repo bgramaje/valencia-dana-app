@@ -248,7 +248,7 @@ export function InfoPickerDialog({
             setPickup={setPickup}
             updatePickup={updatePickup}
             needs={needsDB}
-            selectedNeeds={selectedNeeds}
+            selectedNeeds={selectedNeeds ?? []}
             setSelectedNeeds={setSelectedNeeds}
           />
 
@@ -257,7 +257,7 @@ export function InfoPickerDialog({
             setPickup={setPickup}
             updatePickup={updatePickup}
             needs={needsDB}
-            selectedNeeds={selectedNeeds}
+            selectedNeeds={selectedNeeds ?? []}
             setSelectedNeeds={setSelectedNeeds}
           />
 
