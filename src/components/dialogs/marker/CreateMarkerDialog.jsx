@@ -23,11 +23,10 @@ import {
 import {
   Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle,
 } from '@/components/ui/dialog';
-
-import { Alert, AlertTitle } from '../ui/alert';
-import { VoiceInput } from '../custom/voice-input';
-import { PhoneInput } from '../custom/phone-input';
-import { CodeCopyDialog } from './code/CodeCopyDialog';
+import { Alert, AlertTitle } from '@/components/ui/alert';
+import { PhoneInput } from '@/components/custom/phone-input';
+import { VoiceInput } from '@/components/custom/voice-input';
+import { CodeCopyDialog } from '../code/CodeCopyDialog';
 
 const convertToBase64 = (file) => new Promise((resolve, reject) => {
   const reader = new FileReader();
@@ -36,7 +35,7 @@ const convertToBase64 = (file) => new Promise((resolve, reject) => {
   reader.onerror = (error) => reject(error);
 });
 
-export function CreateDialog({
+export function CreateMarkerDialog({
   open,
   close,
   newMarker,

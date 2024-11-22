@@ -91,7 +91,7 @@ export function NeedsAddDialog({
   return (
     <Dialog open={open} onOpenChange={setOpen}>
       <DialogTrigger asChild>
-        <Button variant="outline" className="bg-orange-400 border-orange-500 font-medium uppercase text-[12px] font-semibold">
+        <Button variant="outline" className="flex-1 bg-orange-400 border-orange-500 font-medium uppercase text-[12px] font-semibold">
           <Icon icon="ep:help" style={{ width: 20, height: 20 }} />
           Añadir Necesidades
         </Button>

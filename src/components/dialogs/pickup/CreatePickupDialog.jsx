@@ -17,13 +17,12 @@ import { TOAST_ERROR_CLASSNAMES } from '@/lib/enums';
 import {
   Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle,
 } from '@/components/ui/dialog';
-
-import { Label } from '../ui/label';
-import { Switch } from '../ui/switch';
-import { Alert, AlertTitle } from '../ui/alert';
-import { VoiceInput } from '../custom/voice-input';
-import { CodeCopyDialog } from './code/CodeCopyDialog';
-import { PhoneInput } from '../custom/phone-input';
+import { PhoneInput } from '@/components/custom/phone-input';
+import { VoiceInput } from '@/components/custom/voice-input';
+import { Alert, AlertTitle } from '@/components/ui/alert';
+import { Label } from '@radix-ui/react-dropdown-menu';
+import { Switch } from '@radix-ui/react-switch';
+import { CodeCopyDialog } from '../code/CodeCopyDialog';
 
 export function CreatePickupDialog({
   open,

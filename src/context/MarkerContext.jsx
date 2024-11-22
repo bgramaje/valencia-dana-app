@@ -3,8 +3,8 @@ import React, {
 } from 'react';
 
 import { fetcher } from '@/lib/utils';
-import { CreateDialog } from '@/components/dialogs/CreateDialog';
-import { InfoMarkerDialog } from '@/components/dialogs/InfoMarkerDialog';
+import { CreateMarkerDialog } from '@/components/dialogs/marker/CreateMarkerDialog';
+import { DetailMarkerDialog } from '@/components/dialogs/marker/DetailMarkerDialog';
 import { useTowns } from './TownContext';
 
 const MarkerContext = createContext();
@@ -167,7 +167,7 @@ export function MarkerProvider({
     <MarkerContext.Provider value={value}>
       {children}
       {!selectedMarker && (
-        <CreateDialog
+        <CreateMarkerDialog
           open={showMarkerDialog}
           close={setShowMarkerDialog}
           newMarker={newMarker}
@@ -178,7 +178,7 @@ export function MarkerProvider({
       )}
 
       {selectedMarker && (
-        <InfoMarkerDialog
+        <DetailMarkerDialog
           open={showMarkerDialog}
           close={setShowMarkerDialog}
           selectedMarker={selectedMarker}

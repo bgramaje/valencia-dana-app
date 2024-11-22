@@ -9,8 +9,8 @@ import { Icon } from '@iconify/react';
 import { Button } from '@/components/ui/button';
 import { TOAST_ERROR_CLASSNAMES } from '@/lib/enums';
 import { CodeCrudDialog } from '@/components/dialogs/code/CodeCrudDialog';
-import { CreatePickupDialog } from '@/components/dialogs/CreatePickupDialog';
-import { InfoPickerDialog } from '@/components/dialogs/InfoPickerDialog';
+import { DetailPickerDialog } from '@/components/dialogs/pickup/DetailPickerDialog';
+import { CreatePickupDialog } from '@/components/dialogs/pickup/CreatePickupDialog';
 
 const PickupContext = createContext();
 
@@ -177,7 +177,7 @@ export function PickupProvider({
       />
 
       {selectedPickup && (
-        <InfoPickerDialog
+        <DetailPickerDialog
           selectedPickup={selectedPickup}
           open={showInfoPickupDialog}
           close={setShowInfoPickupDialog}

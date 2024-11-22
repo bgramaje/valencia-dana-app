@@ -18,7 +18,7 @@ import {
   Dialog, DialogContent, DialogFooter, DialogHeader, DialogTitle, DialogDescription,
 } from '@/components/ui/dialog';
 import { Checkbox } from '@/components/ui/checkbox';
-import { CodeCopyDialog } from './code/CodeCopyDialog';
+import { CodeCopyDialog } from '../code/CodeCopyDialog';
 
 export function HelperDialog({
   open, close, callback, selectedMarker,

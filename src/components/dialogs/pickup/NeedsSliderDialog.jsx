@@ -67,7 +67,7 @@ export function NeedsSliderDialog({
   return (
     <Dialog open={open} onOpenChange={setOpen}>
       <DialogTrigger asChild>
-        <Button variant="outline" className="bg-violet-400 border-violet-500 font-medium uppercase text-[12px]">
+        <Button variant="outline" className="flex-1 bg-violet-400 border-violet-500 font-medium uppercase text-[12px]">
           <Icon icon="hugeicons:money-bag-01" style={{ width: 20, height: 20 }} />
           Actualizar Capacidad
         </Button>

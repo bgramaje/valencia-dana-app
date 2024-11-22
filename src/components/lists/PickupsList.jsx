@@ -21,11 +21,11 @@ import { Badge } from '../ui/badge';
 import {
   Accordion, AccordionContent, AccordionItem, AccordionTrigger,
 } from '../ui/accordion';
-import { NeedSliderDisplay } from '../dialogs/InfoPickerDialog';
 import { Input } from '../ui/input';
 import {
   Select, SelectContent, SelectItem, SelectTrigger, SelectValue,
 } from '../ui/select';
+import { NeedSlider } from '../dialogs/pickup/children/NeedSlider';
 
 function PickupCardComp({ entity }) {
   const setGlobalViewState = useMapStore((state) => state.setGlobalViewState);
@@ -99,7 +99,7 @@ function PickupCardComp({ entity }) {
                         const needDB = needsDB.find((n) => n.key === need.key);
                         if (!needDB) return null;
                         return (
-                          <NeedSliderDisplay
+                          <NeedSlider
                             key={needDB.key}
                             {...omit(needDB, ['key'])}
                             value={need?.value ?? 0}
