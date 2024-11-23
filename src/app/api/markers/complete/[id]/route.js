@@ -1,4 +1,4 @@
-import { isEqual } from 'lodash';
+import { checkCode } from '@/lib/api/code';
 import { markersTable, supabase, townsTable } from '../../route';
 
 export async function PUT(request, { params }) {
@@ -21,14 +21,14 @@ export async function PUT(request, { params }) {
     return new Response(JSON.stringify({ error: errorSelect.message }), { status: 500 });
   }
 
-  if (!isEqual(code, marker.password) && !isEqual(code, marker.helper_password)) {
+  if (!checkCode(code, marker)) {
     return new Response(JSON.stringify({ message: 'El código no es correcto' }), { status: 403 });
   }
 
   // Update the `status` field of the specified marker
   const { data, error } = await supabase
     .from(markersTable)
-    .update(rest)
+    .update({ status: rest.status })
     .eq('id', id)
     .select();
 

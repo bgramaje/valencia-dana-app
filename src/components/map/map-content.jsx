@@ -1,7 +1,7 @@
 'use client';
 
 import { usePickups } from '@/context/PickupContext';
-import React, { useState } from 'react';
+import React from 'react';
 import { useMarkers } from '@/context/MarkerContext';
 import { ActionButtons } from './action-buttons';
 import ChooseCreateDialog from '../dialogs/ChooseCreateDialog';
@@ -15,9 +15,9 @@ function MapContent({
   loading,
   dialogChooseCreate,
   setDialogChooseCreate,
+  infoOpenDialog,
+  setInfoOpenDialog,
 }) {
-  const [infoOpenDialog, setInfoOpenDialog] = useState(false);
-
   const { setShowCreateDialog } = usePickups();
   const { setShowMarkerDialog } = useMarkers();
 

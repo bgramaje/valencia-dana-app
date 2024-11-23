@@ -2,12 +2,12 @@ import React, { memo } from 'react';
 import { Button } from '@/components/ui/button';
 import { Icon } from '@iconify/react';
 import { Legend } from './legend';
+import { ListMobile } from '../lists/ListMobile';
 
 export const ActionButtons = memo(({
   isSelectingLocation,
   setIsSelectingLocation,
   getLocation,
-  setIsInfoOpen,
   types,
   loading,
 }) => (
@@ -49,21 +49,25 @@ export const ActionButtons = memo(({
         />
       </Button>
     </div>
+
     <div className="flex gap-2">
-      <Button
-        onClick={() => setIsInfoOpen(true)}
-        variant="outline"
-        size="icon"
-        className="min-w-[60px] h-[60px] rounded-xl"
-      >
-        <Icon
-          icon="ph:info-bold"
-          width="40"
-          height="40"
-          className="text-red-300"
-          style={{ color: 'black', width: 40, height: 40 }}
-        />
-      </Button>
+      <div className="block md:hidden">
+        <ListMobile>
+          <Button
+            variant="outline"
+            size="icon"
+            className="min-w-[60px] h-[60px] rounded-xl"
+          >
+            <Icon
+              icon="mdi:select-multiple-location"
+              width="40"
+              height="40"
+              className="text-red-300"
+              style={{ color: 'black', width: 40, height: 40 }}
+            />
+          </Button>
+        </ListMobile>
+      </div>
       <Legend types={types} loading={loading}>
         <Button
           variant="outline"

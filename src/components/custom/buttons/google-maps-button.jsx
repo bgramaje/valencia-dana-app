@@ -1,13 +1,14 @@
 import { Button } from '@/components/ui/button';
 import { getGoogleMapsUrl } from '@/lib/getAdress';
+import { cn } from '@/lib/utils';
 import { Icon } from '@iconify/react';
 import React from 'react';
 
-export function GoogleMapsButtton({ entity }) {
+export function GoogleMapsButtton({ entity, className }) {
   return (
     <Button
       onClick={() => window.open(getGoogleMapsUrl(entity), '_blank')}
-      className="w-full mt-0.5"
+      className={cn('w-full mt-0.5', className)}
     >
       <Icon
         icon="mingcute:location-fill"

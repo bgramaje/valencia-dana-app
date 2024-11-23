@@ -37,7 +37,7 @@ export function ComboBoxResponsive({ towns, setSelectedTown, selectedTown }) {
     return (
       <Popover open={open} onOpenChange={setOpen}>
         <PopoverTrigger asChild>
-          <Button variant="outline" className="w-[150px] justify-start">
+          <Button variant="outline" className="w-full justify-start">
             {selectedTown
               ? (
                 <div className="flex justify-between w-full items-center uppercase text-[11px] gap-1">

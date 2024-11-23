@@ -8,8 +8,6 @@ import { PickupProvider } from '@/context/PickupContext';
 import { MarkerProvider } from '@/context/MarkerContext';
 import MapView from '@/components/map/map-view';
 import { TownProvider } from '@/context/TownContext';
-import { MarkersList } from '@/components/lists/MarkersList';
-import { PickupsList } from '@/components/lists/PickupsList';
 import { Separator } from '@/components/ui/separator';
 import Image from 'next/image';
 import { Icon } from '@iconify/react';
@@ -17,6 +15,8 @@ import Link from 'next/link';
 import { CodeCrudDialog } from '@/components/dialogs/code/CodeCrudDialog';
 import { Button } from '@/components/ui/button';
 import useIsAdmin from '@/hooks/useIsAdmin';
+import { MarkersList } from '@/components/lists/marker/MarkersList';
+import { PickupsList } from '@/components/lists/pickup/PickupsList';
 
 /**
  * @name CombinedProvider
@@ -90,7 +90,7 @@ export default function Home() {
           selectedMarker={selectedMarker}
           setSelectedMarker={setSelectedMarker}
         />
-        <div className="hidden xl:flex flex-col grow-2 max-h-dvh">
+        <div className="hidden md:flex flex-col flex-1 grow-3 max-h-dvh">
           <div className="p-2 flex gap-2 items-center justify-between">
             <div className="flex items-center gap-4">
               <Image src="som.svg" alt="logo-som" width={60} height={23} />
@@ -99,13 +99,18 @@ export default function Home() {
                   onClick={() => {
                     setShowAdminDialog(true);
                   }}
-                  className="w-fit mt-0 text-[12px] rounded-xl font-mediumn m-0 p-0 min-h-[20px] h-[26px] px-2"
+                  className="w-fit mt-0 text-[11px] rounded-xl font-semibold m-0 p-0 min-h-[20px] h-[26px] px-2 pr-3 uppercase"
                 >
+                  <span className="relative flex h-3 w-3">
+                    <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-red-400 opacity-75" />
+                    <span className="relative inline-flex rounded-full h-3 w-3 bg-red-500" />
+                  </span>
                   <Icon
                     icon="charm:key"
                     width="20"
                     height="20"
                   />
+                  Modo Administrador
                 </Button>
               )}
             </div>
@@ -137,7 +142,7 @@ export default function Home() {
           </div>
           <Separator />
 
-          <div className="hidden xl:flex justify-between flex-1 overflow-auto">
+          <div className="flex justify-between flex-1 overflow-auto">
             <MarkersList />
             <Separator orientation="vertical" />
             <PickupsList />
@@ -159,8 +164,8 @@ export default function Home() {
         open={showAdminDialog}
         close={setShowAdminDialog}
         title="MODO ADMINISTRADOR"
-        description="Facilita el código para entrar al modo administrador. Entrando en este modo podrñas
-        editar informacion relativa a puntos de recogida"
+        description="Acceso como modo administrador. Esto te permitirá poder modificar todas las
+        solicitudes de ayuda y la gestion de puntos de recogida"
         callback={(code) => {
           if (code === process.env.NEXT_PUBLIC_MASTER_KEY_PICKUPS) {
             sessionStorage.setItem('admin', JSON.stringify(true));

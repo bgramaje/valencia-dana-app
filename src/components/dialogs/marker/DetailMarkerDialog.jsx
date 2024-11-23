@@ -153,7 +153,7 @@ export function DetailMarkerDialog({
         close={setShowCodeDialog}
         selectedMarker={marker}
         callback={(code) => {
-          deleteMarker(code);
+          deleteMarker(marker.id, code);
           close(false);
         }}
       >
@@ -176,7 +176,7 @@ export function DetailMarkerDialog({
         handleDeleteMarker={deleteMarker}
         selectedMarker={marker}
         callback={(code) => {
-          completeMarker({ status: 'completado', code });
+          completeMarker(marker?.id, code);
           close(false);
         }}
       >

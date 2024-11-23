@@ -54,6 +54,7 @@ function MapView({
   setSelectedMarker,
 }) {
   const [showAdminDialog, setShowAdminDialog] = useState(false);
+  const [infoOpenDialog, setInfoOpenDialog] = useState(false);
 
   const globalViewState = useMapStore((state) => state.globalViewState);
 
@@ -143,7 +144,7 @@ function MapView({
   }, [globalViewState]);
 
   return (
-    <div className="relative h-dvh grow-[5] min-w-[60%]">
+    <div className="relative h-dvh flex-1 grow-4">
       <DeckGL
         height="100dvh"
         viewState={viewState}
@@ -173,6 +174,7 @@ function MapView({
       <div
         className="w-full px-3 flex absolute top-20 left-1/2 transform -translate-x-1/2 -translate-y-1/2 items-start gap-4 justify-between"
       >
+        <div className="hidden xl:block" />
         <div className="flex flex-col gap-1 items-center xl:hidden">
           <Link href="https://github.com/bgramaje" passHref target="_blank">
             <Image
@@ -186,6 +188,18 @@ function MapView({
           <div className="font-semibold text-[13px] bg-white p-1 rounded-xl w-[32px] h-[32px] flex items-center justify-center">
             {markers.filter((m) => m.status !== MARKER_STATUS.COMPLETADO).length}
           </div>
+          <Button
+            onClick={() => setInfoOpenDialog(true)}
+            variant="outline"
+            size="icon"
+            className="rounded-xl"
+          >
+            <Icon
+              icon="ph:info-bold"
+              className="text-red-300"
+              style={{ color: 'black', width: 22, height: 22 }}
+            />
+          </Button>
           {!isAdmin && (
             <Button
               onClick={() => {
@@ -200,10 +214,9 @@ function MapView({
               />
             </Button>
           )}
-
         </div>
 
-        <div className="p-0 m-0">
+        <div className="p-0 m-0 w-[200px]">
           <ComboBoxResponsive
             towns={towns}
             selectedTown={selectedTown}
@@ -227,6 +240,8 @@ function MapView({
         loading={loadingMarkers && loadingPickups && loadingTowns}
         dialogChooseCreate={dialogChooseCreate}
         setDialogChooseCreate={setDialogChooseCreate}
+        infoOpenDialog={infoOpenDialog}
+        setInfoOpenDialog={setInfoOpenDialog}
       />
       <CodeCrudDialog
         open={showAdminDialog}

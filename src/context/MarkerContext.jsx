@@ -3,8 +3,10 @@ import React, {
 } from 'react';
 
 import { fetcher } from '@/lib/utils';
+import { MARKER_STATUS } from '@/lib/enums';
 import { CreateMarkerDialog } from '@/components/dialogs/marker/CreateMarkerDialog';
 import { DetailMarkerDialog } from '@/components/dialogs/marker/DetailMarkerDialog';
+
 import { useTowns } from './TownContext';
 
 const MarkerContext = createContext();
@@ -100,35 +102,41 @@ export function MarkerProvider({
    * @param body
    * @description function to change a marker as completed
    */
-  const completeMarker = useCallback((body) => {
-    fetcher(`/api/markers/complete/${selectedMarker.id}`, {
+  const completeMarker = useCallback((id, code) => {
+    fetcher(`/api/markers/complete/${id}`, {
       method: 'PUT',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ id: selectedMarker.id, ...body }),
+      body: JSON.stringify({
+        code,
+        status: MARKER_STATUS.COMPLETADO,
+      }),
     }, 'Marcador completado correctamente')
       .then(() => {
         fetchMarkers();
       });
-  }, [fetchMarkers, selectedMarker]);
+  }, [fetchMarkers]);
 
   /**
    * @name deleteMarker
    * @param body
    * @description function to delete a marker
    */
-  const deleteMarker = useCallback((code) => {
-    fetcher('/api/markers', {
+  const deleteMarker = useCallback((id, code) => {
+    fetcher(`/api/markers/${id}`, {
       method: 'DELETE',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ id: selectedMarker.id, code }),
+      body: JSON.stringify({ code }),
     }, 'Marcador borrado correctamente')
-      .then(() => {
+      .then(async () => {
         setMarkers((prevMarkers) => prevMarkers.filter((marker) => marker !== selectedMarker));
         setShowMarkerDialog(false);
-        setSelectedMarker(null);
-        fetchTowns();
+        if (selectedMarker) setSelectedMarker(null);
+        await Promise.all([
+          fetchTowns(),
+          fetchMarkers(),
+        ]);
       });
-  }, [selectedMarker, setSelectedMarker, fetchTowns]);
+  }, [selectedMarker, setSelectedMarker, fetchTowns, fetchMarkers]);
 
   useEffect(() => {
     setLoading(true);
@@ -151,6 +159,8 @@ export function MarkerProvider({
     markers,
     markersType,
     loading,
+    completeMarker,
+    deleteMarker,
     fetchMarkers,
     postMarker,
     setShowMarkerDialog,
@@ -158,6 +168,8 @@ export function MarkerProvider({
     markers,
     markersType,
     loading,
+    completeMarker,
+    deleteMarker,
     fetchMarkers,
     postMarker,
     setShowMarkerDialog,
