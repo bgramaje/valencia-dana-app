@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import {
   Drawer,
   DrawerContent,
@@ -14,12 +14,17 @@ import { MarkersList } from './marker/MarkersList';
 import { PickupsList } from './pickup/PickupsList';
 
 export function ListMobile({ children }) {
+  const [open, setOpen] = useState(false);
+  const [tab, setTab] = useState(MARKER_LAYERS.AFECTADO.label);
+
   return (
-    <Drawer>
-      <DrawerTrigger>{children}</DrawerTrigger>
+    <Drawer open={open} onOpenChange={setOpen}>
+      <DrawerTrigger asChild>{children}</DrawerTrigger>
       <DrawerTitle />
       <DrawerContent className=" h-[95%] px-2 flex flex-col">
         <Tabs
+          value={tab}
+          onValueChange={setTab}
           defaultValue={MARKER_LAYERS.AFECTADO.label}
           className="w-full h-full flex-1 flex flex-col"
         >
@@ -34,19 +39,30 @@ export function ListMobile({ children }) {
               );
             })}
           </TabsList>
-          <div className="flex flex-1 overflow-hidden">
-            <TabsContent
-              value={MARKER_LAYERS.AFECTADO.label}
-              className="flex overflow-y-hidden"
-            >
-              <MarkersList className="basis-full pb-4" />
-            </TabsContent>
+          <div className="flex flex-1 overflow-hidden w-full">
+            {tab === MARKER_LAYERS.AFECTADO.label && (
+              <TabsContent
+                value={MARKER_LAYERS.AFECTADO.label}
+                className="flex overflow-y-hidden w-full"
+              >
+                <MarkersList
+                  cb={() => setOpen(false)}
+                  className="basis-full pb-4 w-full"
+                />
+              </TabsContent>
+            )}
+
+            {tab === MARKER_LAYERS.PUNTO.label && (
             <TabsContent
               value={MARKER_LAYERS.PUNTO.label}
-              className="flex overflow-y-hidden"
+              className="flex overflow-y-hidden w-full"
             >
-              <PickupsList className="basis-full pb-4" />
+              <PickupsList
+                cb={() => setOpen(false)}
+                className="basis-full pb-4 w-full"
+              />
             </TabsContent>
+            )}
           </div>
 
         </Tabs>

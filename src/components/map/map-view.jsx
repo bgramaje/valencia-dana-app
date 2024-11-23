@@ -216,7 +216,7 @@ function MapView({
           )}
         </div>
 
-        <div className="p-0 m-0 w-[200px]">
+        <div className="p-0 m-0">
           <ComboBoxResponsive
             towns={towns}
             selectedTown={selectedTown}

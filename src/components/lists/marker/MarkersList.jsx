@@ -14,7 +14,7 @@ const statusClasses = {
   [MARKER_STATUS.ASIGNADO]: 'bg-orange-500 text-orange-900 hover:bg-orange-500',
 };
 
-export function MarkersList({ className }) {
+export function MarkersList({ className, cb = null }) {
   const { markers, loading } = useMarkers();
   const [searchTerm, setSearchTerm] = useState('');
   const [selectedStatus, setSelectedStatus] = useState(null);
@@ -62,7 +62,7 @@ export function MarkersList({ className }) {
       {!loading && (
         <div className="h-full overflow-y-auto pr-2 flex flex-col gap-2">
           {filteredMarkers.length > 0 ? (
-            filteredMarkers.map((marker) => <MarkerCard key={marker.id} entity={marker} />)
+            filteredMarkers.map((marker) => <MarkerCard cb={cb} key={marker.id} entity={marker} />)
           ) : (
             <p className="text-gray-500 text-center">No se encontraron marcadores.</p>
           )}

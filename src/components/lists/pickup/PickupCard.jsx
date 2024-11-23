@@ -24,7 +24,7 @@ import {
 } from '@/components/ui/accordion';
 import { NeedSlider } from '@/components/dialogs/pickup/children/NeedSlider';
 
-function PickupCardComp({ entity }) {
+function PickupCardComp({ entity, cb = null }) {
   const setGlobalViewState = useMapStore((state) => state.setGlobalViewState);
   const { needs: needsDB } = usePickups();
 
@@ -103,7 +103,10 @@ function PickupCardComp({ entity }) {
       </div>
       <CardFooter className="px-4 -my-0.5 pb-2 flex flex-col gap-0.5">
         <Button
-          onClick={() => setGlobalViewState({ latitude: entity?.latitude, longitude: entity?.longitude, zoom: 16 })}
+          onClick={() => {
+            setGlobalViewState({ latitude: entity?.latitude, longitude: entity?.longitude, zoom: 16 });
+            if (cb) cb();
+          }}
           className="w-full mt-0.5 rounded-xl bg-blue-400 border-1 border-blue-900 hover:bg-blue-500"
         >
           <Icon

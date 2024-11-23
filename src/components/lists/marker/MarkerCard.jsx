@@ -18,7 +18,7 @@ import {
 } from '@/components/ui/card';
 import { CompleteButton, DeleteButton } from '@/components/dialogs/marker/children/MarkerButtons';
 
-function MarkerCardComp({ entity }) {
+function MarkerCardComp({ entity, cb = null }) {
   const setGlobalViewState = useMapStore((state) => state.setGlobalViewState);
   const { completeMarker, deleteMarker } = useMarkers();
 
@@ -82,7 +82,10 @@ function MarkerCardComp({ entity }) {
         </div>
         )}
         <Button
-          onClick={() => setGlobalViewState({ latitude: entity?.latitude, longitude: entity?.longitude, zoom: 16 })}
+          onClick={() => {
+            setGlobalViewState({ latitude: entity?.latitude, longitude: entity?.longitude, zoom: 16 });
+            if (cb) cb();
+          }}
           className="w-full mt-0.5 rounded-xl bg-blue-400 border-1 border-blue-900 hover:bg-blue-500"
         >
           <Icon

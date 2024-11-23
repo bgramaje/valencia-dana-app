@@ -11,7 +11,7 @@ import {
 import { cn } from '@/lib/utils';
 import { PickupCard } from './PickupCard';
 
-export function PickupsList({ className }) {
+export function PickupsList({ className, cb = null }) {
   const { pickups, needs, loading } = usePickups(); // needs contiene todos los posibles "key"
   const [searchTerm, setSearchTerm] = useState('');
   const [selectedNeed, setSelectedNeed] = useState('all'); // Usar 'all' en lugar de ''
@@ -76,7 +76,13 @@ export function PickupsList({ className }) {
       {!loading && (
         <div className="h-full overflow-y-auto pr-2 flex flex-col gap-2">
           {filteredPickups.length > 0 ? (
-            filteredPickups.map((pickup) => <PickupCard key={pickup.id} entity={pickup} />)
+            filteredPickups.map((pickup) => (
+              <PickupCard
+                key={pickup.id}
+                cb={cb}
+                entity={pickup}
+              />
+            ))
           ) : (
             <p className="text-gray-500 text-center">No se encontraron puntos de recogida.</p>
           )}
