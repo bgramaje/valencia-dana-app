@@ -24,12 +24,18 @@ import {
 } from '@/components/ui/accordion';
 import { NeedSlider } from '@/components/dialogs/pickup/children/NeedSlider';
 
-function PickupCardComp({ entity, cb = null }) {
+function PickupCardComp({
+  id, style, cb, entity,
+}) {
   const setGlobalViewState = useMapStore((state) => state.setGlobalViewState);
   const { needs: needsDB } = usePickups();
 
   return (
-    <Card className="flex-1 bg-gray-50">
+    <Card
+      key={`child-${id}`}
+      style={style}
+      className="flex-1 bg-gray-50 p-1"
+    >
       <CardHeader className="px-4 py-3">
         <CardTitle className="flex items-center text-[13px] uppercase pb-0 justify-between w-full gap-2">
           <div className="flex items-center gap-1">
@@ -101,7 +107,7 @@ function PickupCardComp({ entity, cb = null }) {
       <div className="px-4 py-2">
         <Separator />
       </div>
-      <CardFooter className="px-4 -my-0.5 pb-2 flex flex-col gap-0.5">
+      <CardFooter className="px-4 -my-0.5 pb-2 flex flex gap-0.5">
         <Button
           onClick={() => {
             setGlobalViewState({ latitude: entity?.latitude, longitude: entity?.longitude, zoom: 16 });
@@ -114,9 +120,13 @@ function PickupCardComp({ entity, cb = null }) {
             width="20"
             height="20"
           />
-          Localizar en el mapa
+          Localizar
         </Button>
-        <GoogleMapsButtton entity={entity} />
+        <GoogleMapsButtton
+          entity={entity}
+          text="Google Maps"
+          className="rounded-xl"
+        />
       </CardFooter>
     </Card>
   );

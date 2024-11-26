@@ -158,7 +158,7 @@ function MapView({
           attributionControl={false}
           reuseMaps
           onClick={handleMapClick}
-          mapStyle={mapStyle}
+          mapStyle="https://basemaps.cartocdn.com/gl/voyager-gl-style/style.json"
         />
       </DeckGL>
 

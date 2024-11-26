@@ -4,7 +4,7 @@ import { cn } from '@/lib/utils';
 import { Icon } from '@iconify/react';
 import React from 'react';
 
-export function GoogleMapsButtton({ entity, className }) {
+export function GoogleMapsButtton({ entity, className, text }) {
   return (
     <Button
       onClick={() => window.open(getGoogleMapsUrl(entity), '_blank')}
@@ -15,7 +15,7 @@ export function GoogleMapsButtton({ entity, className }) {
         width="20"
         height="20"
       />
-      Abrir en Google Maps
+      {text ?? 'Abrir en Google Maps'}
     </Button>
   );
 }

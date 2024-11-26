@@ -1,11 +1,11 @@
 import { useMarkers } from '@/context/MarkerContext';
-import React, { useState } from 'react';
+import React, { useMemo, useState, useRef } from 'react';
 
-import { Icon } from '@iconify/react';
 import { MARKER_STATUS } from '@/lib/enums';
 import { Badge } from '@/components/ui/badge';
 import { Input } from '@/components/ui/input';
 import { cn } from '@/lib/utils';
+import { useVirtualizer } from '@tanstack/react-virtual';
 import { MarkerCard } from './MarkerCard';
 
 const statusClasses = {
@@ -15,16 +15,28 @@ const statusClasses = {
 };
 
 export function MarkersList({ className, cb = null }) {
+  const parentRef = useRef(null);
   const { markers, loading } = useMarkers();
   const [searchTerm, setSearchTerm] = useState('');
   const [selectedStatus, setSelectedStatus] = useState(null);
 
   // Filtrar marcadores por descripción y estado
-  const filteredMarkers = markers.filter((marker) => {
+  const filteredMarkers = useMemo(() => markers.filter((marker) => {
     const matchesSearch = marker?.description?.toLowerCase().includes(searchTerm.toLowerCase());
     const matchesStatus = selectedStatus ? marker.status === selectedStatus : true;
     return matchesSearch && matchesStatus;
+  }), [markers, searchTerm, selectedStatus]);
+
+  const virtualizer = useVirtualizer({
+    count: filteredMarkers.length,
+    getScrollElement: () => parentRef.current,
+    estimateSize: () => 300,
+    overscan: 12,
+    gap: 0,
   });
+
+  const virtualItems = virtualizer.getVirtualItems();
+  const totalSize = virtualizer.getTotalSize();
 
   return (
     <div className={cn('grow-[1] basis-[200px] p-3 flex-1 flex overflow-y-hidden flex-col gap-2', className)}>
@@ -59,24 +71,45 @@ export function MarkersList({ className, cb = null }) {
         ))}
       </div>
 
-      {!loading && (
-        <div className="h-full overflow-y-auto pr-2 flex flex-col gap-2">
-          {filteredMarkers.length > 0 ? (
-            filteredMarkers.map((marker) => <MarkerCard cb={cb} key={marker.id} entity={marker} />)
-          ) : (
-            <p className="text-gray-500 text-center">No se encontraron marcadores.</p>
-          )}
-        </div>
-      )}
+      <div
+        ref={parentRef}
+        className="h-full overflow-y-auto pr-2 flex flex-col gap-2"
+      >
+        <div
+          className="relative w-full"
+          style={{ height: `${totalSize}px` }}
+        >
+          <div
+            className="absolute top-0 left-0 w-full flex flex-col gap-2"
+            style={{
+              transform: `translateY(${virtualItems[0]?.start ?? 0}px)`,
+            }}
+          >
+            {virtualItems.map((virtualItem) => {
+              const { index, key } = virtualItem;
+              const listItem = filteredMarkers[index];
 
-      {loading && (
-        <div className="h-full overflow-y-auto pr-2 flex flex-col gap-2 flex-1">
-          <Icon
-            icon="line-md:loading-loop"
-            width="20"
-            height="20"
-            style={{ color: '#202020' }}
-          />
+              return (
+                <div
+                  key={key}
+                  data-index={index}
+                  ref={virtualizer.measureElement}
+                >
+                  <MarkerCard
+                    id={key}
+                    cb={cb}
+                    entity={listItem}
+                  />
+                </div>
+              );
+            })}
+          </div>
+        </div>
+      </div>
+
+      {!loading && filteredMarkers.length === 0 && (
+        <div className="h-full flex items-center justify-center text-gray-500">
+          No hay marcadores que coincidan con los filtros.
         </div>
       )}
     </div>

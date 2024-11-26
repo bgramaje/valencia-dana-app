@@ -18,7 +18,9 @@ import {
 } from '@/components/ui/card';
 import { CompleteButton, DeleteButton } from '@/components/dialogs/marker/children/MarkerButtons';
 
-function MarkerCardComp({ entity, cb = null }) {
+function MarkerCardComp({
+  entity, cb = null, id, style,
+}) {
   const setGlobalViewState = useMapStore((state) => state.setGlobalViewState);
   const { completeMarker, deleteMarker } = useMarkers();
 
@@ -33,7 +35,11 @@ function MarkerCardComp({ entity, cb = null }) {
   };
 
   return (
-    <Card className="flex-1 bg-gray-50">
+    <Card
+      key={`child-${id}`}
+      style={style}
+      className="flex-1 bg-gray-50 p-1"
+    >
       <CardHeader className="px-4 py-3">
         <CardTitle className="flex items-center text-[13px] uppercase pb-0 justify-between w-full">
           <div className="flex flex-col gap-0">
