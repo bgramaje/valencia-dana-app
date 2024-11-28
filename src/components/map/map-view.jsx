@@ -21,6 +21,7 @@ import MapContent from './map-content';
 import { Button } from '../ui/button';
 import { CodeCrudDialog } from '../dialogs/code/CodeCrudDialog';
 
+/*
 const mapStyle = {
   version: 8,
   sources: {
@@ -45,6 +46,7 @@ const mapStyle = {
     },
   ],
 };
+*/
 
 function MapView({
   setSelectedCoordinate,

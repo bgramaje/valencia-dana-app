@@ -1,33 +1,22 @@
 import React, { useMemo, useState } from 'react';
-import { usePickups } from '@/context/PickupContext';
-import { Icon } from '@iconify/react';
 
+import { cn } from '@/lib/utils';
+import { Icon } from '@iconify/react';
 import { Badge } from '@/components/ui/badge';
 import { Input } from '@/components/ui/input';
+import { usePickups } from '@/context/PickupContext';
+import { useVirtualizer } from '@tanstack/react-virtual';
 import {
   Select, SelectContent, SelectItem, SelectTrigger, SelectValue,
 } from '@/components/ui/select';
-import { cn } from '@/lib/utils';
 
-import { useVirtualizer } from '@tanstack/react-virtual';
 import { PickupCard } from './PickupCard';
 
-export function PickupsList({ className, cb = null }) {
-  const { pickups, needs, loading } = usePickups();
-  const [searchTerm, setSearchTerm] = useState('');
-  const [selectedNeed, setSelectedNeed] = useState('all');
+function PickupVirtualizedList({ data, cb }) {
   const parentRef = React.useRef(null);
 
-  const filteredPickups = useMemo(() => pickups.filter((pickup) => {
-    const matchesSearch = pickup.name.toLowerCase().includes(searchTerm.toLowerCase());
-    const matchesNeed = selectedNeed === 'all'
-        || pickup.needs?.some((need) => need.key === selectedNeed && Number(need.value) !== 100);
-
-    return matchesSearch && matchesNeed;
-  }), [pickups, searchTerm, selectedNeed]);
-
   const virtualizer = useVirtualizer({
-    count: filteredPickups.length,
+    count: data.length,
     getScrollElement: () => parentRef.current,
     estimateSize: () => 300,
     overscan: 12,
@@ -36,6 +25,59 @@ export function PickupsList({ className, cb = null }) {
 
   const virtualItems = virtualizer.getVirtualItems();
   const totalSize = virtualizer.getTotalSize();
+
+  return (
+    <div
+      ref={parentRef}
+      className="h-full overflow-y-auto pr-2 flex flex-col gap-2"
+    >
+      <div
+        className="relative w-full"
+        style={{ height: `${totalSize}px` }}
+      >
+        <div
+          className="absolute top-0 left-0 w-full flex flex-col gap-2"
+          style={{
+            transform: `translateY(${virtualItems[0]?.start ?? 0}px)`,
+          }}
+        >
+          {virtualItems.map((virtualItem) => {
+            const { index, key } = virtualItem;
+            const listItem = data[index];
+
+            return (
+              <div
+                key={key}
+                data-index={index}
+                ref={virtualizer.measureElement}
+              >
+                <PickupCard
+                  id={key}
+                  cb={cb}
+                  entity={listItem}
+                />
+              </div>
+            );
+          })}
+        </div>
+
+      </div>
+    </div>
+  );
+}
+
+export function PickupsList({ className, cb = null }) {
+  const { pickups, needs, loading } = usePickups();
+  const [searchTerm, setSearchTerm] = useState('');
+  const [selectedNeed, setSelectedNeed] = useState('all');
+
+  const filteredPickups = useMemo(() => pickups.filter((pickup) => {
+    const matchesSearch = pickup.name.toLowerCase().includes(searchTerm.toLowerCase());
+    const matchesNeed = selectedNeed === 'all'
+        || pickup.needs?.some((need) => need.key === selectedNeed && Number(need.value) !== 100);
+
+    return matchesSearch && matchesNeed;
+  }), [pickups, searchTerm, selectedNeed]);
 
   return (
     <div className={cn('grow-[1] basis-[200px] p-3 flex-1 flex overflow-y-hidden flex-col gap-2', className)}>
@@ -79,43 +121,7 @@ export function PickupsList({ className, cb = null }) {
         </Select>
       </div>
 
-      <div
-        ref={parentRef}
-        className="h-full overflow-y-auto pr-2 flex flex-col gap-2"
-      >
-        <div
-          className="relative w-full"
-          style={{ height: `${totalSize}px` }}
-        >
-          <div
-            className="absolute top-0 left-0 w-full flex flex-col gap-2"
-            style={{
-              transform: `translateY(${virtualItems[0]?.start ?? 0}px)`,
-            }}
-          >
-            {virtualItems.map((virtualItem) => {
-              const { index, key } = virtualItem;
-              const listItem = filteredPickups[index];
-
-              return (
-                <div
-                  key={key}
-                  data-index={index}
-                  ref={virtualizer.measureElement}
-                >
-                  <PickupCard
-                    id={key}
-                    cb={cb}
-                    entity={listItem}
-                  />
-                </div>
-              );
-            })}
-          </div>
-
-        </div>
-      </div>
-      {/* List */}
+      <PickupVirtualizedList data={filteredPickups} cb={cb} />
 
       {/* Empty or Loading States */}
       {!loading && filteredPickups.length === 0 && (

@@ -42,6 +42,7 @@
     "input-otp": "^1.4.0",
     "libphonenumber-js": "^1.11.12",
     "lodash": "^4.17.21",
+    "lodash.debounce": "^4.0.8",
     "lucide-react": "^0.454.0",
     "maplibre-gl": "^4.7.1",
     "next": "15.0.2",
