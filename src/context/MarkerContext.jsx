@@ -2,7 +2,11 @@ import React, {
   createContext, useCallback, useContext, useEffect, useMemo, useState,
 } from 'react';
 
-import { fetcher } from '@/lib/utils';
+import { isEmpty } from 'lodash';
+
+import {
+  DELETE, GET, POST, PUT,
+} from '@/lib/fetcher';
 import { MARKER_STATUS } from '@/lib/enums';
 import { CreateMarkerDialog } from '@/components/dialogs/marker/CreateMarkerDialog';
 import { DetailMarkerDialog } from '@/components/dialogs/marker/DetailMarkerDialog';
@@ -22,61 +26,55 @@ export function MarkerProvider({
   location, selectedMarker, setSelectedMarker, children,
 }) {
   const [newMarker, setNewMarker] = useState(INITIAL_VALUE);
-  // state for data coming from DDBB
+
   const [markers, setMarkers] = useState([]);
   const [markersType, setMarkersType] = useState([]);
 
-  // loading state variable
   const [loading, setLoading] = useState(false);
-  // booleans for controlling dialogs
   const [showMarkerDialog, setShowMarkerDialog] = useState(false);
 
   const { fetchTowns } = useTowns();
 
   /**
    * @name fetchMarkers
-   * @description function to set all markers stored in the database
-   * it stores them into the useState of `markers`
+   * @description retreive markers from db and assign it to state
    */
-  const fetchMarkers = useCallback(() => {
-    fetcher('/api/markers', {
-      method: 'GET',
-      headers: { 'Content-Type': 'application/json' },
-    }, null).then((data) => {
-      setMarkers(data);
-    });
+  const fetchMarkers = useCallback(async () => {
+    const markersDb = await GET({ endpoint: '/api/markers' });
+    if (!isEmpty(markersDb)) setMarkers(markersDb);
   }, []);
 
   /**
    * @name fetchMarkersType
-   * @description function to set all markers stored in the database
-   * it stores them into the useState of `markers`
+   * @description retreive markerTypes from db and assign it to state
    */
-  const fetchMarkersType = useCallback(() => {
-    fetcher('/api/markers/type', {
-      method: 'GET',
-      headers: { 'Content-Type': 'application/json' },
-    }, null).then((data) => {
-      setMarkersType(data);
-    });
+  const fetchMarkersType = useCallback(async () => {
+    const typesDb = await GET({ endpoint: '/api/markers/type' });
+    if (!isEmpty(typesDb)) setMarkersType(typesDb);
   }, []);
 
   /**
    * @name postMarker
-   * @param body
-   * @description function to post to the api a new marker point.
-   * After successfully doing it, it closes marker dialog modal.
+   * @param body the marker to be adding into the db
+   * @description adds the marker into the ddbb, if succeeded closes modal
    */
-  const postMarker = useCallback((body) => {
-    fetcher('/api/markers', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify(body),
-    }, 'Marcador creado correctamente').then((data) => {
-      setMarkers((prevMarkers) => [...prevMarkers, data]);
+  const postMarker = useCallback(async (body) => {
+    const msg = {
+      error: 'Error al crear el marcador',
+      success: 'Marcador creado correctamente',
+    };
+
+    const newMarkerDb = await POST(
+      { endpoint: '/api/markers', body },
+      { msg },
+    );
+
+    if (!isEmpty(newMarkerDb)) {
+      setMarkers((prevMarkers) => [...prevMarkers, newMarkerDb]);
       setShowMarkerDialog(false);
       fetchTowns();
-    });
+      setNewMarker(INITIAL_VALUE);
+    }
   }, [fetchTowns]);
 
   /**
@@ -84,17 +82,23 @@ export function MarkerProvider({
    * @param body
    * @description function to assign marker to a given volunteer
    */
-  const assignMarker = useCallback((body, cb = undefined) => {
-    fetcher(`/api/markers/assign/${selectedMarker.id}`, {
-      method: 'PUT',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ id: selectedMarker.id, ...body }),
-    }, 'Marcador asignado correctamente')
-      .then((data) => {
-        setSelectedMarker(data);
-        fetchMarkers();
-        if (cb) cb();
-      });
+  const assignMarker = useCallback(async (body, cb = undefined) => {
+    const data = { id: selectedMarker.id, ...body };
+    const msg = {
+      error: 'Error al asignar el marcador',
+      success: 'Marcador asignado correctamente',
+    };
+
+    const updatedMarkerDb = await PUT(
+      { endpoint: `/api/markers/assign/${selectedMarker.id}`, body: data },
+      { msg },
+    );
+
+    if (updatedMarkerDb) {
+      setSelectedMarker(updatedMarkerDb);
+      fetchMarkers();
+      if (cb) cb();
+    }
   }, [selectedMarker, fetchMarkers, setSelectedMarker]);
 
   /**
@@ -102,18 +106,23 @@ export function MarkerProvider({
    * @param body
    * @description function to change a marker as completed
    */
-  const completeMarker = useCallback((id, code) => {
-    fetcher(`/api/markers/complete/${id}`, {
-      method: 'PUT',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({
-        code,
-        status: MARKER_STATUS.COMPLETADO,
-      }),
-    }, 'Marcador completado correctamente')
-      .then(() => {
-        fetchMarkers();
-      });
+  const completeMarker = useCallback(async (id, code) => {
+    const data = {
+      code,
+      status: MARKER_STATUS.COMPLETADO,
+    };
+
+    const msg = {
+      error: 'Error al completar el marcador',
+      success: 'Marcador completado correctamente',
+    };
+
+    const updatedMarkerDb = await PUT(
+      { endpoint: `/api/markers/complete/${id}`, body: data },
+      { msg },
+    );
+
+    if (updatedMarkerDb) await fetchMarkers();
   }, [fetchMarkers]);
 
   /**
@@ -121,28 +130,42 @@ export function MarkerProvider({
    * @param body
    * @description function to delete a marker
    */
-  const deleteMarker = useCallback((id, code) => {
-    fetcher(`/api/markers/${id}`, {
-      method: 'DELETE',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ code }),
-    }, 'Marcador borrado correctamente')
-      .then(async () => {
-        setMarkers((prevMarkers) => prevMarkers.filter((marker) => marker !== selectedMarker));
-        setShowMarkerDialog(false);
-        if (selectedMarker) setSelectedMarker(null);
-        await Promise.all([
-          fetchTowns(),
-          fetchMarkers(),
-        ]);
-      });
+  const deleteMarker = useCallback(async (id, code) => {
+    const data = {
+      code,
+      status: MARKER_STATUS.COMPLETADO,
+    };
+
+    const msg = {
+      error: 'Error al borrar el marcador',
+      success: 'Marcador borrado correctamente',
+    };
+
+    const deletedMarkerDb = await DELETE(
+      { endpoint: `/api/markers/${id}`, body: data },
+      { msg },
+    );
+
+    if (deletedMarkerDb) {
+      setMarkers((prevMarkers) => prevMarkers.filter((marker) => marker !== selectedMarker));
+      setShowMarkerDialog(false);
+      if (selectedMarker) setSelectedMarker(null);
+      await Promise.all([
+        fetchTowns(),
+        fetchMarkers(),
+      ]);
+    }
   }, [selectedMarker, setSelectedMarker, fetchTowns, fetchMarkers]);
 
   useEffect(() => {
-    setLoading(true);
-    fetchMarkers();
-    fetchMarkersType();
-    setLoading(false);
+    (async () => {
+      setLoading(true);
+      await Promise.all([
+        fetchMarkers(),
+        fetchMarkersType(),
+      ]);
+      setLoading(false);
+    })();
   }, [fetchMarkers, fetchMarkersType]);
 
   useEffect(() => {

@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { INITIAL_VIEW_STATE, MARKER_STATUS } from '@/lib/enums';
 
 import { DeckGL } from '@deck.gl/react';
@@ -92,7 +92,7 @@ function MapView({
     activeLayers,
   });
 
-  const getLocation = () => {
+  const getLocation = useCallback(() => {
     navigator.geolocation.getCurrentPosition(
       (position) => {
         const { latitude, longitude } = position.coords;
@@ -108,29 +108,32 @@ function MapView({
       (error) => toast.error(`Error getting location: ${error}`),
       { enableHighAccuracy: true },
     );
-  };
+  }, [setUserLocation, setViewState]);
 
-  const onViewStateChange = ({ viewState: _v }) => setViewState(_v);
+  const onViewStateChange = useCallback(({ viewState: _v }) => setViewState(_v), []);
 
-  const handleMapClick = (event) => {
-    if (isSelectingLocation && event.coordinate) {
-      setSelectedCoordinate({
-        longitude: event.coordinate[0],
-        latitude: event.coordinate[1],
-      });
+  const handleMapClick = useCallback((event) => {
+    if (!isSelectingLocation || !event.coordinate) return;
 
-      setIsSelectingLocation(false);
-      if (isAdmin) {
-        setDialogChooseCreate(true);
-      } else {
-        setShowMarkerDialog(true);
-      }
-    }
-  };
+    setSelectedCoordinate({
+      longitude: event.coordinate[0],
+      latitude: event.coordinate[1],
+    });
+
+    setIsSelectingLocation(false);
+
+    if (isAdmin) setDialogChooseCreate(true);
+    else setShowMarkerDialog(true);
+  }, [isSelectingLocation, isAdmin, setIsSelectingLocation, setDialogChooseCreate, setShowMarkerDialog, setSelectedCoordinate]);
+
+  const getCursor = useCallback(
+    () => (isSelectingLocation ? 'crosshair' : 'grab'),
+    [isSelectingLocation],
+  );
 
   useEffect(() => {
     getLocation();
-  }, []);
+  }, [getLocation]);
 
   useEffect(() => {
     setViewState((prev) => ({
@@ -154,7 +157,7 @@ function MapView({
         layers={layers}
         onViewStateChange={onViewStateChange} // Escucha los cambios en viewState
         onClick={handleMapClick}
-        getCursor={() => (isSelectingLocation ? 'crosshair' : 'grab')}
+        getCursor={getCursor}
       >
         <ReactMap
           attributionControl={false}

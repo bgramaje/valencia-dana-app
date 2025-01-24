@@ -54,18 +54,22 @@ export const PICKUP_STATUS = {
   ABIERTO: {
     label: 'aceptando',
     color: '#49e659',
+    rgbColor: [73, 230, 105],
   },
   PARCIALMENTE: {
     label: 'parcialmente aceptando',
     color: '#e6ce49',
+    rgbColor: [230, 206, 73],
   },
   CERRADO: {
     label: 'cerrado',
     color: '#eb4034',
+    rgbColor: [235, 64, 52],
   },
   DESCONOCIDO: {
     label: 'desconocido',
     color: '#202020',
+    rgbColor: [32, 32, 32],
   },
 };
 

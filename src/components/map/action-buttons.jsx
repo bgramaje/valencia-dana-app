@@ -16,8 +16,8 @@ export const ActionButtons = memo(({
       <Button
         variant="outline"
         size="icon"
-        className={`min-w-[60px] h-[60px] rounded-xl ${isSelectingLocation && 'animate-pulse bg-red-400'}`}
-        onClick={() => setIsSelectingLocation(true)}
+        className={`min-w-[60px] h-[60px] rounded-xl ${isSelectingLocation && 'animate-pulse bg-blue-600 hover:bg-blue-800'}`}
+        onClick={() => setIsSelectingLocation(!isSelectingLocation)}
       >
         <Icon
           icon="uil:map-marker-plus"
@@ -83,7 +83,6 @@ export const ActionButtons = memo(({
           />
         </Button>
       </Legend>
-
     </div>
 
   </div>

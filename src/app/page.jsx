@@ -17,6 +17,8 @@ import { Button } from '@/components/ui/button';
 import useIsAdmin from '@/hooks/useIsAdmin';
 import { MarkersList } from '@/components/lists/marker/MarkersList';
 import { PickupsList } from '@/components/lists/pickup/PickupsList';
+import { Sidebar } from '@/components/nav/Sidebar';
+import { DataTableDemo } from '@/components/tables/MarkersTable';
 
 /**
  * @name CombinedProvider
@@ -81,6 +83,7 @@ export default function Home() {
       setSelectedPickup={setSelectedPickup}
     >
       <div className="w-dvh h-dvh flex">
+        <Sidebar />
         <MapView
           setSelectedCoordinate={setSelectedCoordinate}
           dialogChooseCreate={dialogChooseCreate}
@@ -90,7 +93,8 @@ export default function Home() {
           selectedMarker={selectedMarker}
           setSelectedMarker={setSelectedMarker}
         />
-        <div className="hidden md:flex flex-col flex-1 grow-3 max-h-dvh">
+        {/**
+         *  <div className="hidden md:flex flex-col flex-1 grow-3 max-h-dvh">
           <div className="p-2 flex gap-2 items-center justify-between">
             <div className="flex items-center gap-4">
               <Image src="som.svg" alt="logo-som" width={60} height={23} />
@@ -143,11 +147,16 @@ export default function Home() {
           <Separator />
 
           <div className="flex justify-between flex-1 overflow-auto">
-            <MarkersList />
+            <DataTableDemo />
+
+                     <MarkersList />
             <Separator orientation="vertical" />
             <PickupsList />
+
           </div>
         </div>
+         */}
+
       </div>
 
       <InfoDialog

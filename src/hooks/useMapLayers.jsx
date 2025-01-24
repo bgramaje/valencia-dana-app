@@ -1,10 +1,13 @@
 /* eslint-disable max-len */
 /* eslint-disable no-param-reassign */
+import { useEffect, useMemo, useState } from 'react';
+
+import { DateTime } from 'luxon';
+
+import { PICKUP_STATUS } from '@/lib/enums';
 import { useMarkers } from '@/context/MarkerContext';
 import { usePickups } from '@/context/PickupContext';
-import { PICKUP_STATUS } from '@/lib/enums';
-import { ScatterplotLayer, IconLayer, TextLayer } from '@deck.gl/layers';
-import { useState, useEffect, useMemo } from 'react';
+import { IconLayer, ScatterplotLayer, TextLayer } from '@deck.gl/layers';
 
 const ZOOM_LIMIT = 11;
 
@@ -25,7 +28,7 @@ export const useMapLayers = ({
   const { setShowMarkerDialog } = useMarkers();
   const { zoom } = viewState;
 
-  const [pulseRadius, setPulseRadius] = useState(100);
+  const [pulseRadius, setPulseRadius] = useState(80);
 
   useEffect(() => {
     const interval = setInterval(() => {
@@ -89,6 +92,58 @@ export const useMapLayers = ({
         },
         updateTriggers: {
           getColor: [markers],
+          visible: [zoom],
+        },
+      }),
+      new IconLayer({
+        id: 'markers-layer-verified-badge-background',
+        data: markers.filter((item) => DateTime.fromISO(item.created_at) < DateTime.now().minus({ days: 2 })),
+        pickable: true,
+        getIcon: () => ({
+          url: `https://api.iconify.design/tdesign/circle-filled.svg?width=40&height=40&color=${encodeURIComponent('#eb4034')}`,
+          width: 40, // Use a larger base width
+          height: 40, // Use a larger base heighttdesign:circle-filled
+        }),
+        getPosition: (d) => [d.longitude, d.latitude],
+        sizeScale: 1.5, // Reduce size scale for less scaling
+        getAngle: 0,
+        getSize: 15, // Ensure this is in line with the actual icon size
+        getPixelOffset: [18, 14], // Offset to ensure it aligns correctly
+        visible: (activeLayers?.AFECTADO && zoom >= ZOOM_LIMIT),
+        onClick: ({ object }) => {
+          if (object) {
+            setSelectedPickup(object);
+            setShowInfoPickupDialog(true);
+          }
+        },
+        updateTriggers: {
+          getColor: [pickups],
+          visible: [zoom],
+        },
+      }),
+      new IconLayer({
+        id: 'markers-layer-verified-badge',
+        data: markers.filter((item) => DateTime.fromISO(item.created_at) < DateTime.now().minus({ days: 2 })),
+        pickable: true,
+        getIcon: () => ({
+          url: `https://api.iconify.design/lets-icons/alarm-fill.svg?width=40&height=40&color=${encodeURIComponent('#ffffff')}`,
+          width: 40, // Use a larger base width
+          height: 40, // Use a larger base height
+        }),
+        getPosition: (d) => [d.longitude, d.latitude],
+        sizeScale: 1.5, // Reduce size scale for less scaling
+        getAngle: 0,
+        getSize: 10, // Ensure this is in line with the actual icon size
+        getPixelOffset: [18, 14], // Offset to ensure it aligns correctly
+        visible: (activeLayers?.AFECTADO && zoom >= ZOOM_LIMIT),
+        onClick: ({ object }) => {
+          if (object) {
+            setSelectedPickup(object);
+            setShowInfoPickupDialog(true);
+          }
+        },
+        updateTriggers: {
+          getColor: [pickups],
           visible: [zoom],
         },
       }),
@@ -160,22 +215,23 @@ export const useMapLayers = ({
         id: 'scatter-plot-pickups-border',
         data: pickups,
         pickable: true,
-        opacity: 1,
+        opacity: 0.8,
         filled: true,
-        radiusScale: 2,
-        radiusMinPixels: 10, // Slightly larger than inner layer to create a border effect
-        radiusMaxPixels: 22,
+        radiusScale: 4,
+        radiusMinPixels: zoom >= ZOOM_LIMIT ? 20 : 5, // Cambia el tamaño mínimo del marcador según el zoom
+        radiusMaxPixels: 20,
         getPosition: (d) => [d.longitude, d.latitude],
-        getRadius: 3, // Slightly larger than the inner fill layer
-        getFillColor: [255, 255, 255, 255], // Border color (e.g., black)
-        visible: (activeLayers?.PUNTO && zoom >= ZOOM_LIMIT),
+        getRadius: 5,
+        getFillColor: (d) => PICKUP_STATUS[d.status].rgbColor,
         onClick: ({ object }) => {
           if (object) {
-            setSelectedPickup(object);
-            setShowInfoPickupDialog(true);
+            setSelectedMarker(object);
+            setShowMarkerDialog(true);
           }
         },
+        visible: (activeLayers?.AFECTADO && zoom >= ZOOM_LIMIT), // Mostrar los marcadores individuales cuando el zoom es mayor o igual a 10
         updateTriggers: {
+          getColor: [markers],
           visible: [zoom, activeLayers],
         },
       }),
@@ -184,18 +240,44 @@ export const useMapLayers = ({
         data: pickups,
         pickable: true,
         getIcon: (d) => {
-          const color = PICKUP_STATUS[d.status].color ?? '#202020';
+          const color = d.status === 'DESCONOCIDO' ? 'white' : '#202020';
           return {
-            url: `https://api.iconify.design/mynaui/location-home-solid.svg?width=100&height=100&color=${encodeURIComponent(color)}`,
-            width: 100, // Use a larger base width
-            height: 100, // Use a larger base height
+            url: `https://api.iconify.design/ph/package.svg?width=40&height=40&color=${encodeURIComponent(color)}`,
+            width: 40, // Use a larger base width
+            height: 40, // Use a larger base height
           };
         },
         getPosition: (d) => [d.longitude, d.latitude],
-        sizeScale: 2.25, // Reduce size scale for less scaling
+        sizeScale: 1.5, // Reduce size scale for less scaling
         getAngle: 0,
         getSize: 20, // Ensure this is in line with the actual icon size
         getPixelOffset: [0, 0], // Offset to ensure it aligns correctly
+        visible: (activeLayers?.PUNTO && zoom >= ZOOM_LIMIT),
+        onClick: ({ object }) => {
+          if (object) {
+            setSelectedPickup(object);
+            setShowInfoPickupDialog(true);
+          }
+        },
+        updateTriggers: {
+          getColor: [pickups],
+          visible: [zoom],
+        },
+      }),
+      new IconLayer({
+        id: 'pickups-layer-verified-badge',
+        data: pickups.filter((pickup) => pickup.verified),
+        pickable: true,
+        getIcon: () => ({
+          url: `https://api.iconify.design/material-symbols/verified-rounded.svg?width=40&height=40&color=${encodeURIComponent('#2160ff')}`,
+          width: 40, // Use a larger base width
+          height: 40, // Use a larger base height
+        }),
+        getPosition: (d) => [d.longitude, d.latitude],
+        sizeScale: 1.5, // Reduce size scale for less scaling
+        getAngle: 0,
+        getSize: 13, // Ensure this is in line with the actual icon size
+        getPixelOffset: [18, 14], // Offset to ensure it aligns correctly
         visible: (activeLayers?.PUNTO && zoom >= ZOOM_LIMIT),
         onClick: ({ object }) => {
           if (object) {
@@ -215,14 +297,31 @@ export const useMapLayers = ({
   // Capa con efecto de pulso para userLocation
   const pulsingLayer = useMemo(
     () => userLocation
-      && new ScatterplotLayer({
-        id: 'user-location-layer',
-        data: [userLocation],
-        getPosition: (d) => [d.longitude, d.latitude],
-        getFillColor: [255, 0, 0],
-        getRadius: pulseRadius,
-        pickable: false,
-      }),
+      && [
+        new ScatterplotLayer({
+          id: 'user-location-layer-border',
+          data: [userLocation],
+          getPosition: (d) => [d.longitude, d.latitude],
+          getFillColor: [255, 255, 255],
+          getRadius: pulseRadius + 24,
+          pickable: false,
+          updateTriggers: {
+            getRadius: [pulseRadius],
+          },
+        }),
+        new ScatterplotLayer({
+          id: 'user-location-layer-fill',
+          data: [userLocation],
+          getPosition: (d) => [d.longitude, d.latitude],
+          getFillColor: [33, 96, 255],
+          getRadius: pulseRadius,
+          pickable: false,
+          updateTriggers: {
+            getRadius: [pulseRadius],
+          },
+        }),
+
+      ],
     [userLocation, pulseRadius],
   );
 

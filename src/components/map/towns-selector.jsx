@@ -29,7 +29,45 @@ import { Icon } from '@iconify/react';
 import useMediaQuery from '@/hooks/useMediaQuery';
 import { Badge } from '../ui/badge';
 
-export function ComboBoxResponsive({ towns, setSelectedTown, selectedTown }) {
+function TownsList({
+  towns,
+  setOpen,
+  setSelectedTown,
+}) {
+  return (
+    <Command>
+      <CommandInput className="!text-[16px] p-0 focus:!text-[16px]" placeholder="Buscar poblaciones..." />
+      <CommandList>
+        <CommandEmpty>Población sin ayuda solicitada.</CommandEmpty>
+        <CommandGroup>
+          {towns.map((town) => (
+            <CommandItem
+              key={town.name}
+              value={town.name}
+              onSelect={(value) => {
+                setSelectedTown(
+                  towns.find((t) => t.name === value) || null,
+                );
+                setOpen(false);
+              }}
+            >
+              <div className="flex w-full justify-between uppercase font-semibold text-xs">
+                {town.name}
+                <Badge
+                  className="p-1 py-0 animate-pulse min-w-[20px] flex-items-center justify-center"
+                >
+                  {town.total_helpers_markers}
+                </Badge>
+              </div>
+            </CommandItem>
+          ))}
+        </CommandGroup>
+      </CommandList>
+    </Command>
+  );
+}
+
+export function ComboBoxResponsiveComp({ towns, setSelectedTown, selectedTown }) {
   const [open, setOpen] = React.useState(false);
   const isDesktop = useMediaQuery('(min-width: 768px)');
 
@@ -110,40 +148,4 @@ export function ComboBoxResponsive({ towns, setSelectedTown, selectedTown }) {
   );
 }
 
-function TownsList({
-  towns,
-  setOpen,
-  setSelectedTown,
-}) {
-  return (
-    <Command>
-      <CommandInput className="!text-[16px] p-0 focus:!text-[16px]" placeholder="Buscar poblaciones..." />
-      <CommandList>
-        <CommandEmpty>Población sin ayuda solicitada.</CommandEmpty>
-        <CommandGroup>
-          {towns.map((town) => (
-            <CommandItem
-              key={town.name}
-              value={town.name}
-              onSelect={(value) => {
-                setSelectedTown(
-                  towns.find((t) => t.name === value) || null,
-                );
-                setOpen(false);
-              }}
-            >
-              <div className="flex w-full justify-between uppercase font-semibold text-xs">
-                {town.name}
-                <Badge
-                  className="p-1 py-0 animate-pulse min-w-[20px] flex-items-center justify-center"
-                >
-                  {town.total_helpers_markers}
-                </Badge>
-              </div>
-            </CommandItem>
-          ))}
-        </CommandGroup>
-      </CommandList>
-    </Command>
-  );
-}
+export const ComboBoxResponsive = React.memo(ComboBoxResponsiveComp);

@@ -1,4 +1,8 @@
+import StatusCode from 'status-code-enum';
+
+import { NextResponse } from 'next/server';
 import { hasAnyAttribute } from '@/lib/utils';
+
 import { markersTable, supabase } from '../../route';
 
 export async function PUT(request, { params }) {
@@ -6,7 +10,10 @@ export async function PUT(request, { params }) {
   const { code, ...rest } = await request.json(); // Get the `status` from the request body
 
   if (!id) {
-    return new Response(JSON.stringify({ error: 'ID is required' }), { status: 400 });
+    return NextResponse.json(
+      { error: 'ID is required' },
+      { status: StatusCode.ClientErrorBadRequest },
+    );
   }
 
   const { data: markerDB, error: errorSelect } = await supabase
@@ -16,20 +23,16 @@ export async function PUT(request, { params }) {
     .single();
 
   if (errorSelect) {
-    return new Response(
-      JSON.stringify(
-        { error: errorSelect.message },
-      ),
-      { status: 500 },
+    return NextResponse.json(
+      { error: errorSelect.message },
+      { status: StatusCode.ServerErrorInternal },
     );
   }
 
   if (hasAnyAttribute(markerDB, ['helper_name', 'helper_password', 'helper_telf'])) {
-    return new Response(
-      JSON.stringify(
-        { error: 'El marcador ya ha sido asignado a alguien. Refresca' },
-      ),
-      { status: 204 },
+    return NextResponse.json(
+      { error: 'El marcador ya ha sido asignado a alguien. Refresca' },
+      { status: StatusCode.ClientErrorConflict },
     );
   }
 
@@ -40,8 +43,11 @@ export async function PUT(request, { params }) {
     .select();
 
   if (error) {
-    return new Response(JSON.stringify({ error: error.message }), { status: 500 });
+    return NextResponse.json(
+      { error: error.message },
+      { status: StatusCode.ServerErrorInternal },
+    );
   }
 
-  return new Response(JSON.stringify(data[0]), { status: 200 });
+  return NextResponse.json(data[0], { status: StatusCode.SuccessOK });
 }

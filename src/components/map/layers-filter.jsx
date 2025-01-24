@@ -10,7 +10,7 @@ import {
   DialogFooter,
 } from '@/components/ui/dialog';
 
-function LayersFilter({ activeLayers, setActiveLayers }) {
+function LayersFilterComp({ activeLayers, setActiveLayers }) {
   const [open, setOpen] = useState(false); // Estado para controlar si el Dialog está abierto o cerrado
 
   const handleLayerToggle = (layer) => {
@@ -78,5 +78,7 @@ function LayersFilter({ activeLayers, setActiveLayers }) {
     </Dialog>
   );
 }
+
+const LayersFilter = React.memo(LayersFilterComp);
 
 export default LayersFilter;

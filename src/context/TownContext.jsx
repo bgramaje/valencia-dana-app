@@ -2,33 +2,34 @@ import React, {
   createContext, useCallback, useContext, useEffect, useMemo, useState,
 } from 'react';
 
-import { fetcher } from '@/lib/utils';
+import { isEmpty } from 'lodash';
+import { GET } from '@/lib/fetcher';
 
 const TownContext = createContext();
 
 export function TownProvider({ children }) {
   const [towns, setTowns] = useState([]);
 
-  // loading state variable
   const [loading, setLoading] = useState(false);
+
   /**
    * @name fetchPickups
    * @description function to set all pickups stored in the database
    * it stores them into the useState of `pickups`
    */
-  const fetchTowns = useCallback(() => {
-    fetcher('/api/towns', {
-      method: 'GET',
-      headers: { 'Content-Type': 'application/json' },
-    }, null).then((data) => {
-      setTowns(data);
-    });
+  const fetchTowns = useCallback(async () => {
+    const twonsDb = await GET({ endpoint: '/api/towns' });
+    if (!isEmpty(twonsDb)) setTowns(twonsDb);
   }, []);
 
   useEffect(() => {
-    setLoading(true);
-    fetchTowns();
-    setLoading(false);
+    const fetch = async () => {
+      setLoading(true);
+      await fetchTowns();
+      setLoading(false);
+    };
+
+    fetch();
   }, [fetchTowns]);
 
   const value = useMemo(() => ({
