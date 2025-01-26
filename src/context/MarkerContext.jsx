@@ -147,7 +147,7 @@ export function MarkerProvider({
     );
 
     if (deletedMarkerDb) {
-      setMarkers((prevMarkers) => prevMarkers.filter((marker) => marker !== selectedMarker));
+      setMarkers((prevMarkers) => prevMarkers.filter((marker) => marker.id !== selectedMarker.id));
       setShowMarkerDialog(false);
       if (selectedMarker) setSelectedMarker(null);
       await Promise.all([

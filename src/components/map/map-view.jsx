@@ -20,6 +20,7 @@ import { LeftButtons } from './left-buttons';
 import MapContent from './map-content';
 import { Button } from '../ui/button';
 import { CodeCrudDialog } from '../dialogs/code/CodeCrudDialog';
+import { DrawerTree } from './drawers/drawer-tree';
 
 /*
 const mapStyle = {
@@ -167,6 +168,10 @@ function MapView({
         />
       </DeckGL>
 
+      <div className="absolute top-0 left-0 z-10 h-full p-2">
+        <DrawerTree />
+
+      </div>
       <div className="absolute bottom-1 right-2 text-[10px] bg-white px-1 rounded xl">
         <p>
           &copy;

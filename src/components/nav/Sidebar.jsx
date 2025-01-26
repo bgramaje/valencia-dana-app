@@ -5,9 +5,9 @@ import Link from 'next/link';
 
 export function Sidebar() {
   return (
-    <div className="w-8 h-full flex flex-col basis-[65px] justify-between items-center py-4">
+    <div className="w-8 h-full flex flex-col basis-[60px] justify-between items-center py-4">
       <div className="flex items-center justify-center pl-0">
-        <Image src="som_heart.svg" alt="logo-som" width={40} height={40} />
+        <Image src="som_heart.svg" alt="logo-som" width={35} height={40} />
       </div>
       <div className="flex flex-col gap-2">
         <div className="flex gap-1 items-center">

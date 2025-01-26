@@ -20,6 +20,7 @@ export function TownProvider({ children }) {
   const fetchTowns = useCallback(async () => {
     const twonsDb = await GET({ endpoint: '/api/towns' });
     if (!isEmpty(twonsDb)) setTowns(twonsDb);
+    return twonsDb;
   }, []);
 
   useEffect(() => {
