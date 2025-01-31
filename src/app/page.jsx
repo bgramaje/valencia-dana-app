@@ -19,6 +19,7 @@ import { MarkersList } from '@/components/lists/marker/MarkersList';
 import { PickupsList } from '@/components/lists/pickup/PickupsList';
 import { Sidebar } from '@/components/nav/Sidebar';
 import { DataTableDemo } from '@/components/tables/MarkersTable';
+import { AnimatedShinyText } from '@/components/ui/animated-shiny-text';
 
 /**
  * @name CombinedProvider
@@ -82,8 +83,9 @@ export default function Home() {
       selectedPickup={selectedPickup}
       setSelectedPickup={setSelectedPickup}
     >
-      <div className="w-dvh h-dvh flex">
+      <div className="w-dvh h-dvh flex relative">
         <Sidebar />
+
         <MapView
           setSelectedCoordinate={setSelectedCoordinate}
           dialogChooseCreate={dialogChooseCreate}

@@ -154,7 +154,7 @@ function TreeNode({
       >
         <AccordionPrimitive.Item value={item.id}>
           <AccordionTrigger
-            className={cn(treeVariants(), selectedItemId === item.id && selectedTreeVariants())}
+            className={cn(treeVariants(), selectedItemId === item.id && selectedTreeVariants(), 'hover:bg-accent/50')}
             onClick={() => {
               handleSelectChange(item);
               item.onClick?.();
@@ -173,7 +173,9 @@ function TreeNode({
               {item.actions}
             </TreeActions>
           </AccordionTrigger>
-          <AccordionContent className="ml-2.5 pl-0.5 border-l">
+          <AccordionContent
+            className="ml-2.5 pl-0.5 border-l"
+          >
             <TreeItem
               data={item.children ? item.children : item}
               selectedItemId={selectedItemId}
@@ -209,6 +211,7 @@ const TreeLeaf = React.forwardRef((
         treeVariants(),
         className,
         selectedItemId === item.id && selectedTreeVariants(),
+        'hover:bg-accent/50 rounded-md',
       )}
       onClick={() => {
         handleSelectChange(item);

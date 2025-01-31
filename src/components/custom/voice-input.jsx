@@ -1,81 +1,61 @@
-import React, { useState } from 'react';
-
-import { toast } from 'sonner';
-
-import { Icon } from '@iconify/react';
+import React, { useEffect } from 'react';
+import { Textarea } from '@/components/ui/textarea';
 import { Button } from '@/components/ui/button';
+import SpeechRecognition, { useSpeechRecognition } from 'react-speech-recognition';
+import { Icon } from '@iconify/react';
 
-import { Textarea } from '../ui/textarea';
+export const VoiceInput = React.forwardRef(({
+  placeholder, onChange, value, ...props
+}, ref) => {
+  const {
+    transcript,
+    listening,
+    resetTranscript,
+    browserSupportsSpeechRecognition,
+  } = useSpeechRecognition();
 
-export function VoiceInput(props) {
-  const { setter, ...rest } = props;
+  // Update the parent form value when transcript changes
+  useEffect(() => {
+    if (transcript !== value) {
+      onChange(transcript);
+    }
+  }, [transcript, value, onChange]);
 
-  const [listening, setListening] = useState(false);
-
-  // Verifica que el navegador soporte SpeechRecognition
-  const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
-  const recognition = SpeechRecognition ? new SpeechRecognition() : null;
-
-  if (recognition) {
-    // Configuración del reconocimiento de voz
-    recognition.continuous = true;
-    recognition.interimResults = true;
-    recognition.lang = 'es-ES'; // Configura el idioma, por ejemplo, español
-    recognition.maxAlternatives = 1;
-
-    // Evento que se activa cuando el reconocimiento detecta resultados
-    recognition.onresult = (event) => {
-      const { transcript } = event.results[0][0];
-      setter((prev) => ({ ...prev, description: transcript })); // Escribe el texto transcrito en el input
-      setListening(false);
-    };
-
-    recognition.onaudiostart = () => toast.info('Capturando voz, hable por favor');
-    recognition.onspeechend = () => toast.info('Voz detectada');
-    recognition.onend = () => {
-      toast.info('Voz detectada');
-      setListening(false);
-    };
-
-    recognition.onerror = (event) => {
-      if (event.error === 'network') {
-        toast('Error de red: verifica tu conexión a Internet.');
-      } else if (event.error === 'not-allowed') {
-        toast('Permiso denegado: permite el acceso al micrófono.');
-      } else {
-        toast(`Error en el reconocimiento de voz: ${event.error}`);
-      }
-      setListening(false);
-    };
-  }
-
-  const handleStartListening = () => {
-    if (recognition) {
-      setListening(true);
-      recognition.start();
+  const handleListen = () => {
+    if (listening) {
+      SpeechRecognition.stopListening();
     } else {
-      toast.error('Tu navegador no soporta reconocimiento de voz.');
+      resetTranscript();
+      SpeechRecognition.startListening({ continuous: true });
     }
   };
 
   return (
-    <div className="relative flex items-center gap-2 items-stretch">
-      <Textarea {...rest} />
-      {recognition && (
+    <div className="flex gap-1 items-start">
+      <Textarea
+        ref={ref}
+        value={value || ''}
+        onChange={(e) => onChange(e.target.value)}
+        placeholder={placeholder || 'Speak or type here...'}
+        rows={4}
+        {...props}
+      />
+      {browserSupportsSpeechRecognition && (
         <Button
-          onClick={handleStartListening}
-          className="grow-1 max-w-[40px] h-full rounded-md"
-          disabled={listening}
+          type="button"
+          onClick={handleListen}
+          variant={listening ? 'destructive' : 'default'}
+          className="rounded-lg"
         >
           <Icon
-            icon={listening ? 'svg-spinners:3-dots-bounce' : 'ic:baseline-mic'}
-            style={{
-              color: 'white', width: 20, height: 20, margin: 0,
-            }}
+            icon={listening ? 'ic:twotone-mic-off' : 'ic:twotone-mic'}
+            width="20"
+            height="20"
           />
         </Button>
       )}
-
     </div>
   );
-}
+});
+
+VoiceInput.displayName = 'VoiceInput';

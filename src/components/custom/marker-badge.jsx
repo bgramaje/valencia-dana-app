@@ -29,3 +29,19 @@ export function MarkerBadge({ marker }) {
     )
   );
 }
+
+export function MarkerDot({ marker }) {
+  const statusClasses = {
+    [MARKER_STATUS.COMPLETADO]: 'bg-green-500 text-green-900 hover:bg-green-500',
+    [MARKER_STATUS.PENDIENTE]: 'bg-red-500 text-red-900 hover:bg-red-500',
+    [MARKER_STATUS.ASIGNADO]: 'bg-orange-500 text-orange-900 hover:bg-orange-500',
+  };
+
+  return (
+    statusClasses[marker?.status] && (
+      <Badge
+        className={`w-2 h-2 rounded-full p-0 ${statusClasses[marker?.status]} hover:cursor-pointer`}
+      />
+    )
+  );
+}

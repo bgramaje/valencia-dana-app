@@ -203,6 +203,7 @@ export function MarkerProvider({
       {children}
       {!selectedMarker && (
         <CreateMarkerDialog
+          currentLocation={location}
           open={showMarkerDialog}
           close={setShowMarkerDialog}
           newMarker={newMarker}

@@ -105,13 +105,28 @@ module.exports = {
   				to: {
   					'background-position': '0% 0%'
   				}
+  			},
+  			'shiny-text': {
+  				'0%, 90%, 100%': {
+  					'background-position': 'calc(-100% - var(--shiny-width)) 0'
+  				},
+  				'30%, 60%': {
+  					'background-position': 'calc(100% + var(--shiny-width)) 0'
+  				}
+  			},
+  			gradient: {
+  				to: {
+  					backgroundPosition: 'var(--bg-size) 0'
+  				}
   			}
   		},
   		animation: {
   			'caret-blink': 'caret-blink 1.25s ease-out infinite',
   			'accordion-down': 'accordion-down 0.2s ease-out',
   			'accordion-up': 'accordion-up 0.2s ease-out',
-  			shine: 'shine var(--duration) infinite linear'
+  			shine: 'shine var(--duration) infinite linear',
+  			'shiny-text': 'shiny-text 8s infinite',
+  			gradient: 'gradient 8s linear infinite'
   		}
   	}
   },

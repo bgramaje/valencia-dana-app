@@ -1,5 +1,6 @@
+/* eslint-disable max-len */
 import React, { useState, useEffect, useCallback } from 'react';
-import { INITIAL_VIEW_STATE, MARKER_STATUS } from '@/lib/enums';
+import { INITIAL_VIEW_STATE, MARKER_STATUS, PICKUP_STATUS } from '@/lib/enums';
 
 import { DeckGL } from '@deck.gl/react';
 import { Map as ReactMap } from 'react-map-gl/maplibre';
@@ -14,6 +15,8 @@ import { useMapStore } from '@/app/store';
 import { isEmpty } from 'lodash';
 import { Icon } from '@iconify/react';
 import useIsAdmin from '@/hooks/useIsAdmin';
+import { cn } from '@/lib/utils';
+import { ChevronRight } from 'lucide-react';
 import { ComboBoxResponsive } from './towns-selector';
 import LayersFilter from './layers-filter';
 import { LeftButtons } from './left-buttons';
@@ -21,6 +24,9 @@ import MapContent from './map-content';
 import { Button } from '../ui/button';
 import { CodeCrudDialog } from '../dialogs/code/CodeCrudDialog';
 import { DrawerTree } from './drawers/drawer-tree';
+import { AnimatedGradientText } from '../ui/animated-gradient-text';
+import { DockSubactions } from './dock-subactions';
+import { DrawerLegend } from './drawers/drawer-legend';
 
 /*
 const mapStyle = {
@@ -63,8 +69,14 @@ function MapView({
 
   const [viewState, setViewState] = useState(INITIAL_VIEW_STATE);
   const [activeLayers, setActiveLayers] = useState({
-    AFECTADO: true,
-    PUNTO: true,
+    ...Object.keys(MARKER_STATUS).reduce((acc, status) => {
+      acc[`marker-${status.toLowerCase()}`] = true;
+      return acc;
+    }, {}),
+    ...Object.keys(PICKUP_STATUS).reduce((acc, status) => {
+      acc[`pickup-${status}`] = true;
+      return acc;
+    }, {}),
   });
 
   const [selectedTown, setSelectedTown] = useState(null);
@@ -168,10 +180,31 @@ function MapView({
         />
       </DeckGL>
 
-      <div className="absolute top-0 left-0 z-10 h-full p-2">
-        <DrawerTree />
-
+      <div
+        onClick={() => window.open('https://www.vozpopuli.com/espana/comunidad-valenciana/comida-medicamentos-ropa-aplicacion-pedir-ayuda-dana-valencia.html', '_blank')}
+        role="button"
+        aria-hidden="true"
+        className="z-10 absolute top-6 left-1/2 transform -translate-x-1/2 -translate-y-1/2 flex items-center justify-center"
+      >
+        <AnimatedGradientText>
+          🎉
+          <hr className="mx-2 h-4 w-px shrink-0 bg-gray-300" />
+          <span
+            className={cn(
+              'mr-1 inline animate-gradient bg-gradient-to-r from-[#202020] via-[#40ff66] to-[#202020] bg-[length:var(--bg-size)_100%] bg-clip-text text-transparent',
+            )}
+          >
+            Salimos en Vozpópuli
+          </span>
+          🗞️
+          <ChevronRight className="ml-1 size-3 transition-transform duration-300 ease-in-out group-hover:translate-x-0.5" />
+        </AnimatedGradientText>
       </div>
+
+      <div className="absolute top-0 left-0 z-10 h-full p-2">
+        <DrawerTree setViewState={setViewState} />
+      </div>
+
       <div className="absolute bottom-1 right-2 text-[10px] bg-white px-1 rounded xl">
         <p>
           &copy;
@@ -226,6 +259,7 @@ function MapView({
           )}
         </div>
 
+        {/*
         <div className="p-0 m-0">
           <ComboBoxResponsive
             towns={towns}
@@ -233,13 +267,19 @@ function MapView({
             setSelectedTown={setSelectedTown}
           />
         </div>
+        */}
+
         <div className="relative flex flex-col gap-1">
-          <LayersFilter
+          <DockSubactions
+            setViewState={setViewState}
             activeLayers={activeLayers}
             setActiveLayers={setActiveLayers}
           />
-          <LeftButtons setViewState={setViewState} />
         </div>
+      </div>
+
+      <div className="absolute z-10 right-2 bottom-7">
+        <DrawerLegend types={markersType} loading={loadingMarkers} />
       </div>
 
       <MapContent
