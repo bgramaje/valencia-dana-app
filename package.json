@@ -61,6 +61,7 @@
     "react-phone-number-input": "^3.4.9",
     "react-speech-recognition": "^3.10.0",
     "react-virtualized": "^9.22.5",
+    "regenerator-runtime": "^0.14.1",
     "sonner": "^1.5.0",
     "status-code-enum": "^1.0.0",
     "tailwind-merge": "^2.5.4",
@@ -72,6 +73,7 @@
     "zustand": "^5.0.1"
   },
   "devDependencies": {
+    "@babel/plugin-transform-runtime": "^7.25.9",
     "eslint": "^8",
     "eslint-config-airbnb": "^19.0.4",
     "eslint-config-next": "15.0.2",

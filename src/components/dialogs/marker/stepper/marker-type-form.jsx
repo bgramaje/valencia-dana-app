@@ -58,6 +58,14 @@ function MarkerTypeForm({ markersType }) {
 
   return (
     <div className="flex flex-col gap-1">
+      <div className="flex flex-col">
+        <p className="uppercase text-[11px] m-0 p-0 font-medium">
+          TIPO DE MARCADOR
+        </p>
+        <p className=" text-[11px] m-0 p-0 font-regular">
+          Porfavor, categorice el tipo de ayuda que desea recibir
+        </p>
+      </div>
       <div className="flex flex-wrap w-full gap-2 max-w-[350px]">
         {(markersType ?? []).map((type) => (
           <TypeItem
@@ -65,11 +73,11 @@ function MarkerTypeForm({ markersType }) {
             type={type}
             isSelected={type.key === selectedTypeId}
             onSelect={handleSelect}
-            className={errors.marker ? 'border-[1px] border-red-500 ring-red-500' : ''}
+            className={errors.type ? 'border-[1px] border-red-500 ring-red-500' : ''}
           />
         ))}
       </div>
-      {errors?.type && <p className="text-red-500 text-xs font-medium">{errors?.type?.message}</p>}
+      {errors?.type && <code className="text-red-500 text-[12px] font-semibold">{errors?.type?.message}</code>}
     </div>
 
   );

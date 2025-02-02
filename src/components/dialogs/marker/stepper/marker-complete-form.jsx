@@ -3,16 +3,19 @@
 /* eslint-disable jsx-a11y/label-has-associated-control */
 /* eslint-disable consistent-return */
 
-import React, { useCallback, useState, useRef } from 'react';
-import { useFormContext } from 'react-hook-form';
-import imageCompression from 'browser-image-compression';
+import React, { useCallback, useRef, useState } from 'react';
+
 import { toast } from 'sonner';
 import { Upload } from 'lucide-react';
-import { Alert, AlertTitle } from '@/components/ui/alert';
-import { Textarea } from '@/components/ui/textarea';
-import { Button } from '@/components/ui/button';
-import { Icon } from '@iconify/react';
+import { useFormContext } from 'react-hook-form';
+import imageCompression from 'browser-image-compression';
+
 import Image from 'next/image';
+import { Icon } from '@iconify/react';
+import { Button } from '@/components/ui/button';
+import { Textarea } from '@/components/ui/textarea';
+import { Checkbox } from '@/components/ui/checkbox';
+import { Alert, AlertTitle } from '@/components/ui/alert';
 
 const convertToBase64 = (file) => new Promise((resolve, reject) => {
   const reader = new FileReader();
@@ -29,7 +32,6 @@ function MarkerCompleteForm() {
     formState: { errors },
   } = useFormContext();
 
-  const [image, setImage] = useState(null); // Estado para la imagen seleccionada
   const [imagePreview, setImagePreview] = useState(null); // Estado para la vista previa de la imagen
   const [isCompressing, setIsCompressing] = useState(false); // Estado para la compresión
 
@@ -53,9 +55,8 @@ function MarkerCompleteForm() {
         const base64Image = await convertToBase64(compressedFile);
 
         // Actualizar estados y valor del formulario
-        setImage(compressedFile);
         setImagePreview(base64Image);
-        setValue('image', base64Image); // Almacenar la imagen en Base64 en el formulario
+        setValue('img', base64Image); // Almacenar la imagen en Base64 en el formulario
       } catch (error) {
         console.error('Error comprimiendo la imagen:', error);
         toast.error('Error al comprimir la imagen. Inténtalo de nuevo.');
@@ -89,9 +90,8 @@ function MarkerCompleteForm() {
 
   // Eliminar la imagen seleccionada
   const handleRemoveImage = useCallback(() => {
-    setImage(null);
     setImagePreview(null);
-    setValue('image', ''); // Limpiar el valor de la imagen en el formulario
+    setValue('img', ''); // Limpiar el valor de la imagen en el formulario
   }, [setValue]);
 
   return (
@@ -129,23 +129,38 @@ function MarkerCompleteForm() {
       </div>
 
       {/* Campo de descripción */}
-      <div className="mt-2">
+      <div className="mt-0.5 flex flex-col gap-1">
+        <div className="flex flex-col gap-0">
+          <p className="uppercase text-[11px] m-0 p-0 font-medium">
+            DESCRIPCIÓN
+          </p>
+          <p className=" text-[11px] m-0 p-0 font-regular">
+            Introduzca una breve descripción de lo que necesita
+          </p>
+        </div>
+
         <Textarea
           placeholder="Qué necesitas?"
           id={register('description').name}
           {...register('description')}
         />
         {errors.description && (
-          <span className="text-sm text-destructive">
-            {errors.description.message}
-          </span>
+        <code className="text-red-500 text-[11px] font-semibold">
+          {errors?.description?.message}
+        </code>
         )}
       </div>
 
       {/* Sección de subida de imagen */}
-      <div className="py-2">
+      <div className="py-1">
+        <p className="uppercase text-[11px] m-0 p-0 font-medium">
+          IMAGEN
+        </p>
+        <p className=" text-[11px] m-0 p-0 font-regular">
+          Añadir una imagen puede ser beneficiosa a la hora de localiar y identificar la ayuda
+        </p>
         <div
-          className="border-2 border-dashed border-gray-300 rounded-lg p-4 text-center cursor-pointer relative"
+          className="mt-1 border-2 border-dashed border-gray-300 rounded-lg p-4 text-center cursor-pointer relative"
           onDragOver={handleDragOver}
           onDrop={handleDrop}
           onClick={() => fileInputRef.current?.click()}
@@ -181,7 +196,10 @@ function MarkerCompleteForm() {
             <>
               <Upload className="mx-auto h-8 w-8 text-gray-400" />
               <p className="mt-1 text-sm">
-                Arrastra o pulsa para añadir una imagen de la ayuda a realizar
+                Arrastra o pulsa para añadir
+                {' '}
+                <br />
+                una imagen de la ayuda a realizar
               </p>
             </>
           )}
@@ -196,6 +214,41 @@ function MarkerCompleteForm() {
         {isCompressing && (
           <p className="text-sm text-gray-500 mt-2">Comprimiendo imagen...</p>
         )}
+        <div className="mt-4 space-y-2">
+          <div className="flex items-center">
+            <Checkbox
+              id="privacy-policy"
+              className={`mr-2 ${errors.policy_accepted ? 'border-red-500 ring-red-500' : ''}`}
+              checked={getValues('policy_accepted')}
+              onCheckedChange={(checked) => {
+                setValue('policy_accepted', checked);
+              }}
+            />
+            <label
+              htmlFor="privacy-policy"
+              className={`${errors.policy_accepted ? 'text-red-500 ring-red-500' : ''} text-[13px]`}
+            >
+              Acepto las políticas de privacidad.
+            </label>
+          </div>
+
+          <div className="flex items-center">
+            <Checkbox
+              id="data-usage"
+              className={`mr-2 ${errors.data_usage ? 'border-red-500 ring-red-500' : ''}`}
+              checked={getValues('data_usage')}
+              onCheckedChange={(checked) => {
+                setValue('data_usage', checked);
+              }}
+            />
+            <label
+              htmlFor="data-usage"
+              className={`${errors.data_usage ? 'text-red-500 ring-red-500' : ''} text-[13px]`}
+            >
+              Acepto el uso de mis datos para ayudarme en la emergencia.
+            </label>
+          </div>
+        </div>
       </div>
     </div>
   );

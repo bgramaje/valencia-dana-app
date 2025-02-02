@@ -16,6 +16,7 @@ import React, {
 import { useForm } from 'react-hook-form';
 import { z } from 'zod';
 import { cn } from '@/lib/utils';
+import { omit } from 'lodash';
 import { CodeCopyDialog } from '../code/CodeCopyDialog';
 import MarkerCompleteForm from './stepper/marker-complete-form';
 import MarkerContactForm from './stepper/marker-contact-form';
@@ -24,9 +25,9 @@ import MarkerTypeForm from './stepper/marker-type-form';
 const markerTypeSchema = z.object({
   type: z
     .string({
-      required_error: 'Seleccion el tipo de ayuda que deseas',
+      required_error: 'Seleccione el tipo de ayuda que deseas',
     })
-    .min(1, { message: 'Seleccion el tipo de ayuda que deseas' }),
+    .min(1, { message: 'Seleccione el tipo de ayuda que deseas' }),
 });
 
 const markerContactSchema = z.object({
@@ -34,8 +35,14 @@ const markerContactSchema = z.object({
     .string({
       required_error: 'Ingrese la dirección postal donde deseas ayuda',
     })
-    .min(1, { message: 'Seleccion el tipo de ayuda que deseas' }),
+    .min(1, { message: 'Ingrese la dirección postal donde deseas ayuda' }),
   location: z.string(),
+  name: z
+    .string({
+      required_error: 'Ingrese su nombre',
+    })
+    .min(1, { message: 'Ingrese su nombre' }),
+  _country: z.string({}).min(1),
   telf: z
     .string({
       required_error: 'Por favor, ingrese un número de teléfono',
@@ -50,11 +57,16 @@ const markerContactSchema = z.object({
 const completeSchema = z.object({
   description: z
     .string({
-      required_error: 'Describa la ayuda que deseas',
+      required_error: 'Describa brevemente el tipo de ayuda o servicio que necesita',
     })
     .min(1, { message: 'Describa la ayuda que deseas' }),
-  image: z.string().optional(), // Campo para la imagen en Base64 (opcional)
-
+  img: z.string().optional(), // Campo para la imagen en Base64 (opcional)
+  policy_accepted: z.boolean().refine((val) => val === true, {
+    message: 'Debes aceptar las políticas de privacidad',
+  }),
+  data_usage: z.boolean().refine((val) => val === true, {
+    message: 'Debes aceptar el uso de datos',
+  }),
 });
 
 const { useStepper, steps, utils } = defineStepper(
@@ -84,6 +96,7 @@ export function CreateMarkerForm({
   handleAddMarker,
 }) {
   const [newMarker, setNewMarker] = useState({});
+  const [loading, setLoading] = useState(false);
   const stepper = useStepper();
 
   const form = useForm({
@@ -91,16 +104,14 @@ export function CreateMarkerForm({
     resolver: zodResolver(stepper.current.schema),
   });
 
-  const onSubmit = (values) => {
-    console.log(values);
-    console.log(stepper.isLast);
-
+  const onSubmit = async (values) => {
     // biome-ignore lint/suspicious/noConsoleLog: <We want to log the form values>
     if (stepper.isLast) {
-      handleAddMarker({ ...newMarker, ...values });
-      stepper.reset();
+      setLoading(true);
+      await handleAddMarker(omit({ ...values, ...selectedCoordinates, ...newMarker }, ['_country']));
+      form.reset();
     } else {
-      setNewMarker(values);
+      setNewMarker((prev) => ({ ...prev, ...values }));
       stepper.next();
     }
   };
@@ -119,57 +130,68 @@ export function CreateMarkerForm({
             aria-orientation="horizontal"
           >
             {stepper.all.map((step, index, array) => (
-              <div key={step.id} className="flex gap-0 items-center w-full ">
-                <li className="flex items-center gap-1.5 flex-shrink-0 flex-col justify-center">
-                  <Button
-                    type="button"
-                    role="tab"
-                    variant={index <= currentIndex ? 'default' : 'secondary'}
-                    aria-current={stepper.current.id === step.id ? 'step' : undefined}
-                    aria-posinset={index + 1}
-                    aria-setsize={steps.length}
-                    aria-selected={stepper.current.id === step.id}
-                    style={{
-                      backgroundColor: form.getValues('type') && index === 0
-                        ? `rgb(${markersType.find((t) => t.key === form.getValues('type'))?.color?.join(',') ?? '0,0,0'})`
-                        : '#202020',
-                      color: form.getValues('type') && index === 0
-                        ? '#202020' : '#fff',
-                    }}
-                    className={cn(
-                      'flex w-4 h-8 items-center justify-center rounded-full',
-                      stepper.current.id === step.id && 'animate-bounce',
-                    )}
-                    onClick={() => {
-                      if (currentIndex === index) return;
-                      if (currentIndex < index) return;
-                      stepper.goTo(step.id);
-                    }}
-                  >
-                    <Icon
-                      icon={
+              <>
+                <div key={step.id} className="flex gap-0 items-center">
+                  <li className="flex items-center gap-1.5 flex-shrink-0 flex-col justify-center">
+                    <Button
+                      type="button"
+                      role="tab"
+                      variant={index <= currentIndex ? 'default' : 'secondary'}
+                      aria-current={stepper.current.id === step.id ? 'step' : undefined}
+                      aria-posinset={index + 1}
+                      aria-setsize={steps.length}
+                      aria-selected={stepper.current.id === step.id}
+                      style={{
+                        backgroundColor: form.getValues('type') && index === 0
+                          ? `rgb(${markersType.find((t) => t.key === form.getValues('type'))?.color?.join(',') ?? '0,0,0'})`
+                          : '#202020',
+                        color: form.getValues('type') && index === 0
+                          ? '#202020' : '#fff',
+                      }}
+                      className={cn(
+                        'flex w-4 h-8 items-center justify-center rounded-full',
+                        stepper.current.id === step.id && 'animate-bounce',
+                      )}
+                      onClick={() => {
+                        if (currentIndex === index) return;
+                        if (currentIndex < index) return;
+                        stepper.goTo(step.id);
+                      }}
+                    >
+                      <Icon
+                        icon={
                         form.getValues('type') && index === 0
                           ? markersType.find((t) => t.key === form.getValues('type'))?.icon
                           : step.icon
-}
-                      style={{ width: '22px', height: '22px' }}
-                    />
-                  </Button>
-                  <div className="flex flex-col gap-0 text-center uppercase">
-                    <span className="text-[11px] font-semibold w-[80px]">
-                      {step.title}
-                    </span>
-                  </div>
-                </li>
+                        }
+                        style={{ width: '22px', height: '22px' }}
+                      />
+                    </Button>
+                    <div className="flex flex-col gap-0 text-center uppercase">
+                      <span className="text-[11px] font-semibold w-[80px]">
+                        {step.title}
+                      </span>
+                    </div>
+                  </li>
+                </div>
                 {index < array.length - 1 && (
-                <Separator className="max-w-[30px] mb-6" />
+                  <Separator className="max-w-[30px] mb-6" />
                 )}
-              </div>
+              </>
             ))}
           </ol>
         </nav>
-        <div className="space-y-2 min-w-[280px] max-w-[450px]">
-          {stepper.switch({
+        <div className="space-y-2 min-w-[320px] max-w-[450px]">
+          {loading && (
+            <div className="w-full flex items-center justify-center min-h-[200px]">
+              <Icon
+                icon="line-md:loading-loop"
+                width="26"
+                height="26"
+              />
+            </div>
+          )}
+          {!loading && stepper.switch({
             markerType: () => (
               <MarkerTypeForm markersType={markersType} />
             ),
@@ -228,6 +250,7 @@ export function CreateMarkerDialog({
           <CreateMarkerForm
             markersType={markersType}
             selectedCoordinates={currentLocation}
+            handleAddMarker={handleAddMarker}
           />
         </DialogContent>
       </Dialog>

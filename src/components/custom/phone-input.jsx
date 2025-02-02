@@ -1,12 +1,9 @@
 /* eslint-disable no-use-before-define */
 /* eslint-disable react/jsx-pascal-case */
-import React from 'react';
+import React, { useState } from 'react';
 import { CheckIcon, ChevronsUpDown } from 'lucide-react';
-
 import * as RPNInput from 'react-phone-number-input';
-
 import flags from 'react-phone-number-input/flags';
-
 import { Button } from '@/components/ui/button';
 import {
   Command,
@@ -22,12 +19,13 @@ import {
   PopoverContent,
   PopoverTrigger,
 } from '@/components/ui/popover';
-
 import { cn } from '@/lib/utils';
 import { ScrollArea } from '../ui/scroll-area';
 
 const PhoneInput = React.forwardRef(
-  ({ className, onChange, ...props }, ref) => (
+  ({
+    className, onChange, value, ...props
+  }, ref) => (
     <RPNInput.default
       ref={ref}
       className={cn('flex', className)}
@@ -35,17 +33,9 @@ const PhoneInput = React.forwardRef(
       countrySelectComponent={CountrySelect}
       inputComponent={InputComponent}
       smartCaret={false}
+      value={value}
       international
-          /**
-           * Handles the onChange event.
-           *
-           * react-phone-number-input might trigger the onChange event as undefined
-           * when a valid phone number is not entered. To prevent this,
-           * the value is coerced to an empty string.
-           *
-           * @param {E164Number | undefined} value - The entered value
-           */
-      onChange={(value) => onChange?.(value || (''))}
+      onChange={(_value) => onChange(_value || '')}
       {...props}
     />
   ),
@@ -64,33 +54,37 @@ const InputComponent = React.forwardRef(
 InputComponent.displayName = 'InputComponent';
 
 function CountrySelect({
-  disabled,
-  value: selectedCountry,
-  options: countryList,
-  onChange,
+  disabled, value: selectedCountry, options: countryList, onChange,
 }) {
+  const [open, setOpen] = useState(false);
+
+  const handleCountrySelect = (country) => {
+    onChange(country);
+    setOpen(false); // Cierra el popover al seleccionar un país
+  };
+
   return (
-    <Popover>
+    <Popover modal open={open} onOpenChange={setOpen}>
       <PopoverTrigger asChild>
         <Button
           type="button"
           variant="outline"
           className="flex gap-1 rounded-e-none rounded-s-lg px-3 border-r-0 focus:z-10"
           disabled={disabled}
+          onClick={() => setOpen((prev) => !prev)}
         >
-          <FlagComponent
-            country={selectedCountry}
-            countryName={selectedCountry}
-          />
+          <FlagComponent country={selectedCountry} countryName={selectedCountry} />
           <ChevronsUpDown
-            className={cn(
-              '-mr-2 size-4 opacity-50',
-              disabled ? 'hidden' : 'opacity-100',
-            )}
+            className={cn('-mr-2 size-4 opacity-50', disabled ? 'hidden' : 'opacity-100')}
           />
         </Button>
       </PopoverTrigger>
-      <PopoverContent className="w-[250px] p-0 ml-0" align="start" side="bottom">
+      <PopoverContent
+        className="w-[250px] p-0 ml-0"
+        align="start"
+        side="bottom"
+        style={{ zIndex: 1000 }}
+      >
         <Command>
           <CommandInput placeholder="Search country..." />
           <CommandList>
@@ -103,7 +97,7 @@ function CountrySelect({
                     country={value}
                     countryName={label}
                     selectedCountry={selectedCountry}
-                    onChange={onChange}
+                    onChange={handleCountrySelect}
                   />
                 ) : null))}
               </CommandGroup>
@@ -137,7 +131,7 @@ function FlagComponent({ country, countryName }) {
   const Flag = flags[country];
 
   return (
-    <span className="flex items-center w-5 h-4 justify-center p-0 1overflow-hidden rounded-sm">
+    <span className="flex items-center w-5 h-4 justify-center p-0 overflow-hidden rounded-sm">
       {Flag && <Flag className="rounded-md" title={countryName} />}
     </span>
   );

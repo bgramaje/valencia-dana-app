@@ -1,3 +1,4 @@
+/* eslint-disable no-underscore-dangle */
 /* eslint-disable jsx-a11y/label-has-associated-control */
 import { PhoneInput } from '@/components/custom/phone-input';
 import { Alert, AlertTitle } from '@/components/ui/alert';
@@ -9,6 +10,7 @@ import { useFormContext } from 'react-hook-form';
 
 function MarkerContactForm({ selectedCoordinates }) {
   const [loading, setLoading] = useState(false);
+
   const {
     register,
     getValues,
@@ -59,27 +61,78 @@ function MarkerContactForm({ selectedCoordinates }) {
             </Alert>
           </div>
         )}
-        <Input
-          placeholder="Dirección Postal"
-          type="text"
-          id={register('address').name}
-          {...register('address')}
-        />
-        {errors.address && (
-          <span className="text-sm text-destructive">
-            {errors.address.message}
-          </span>
-        )}
-        <PhoneInput
-          id={register('telf').name}
-          {...register('telf')}
-          defaultCountry="ES" // Default country code
-        />
-        {errors.telf && (
-          <span className="text-sm text-destructive">
-            {errors.telf.message}
-          </span>
-        )}
+        <div className="flex flex-col gap-0.5">
+          <div className="flex flex-col">
+            <p className="uppercase text-[11px] m-0 p-0 font-medium">
+              DIRECCIÓN POSTAL
+            </p>
+            <p className=" text-[11px] m-0 p-0 font-regular">
+              Añadir una dirección postal para saber donde exactamente acudir
+            </p>
+          </div>
+          <Input
+            placeholder="Dirección Postal"
+            type="text"
+            id={register('address').name}
+            {...register('address')}
+            className={errors.address ? 'border-[1px] border-red-500 ring-red-500' : ''}
+          />
+          {errors.address && (
+            <code className="text-red-500 text-[11px] font-semibold">
+              {errors?.address?.message}
+            </code>
+          )}
+        </div>
+        <div className="flex flex-col gap-0.5">
+          <div className="flex flex-col">
+            <p className="uppercase text-[11px] m-0 p-0 font-medium">
+              NOMBRE DE CONTACTO
+            </p>
+            <p className=" text-[11px] m-0 p-0 font-regular">
+              Añadir un nombre para saber a quien nos dirigimos
+            </p>
+          </div>
+          <Input
+            placeholder="Introduzca su nombre"
+            type="text"
+            id={register('name').name}
+            {...register('name')}
+            className={errors.name ? 'border-[1px] border-red-500 ring-red-500' : ''}
+          />
+          {errors.name && (
+            <code className="text-red-500 text-[11px] font-semibold">
+              {errors?.name?.message}
+            </code>
+          )}
+        </div>
+        <div className="flex flex-col gap-1">
+          <div className="flex flex-col">
+            <p className="uppercase text-[11px] m-0 p-0 font-medium">
+              TELÉFONO
+            </p>
+            <p className=" text-[11px] m-0 p-0 font-regular">
+              Añadir un teléfono es esencial para que peudas recibir la ayuda
+            </p>
+          </div>
+
+          <PhoneInput
+            id={register('telf').name}
+            {...register('telf')}
+            value={getValues('telf')}
+            onChange={(val) => {
+              setValue('telf', val.replace(/\s/g, '').trim());
+            }}
+            country={getValues('_country')}
+            onCountryChange={(_country) => setValue('_country', _country)}
+            className={errors.telf ? 'border-[1px] border-red-500 ring-red-500 rounded-md' : ''}
+          />
+
+          {errors.telf && (
+            <code className="text-red-500 text-[11px] font-semibold">
+              {errors?.telf?.message}
+            </code>
+          )}
+        </div>
       </div>
     </div>
   );
